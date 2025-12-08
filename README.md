@@ -1,4 +1,4 @@
-# Algorithm Practice (离线算法练习)
+# Algorithm Practice
 
 [中文](./README-zh.md)
 

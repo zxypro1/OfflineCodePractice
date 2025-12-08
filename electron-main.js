@@ -1,9 +1,8 @@
-const { app, BrowserWindow, shell, Menu, ipcMain } = require('electron');
-const { createServer } = require('http');
-const next = require('next');
+const { app, BrowserWindow, shell, Menu, ipcMain, protocol, net } = require('electron');
 const path = require('path');
 const fs = require('fs');
 const os = require('os');
+const { createServer } = require('http');
 
 const dev = process.env.NODE_ENV !== 'production';
 const hostname = 'localhost';
@@ -11,10 +10,10 @@ const port = 3000;
 
 let mainWindow;
 let server;
+let nextApp;
 
 // Function to update the application menu
 function updateApplicationMenu(language = 'en') {
-  // Define menu labels for different languages
   const menuLabels = {
     en: {
       navigation: 'Navigation',
@@ -40,26 +39,25 @@ function updateApplicationMenu(language = 'en') {
   
   const labels = menuLabels[language] || menuLabels.en;
   
-  // Create the application menu
   const menu = Menu.buildFromTemplate([
     {
       label: labels.navigation,
       submenu: [
         {
           label: labels.home,
-          click: () => mainWindow.loadURL('http://localhost:3000')
+          click: () => mainWindow && mainWindow.loadURL(`http://localhost:${port}`)
         },
         {
           label: labels.settings,
-          click: () => mainWindow.loadURL('http://localhost:3000/settings')
+          click: () => mainWindow && mainWindow.loadURL(`http://localhost:${port}/settings`)
         },
         {
           label: labels.aiGenerator,
-          click: () => mainWindow.loadURL('http://localhost:3000/generator')
+          click: () => mainWindow && mainWindow.loadURL(`http://localhost:${port}/generator`)
         },
         {
           label: labels.addProblem,
-          click: () => mainWindow.loadURL('http://localhost:3000/add-problem')
+          click: () => mainWindow && mainWindow.loadURL(`http://localhost:${port}/add-problem`)
         }
       ]
     },
@@ -90,52 +88,71 @@ function updateApplicationMenu(language = 'en') {
   Menu.setApplicationMenu(menu);
 }
 
+// Load saved configuration
+function loadSavedConfig() {
+  try {
+    const configPath = path.join(os.homedir(), '.offline-leet-practice', 'config.json');
+    if (fs.existsSync(configPath)) {
+      const configData = JSON.parse(fs.readFileSync(configPath, 'utf8'));
+      
+      // Set environment variables for AI providers
+      if (configData.deepSeek) {
+        if (configData.deepSeek.apiKey) process.env.DEEPSEEK_API_KEY = configData.deepSeek.apiKey;
+        if (configData.deepSeek.model) process.env.DEEPSEEK_MODEL = configData.deepSeek.model;
+        if (configData.deepSeek.timeout) process.env.DEEPSEEK_API_TIMEOUT = configData.deepSeek.timeout;
+        if (configData.deepSeek.maxTokens) process.env.DEEPSEEK_MAX_TOKENS = configData.deepSeek.maxTokens;
+      }
+      
+      if (configData.openAI) {
+        if (configData.openAI.apiKey) process.env.OPENAI_API_KEY = configData.openAI.apiKey;
+        if (configData.openAI.model) process.env.OPENAI_MODEL = configData.openAI.model;
+      }
+      
+      if (configData.qwen) {
+        if (configData.qwen.apiKey) process.env.QWEN_API_KEY = configData.qwen.apiKey;
+        if (configData.qwen.model) process.env.QWEN_MODEL = configData.qwen.model;
+      }
+      
+      if (configData.claude) {
+        if (configData.claude.apiKey) process.env.CLAUDE_API_KEY = configData.claude.apiKey;
+        if (configData.claude.model) process.env.CLAUDE_MODEL = configData.claude.model;
+      }
+      
+      if (configData.ollama) {
+        if (configData.ollama.endpoint) process.env.OLLAMA_ENDPOINT = configData.ollama.endpoint;
+        if (configData.ollama.model) process.env.OLLAMA_MODEL = configData.ollama.model;
+      }
+      
+      return configData;
+    }
+  } catch (error) {
+    console.error('Error loading saved configuration:', error);
+  }
+  return {};
+}
+
+// Start Next.js server
 async function startNextServer() {
   try {
-    // Load saved configuration at startup and set environment variables
-    try {
-      const configPath = path.join(os.homedir(), '.offline-leet-practice', 'config.json');
-      if (fs.existsSync(configPath)) {
-        const configData = JSON.parse(fs.readFileSync(configPath, 'utf8'));
-        
-        // Set environment variables
-        if (configData.deepSeek) {
-          if (configData.deepSeek.apiKey) process.env.DEEPSEEK_API_KEY = configData.deepSeek.apiKey;
-          if (configData.deepSeek.model) process.env.DEEPSEEK_MODEL = configData.deepSeek.model;
-          if (configData.deepSeek.timeout) process.env.DEEPSEEK_API_TIMEOUT = configData.deepSeek.timeout;
-          if (configData.deepSeek.maxTokens) process.env.DEEPSEEK_MAX_TOKENS = configData.deepSeek.maxTokens;
-        }
-        
-        if (configData.openAI) {
-          if (configData.openAI.apiKey) process.env.OPENAI_API_KEY = configData.openAI.apiKey;
-          if (configData.openAI.model) process.env.OPENAI_MODEL = configData.openAI.model;
-        }
-        
-        if (configData.qwen) {
-          if (configData.qwen.apiKey) process.env.QWEN_API_KEY = configData.qwen.apiKey;
-          if (configData.qwen.model) process.env.QWEN_MODEL = configData.qwen.model;
-        }
-        
-        if (configData.claude) {
-          if (configData.claude.apiKey) process.env.CLAUDE_API_KEY = configData.claude.apiKey;
-          if (configData.claude.model) process.env.CLAUDE_MODEL = configData.claude.model;
-        }
-        
-        if (configData.ollama) {
-          if (configData.ollama.endpoint) process.env.OLLAMA_ENDPOINT = configData.ollama.endpoint;
-          if (configData.ollama.model) process.env.OLLAMA_MODEL = configData.ollama.model;
-        }
-      }
-    } catch (configError) {
-      console.error('Error loading saved configuration:', configError);
-    }
+    // Load configuration first
+    loadSavedConfig();
     
-    const nextApp = next({ dev, hostname, port });
+    // Dynamically require next to handle potential issues
+    const next = require('next');
+    
+    nextApp = next({ 
+      dev, 
+      hostname, 
+      port,
+      dir: __dirname 
+    });
+    
     const nextHandler = nextApp.getRequestHandler();
+    
+    await nextApp.prepare();
     
     server = createServer(async (req, res) => {
       try {
-        // Be sure to pass `true` as the second argument to `nextApp.render` to properly handle SSR
         await nextHandler(req, res);
       } catch (error) {
         console.error('Error occurred handling', req.url, error);
@@ -144,26 +161,26 @@ async function startNextServer() {
       }
     });
 
-    await nextApp.prepare();
-    
-    server.listen(port, () => {
-      console.log(`> Ready on http://${hostname}:${port}`);
-      // Only load the main app URL after the server is ready
-      if (mainWindow) {
-        mainWindow.loadURL(`http://${hostname}:${port}`);
-      }
+    return new Promise((resolve, reject) => {
+      server.listen(port, hostname, (err) => {
+        if (err) {
+          reject(err);
+          return;
+        }
+        console.log(`> Ready on http://${hostname}:${port}`);
+        resolve();
+      });
     });
-
-    return nextApp;
   } catch (error) {
     console.error('Failed to start Next.js server:', error);
-    process.exit(1);
+    throw error;
   }
 }
+
 let savedThemePref = 'light';
 
 function createWindow() {
-  // Load saved theme preference
+  // Load theme preference
   try {
     const configPath = path.join(os.homedir(), '.offline-leet-practice', 'config.json');
     if (fs.existsSync(configPath)) {
@@ -177,29 +194,33 @@ function createWindow() {
   }
   
   mainWindow = new BrowserWindow({
-    width: 1200,
-    height: 800,
-    backgroundColor: savedThemePref === 'dark' ? '#1A1B1E' : '#FFFFFF',
+    width: 1400,
+    height: 900,
+    minWidth: 1000,
+    minHeight: 700,
+    title: 'Algorithm Practice',
+    backgroundColor: savedThemePref === 'dark' ? '#1a1a2e' : '#FFFFFF',
+    // 使用默认标题栏，避免红绿灯按钮与内容重叠
+    titleBarStyle: 'default',
     webPreferences: {
       nodeIntegration: false,
       contextIsolation: true,
-      preload: path.join(__dirname, 'electron-preload.js')
+      preload: path.join(__dirname, 'electron-preload.js'),
+      webSecurity: true,
+      spellcheck: false
     },
-    icon: path.join(__dirname, 'public', 'icon.png') // You'll need to add an icon file
+    icon: path.join(__dirname, 'public', 'icon.png'),
+    show: false // Don't show until ready
   });
 
-  // Load saved language and theme preferences
+  // Load saved language preference
   let savedLanguage = 'en';
-  
   try {
     const configPath = path.join(os.homedir(), '.offline-leet-practice', 'config.json');
     if (fs.existsSync(configPath)) {
       const configData = JSON.parse(fs.readFileSync(configPath, 'utf8'));
       if (configData.language) {
         savedLanguage = configData.language;
-      }
-      if (configData.theme) {
-        savedThemePref = configData.theme;
       }
     }
   } catch (error) {
@@ -208,56 +229,71 @@ function createWindow() {
   
   // Update the application menu with the saved language
   updateApplicationMenu(savedLanguage);
-  
-  // Apply theme to the main window
-  if (mainWindow) {
-    mainWindow.setBackgroundColor(savedThemePref === 'dark' ? '#1A1B1E' : '#FFFFFF');
-  }
 
   // Open external links in the default browser
   mainWindow.webContents.setWindowOpenHandler(({ url }) => {
-    if (url.startsWith('http')) {
+    if (url.startsWith('http') && !url.includes('localhost')) {
       shell.openExternal(url);
       return { action: 'deny' };
     }
     return { action: 'allow' };
   });
 
-  // Load the desktop entry point first
-  mainWindow.loadFile(path.join(__dirname, 'public', 'desktop-main.html'));
+  // Show window when ready
+  mainWindow.once('ready-to-show', () => {
+    mainWindow.show();
+  });
+
+  // Load the app
+  mainWindow.loadURL(`http://${hostname}:${port}`);
+  
+  mainWindow.on('closed', () => {
+    mainWindow = null;
+  });
 }
 
+// App ready event
 app.whenReady().then(async () => {
-  await startNextServer();
-  createWindow();
+  try {
+    // Start Next.js server first
+    await startNextServer();
+    
+    // Then create the window
+    createWindow();
+  } catch (error) {
+    console.error('Failed to start application:', error);
+    app.quit();
+  }
 
   app.on('activate', () => {
-    if (BrowserWindow.getAllWindows().length === 0) createWindow();
+    if (BrowserWindow.getAllWindows().length === 0) {
+      createWindow();
+    }
   });
 });
 
 app.on('window-all-closed', () => {
   if (process.platform !== 'darwin') {
-    if (server) {
-      server.close(() => {
-        console.log('Server closed');
-      });
-    }
+    cleanup();
     app.quit();
   }
 });
 
-// Handle app termination gracefully
 app.on('before-quit', () => {
-  if (server) {
-    server.close();
-  }
+  cleanup();
 });
+
+function cleanup() {
+  if (server) {
+    server.close(() => {
+      console.log('Server closed');
+    });
+  }
+}
 
 // IPC event handlers for configuration management
 ipcMain.handle('save-config', async (event, configData) => {
   try {
-    // Save configuration to a file in the user's home directory
     const configDir = path.join(os.homedir(), '.offline-leet-practice');
     if (!fs.existsSync(configDir)) {
       fs.mkdirSync(configDir, { recursive: true });
@@ -266,33 +302,8 @@ ipcMain.handle('save-config', async (event, configData) => {
     const configPath = path.join(configDir, 'config.json');
     fs.writeFileSync(configPath, JSON.stringify(configData, null, 2));
     
-    // Set environment variables for the current process
-    if (configData.deepSeek) {
-      if (configData.deepSeek.apiKey) process.env.DEEPSEEK_API_KEY = configData.deepSeek.apiKey;
-      if (configData.deepSeek.model) process.env.DEEPSEEK_MODEL = configData.deepSeek.model;
-      if (configData.deepSeek.timeout) process.env.DEEPSEEK_API_TIMEOUT = configData.deepSeek.timeout;
-      if (configData.deepSeek.maxTokens) process.env.DEEPSEEK_MAX_TOKENS = configData.deepSeek.maxTokens;
-    }
-    
-    if (configData.openAI) {
-      if (configData.openAI.apiKey) process.env.OPENAI_API_KEY = configData.openAI.apiKey;
-      if (configData.openAI.model) process.env.OPENAI_MODEL = configData.openAI.model;
-    }
-    
-    if (configData.qwen) {
-      if (configData.qwen.apiKey) process.env.QWEN_API_KEY = configData.qwen.apiKey;
-      if (configData.qwen.model) process.env.QWEN_MODEL = configData.qwen.model;
-    }
-    
-    if (configData.claude) {
-      if (configData.claude.apiKey) process.env.CLAUDE_API_KEY = configData.claude.apiKey;
-      if (configData.claude.model) process.env.CLAUDE_MODEL = configData.claude.model;
-    }
-    
-    if (configData.ollama) {
-      if (configData.ollama.endpoint) process.env.OLLAMA_ENDPOINT = configData.ollama.endpoint;
-      if (configData.ollama.model) process.env.OLLAMA_MODEL = configData.ollama.model;
-    }
+    // Reload environment variables
+    loadSavedConfig();
     
     // Update menu if language changed
     if (configData.language) {
@@ -308,7 +319,6 @@ ipcMain.handle('save-config', async (event, configData) => {
 
 ipcMain.handle('load-config', async () => {
   try {
-    // Load configuration from a file in the user's home directory
     const configPath = path.join(os.homedir(), '.offline-leet-practice', 'config.json');
     
     if (fs.existsSync(configPath)) {
@@ -325,7 +335,6 @@ ipcMain.handle('load-config', async () => {
 
 ipcMain.handle('set-language', async (event, language) => {
   try {
-    // Load existing configuration
     let configData = {};
     const configPath = path.join(os.homedir(), '.offline-leet-practice', 'config.json');
     
@@ -333,18 +342,14 @@ ipcMain.handle('set-language', async (event, language) => {
       configData = JSON.parse(fs.readFileSync(configPath, 'utf8'));
     }
     
-    // Update language preference
     configData.language = language;
     
-    // Save updated configuration
     const configDir = path.join(os.homedir(), '.offline-leet-practice');
     if (!fs.existsSync(configDir)) {
       fs.mkdirSync(configDir, { recursive: true });
     }
     
     fs.writeFileSync(configPath, JSON.stringify(configData, null, 2));
-    
-    // Update the application menu
     updateApplicationMenu(language);
     
     return { success: true };
@@ -356,7 +361,6 @@ ipcMain.handle('set-language', async (event, language) => {
 
 ipcMain.handle('set-theme', async (event, theme) => {
   try {
-    // Load existing configuration
     let configData = {};
     const configPath = path.join(os.homedir(), '.offline-leet-practice', 'config.json');
     
@@ -364,10 +368,8 @@ ipcMain.handle('set-theme', async (event, theme) => {
       configData = JSON.parse(fs.readFileSync(configPath, 'utf8'));
     }
     
-    // Update theme preference
     configData.theme = theme;
     
-    // Save updated configuration
     const configDir = path.join(os.homedir(), '.offline-leet-practice');
     if (!fs.existsSync(configDir)) {
       fs.mkdirSync(configDir, { recursive: true });
@@ -375,7 +377,6 @@ ipcMain.handle('set-theme', async (event, theme) => {
     
     fs.writeFileSync(configPath, JSON.stringify(configData, null, 2));
     
-    // Apply theme to the main window
     if (mainWindow) {
       mainWindow.setBackgroundColor(theme === 'dark' ? '#1A1B1E' : '#FFFFFF');
     }

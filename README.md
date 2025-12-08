@@ -1,10 +1,10 @@
-# OfflineLeetPractice
+# Algorithm Practice (离线算法练习)
 
 [中文](./README-zh.md)
 
 Quick links: [Discussions](https://github.com/zxypro1/OfflineLeetPractice/discussions) • [Issues](https://github.com/zxypro1/OfflineLeetPractice/issues) • [Pull requests](https://github.com/zxypro1/OfflineLeetPractice/pulls)
 
-> A local-run LeetCode-style coding practice system that lets you browse, code, and test problems 100% offline—perfect for planes, cruises, or any no-internet scenario.
+> A local-run algorithm coding practice system that lets you browse, code, and test problems 100% offline—perfect for planes, cruises, or any no-internet scenario. Features **WASM-based browser-side code execution** for JavaScript, TypeScript, and Python.
 
 <img width="2536" height="1219" alt="2025-08-24165250" src="https://github.com/user-attachments/assets/17846e96-32e8-479f-9193-02a2fc8db017" />
 
@@ -16,26 +16,29 @@ Quick links: [Discussions](https://github.com/zxypro1/OfflineLeetPractice/discus
 
 ### Prerequisites
 
-- **Node.js** 16+ ([Download here](https://nodejs.org/))
+- **Node.js** 18+ ([Download here](https://nodejs.org/))
 - Any modern web browser
 
 > **Note**: Internet is only required for the initial setup and build. Once built, the application works completely offline.
 
-<!-- ### Desktop App (Recommended)
+### Desktop App (Recommended)
 
-For the best offline experience, you can install OfflineLeetPractice as a desktop application:
+For the best offline experience, you can build the desktop application:
 
-#### Windows
-1. Download the Windows installer from the [Releases page](https://github.com/zxypro1/OfflineLeetPractice/releases)
-2. Run the installer and follow the setup wizard
-3. Launch the app from your Start menu
+#### Build Desktop App
 
-#### macOS
-1. Download the macOS installer from the [Releases page](https://github.com/zxypro1/OfflineLeetPractice/releases)
-2. Open the DMG file and drag the app to your Applications folder
-3. Launch the app from your Applications folder
+```bash
+# macOS
+npm run dist:mac
 
-> See [DESKTOP-APP-GUIDE.md](./DESKTOP-APP-GUIDE.md) for detailed instructions on building the desktop app yourself. -->
+# Windows  
+npm run dist:win
+
+# Linux
+npm run dist:linux
+```
+
+> See [DESKTOP-APP-GUIDE.md](./DESKTOP-APP-GUIDE.md) for detailed instructions.
 
 ### One-Click Setup (Web Version)
 
@@ -81,7 +84,7 @@ Then open **http://localhost:3000** in your browser!
 
 ```bash
 # Clone the repository
-git clone https://github.com/yourusername/OfflineLeetPractice.git
+git clone https://github.com/zxypro1/OfflineLeetPractice.git
 cd OfflineLeetPractice
 
 # Install dependencies - Requires internet
@@ -100,11 +103,22 @@ npm start
 
 - **Local Problem Library**: 10+ classic algorithm problems included
 - **AI Problem Generator**: Generate unlimited custom problems with various AI providers
-- **Multi-Language Support**: Code and test in JavaScript, Python, Java, C++, or C
+- **WASM Code Execution**: Browser-side execution for JavaScript, TypeScript, and Python
 - **Monaco Code Editor**: VS Code-like editing experience
 - **Instant Testing**: Run tests immediately with detailed results
-- **Performance Metrics**: Execution time and memory usage tracking
+- **Performance Metrics**: Execution time tracking
 - **Dynamic Problem Management**: Add/edit problems without rebuilding
+- **Desktop App**: Cross-platform Electron app (Windows, macOS, Linux)
+
+### Supported Languages (WASM Execution)
+
+| Language | Status | Implementation |
+|----------|--------|----------------|
+| **JavaScript** | ✅ Supported | Native browser execution |
+| **TypeScript** | ✅ Supported | TypeScript compiler transpilation |
+| **Python** | ✅ Supported | Pyodide (CPython WASM) |
+
+> **Note**: All code execution happens in the browser using WebAssembly, no server-side execution required.
 
 ### AI-Powered Problem Generation
 
@@ -119,9 +133,10 @@ npm start
 
 1. **Browse Problems**: View the problem list with difficulty and tags
 2. **Select a Problem**: Click on any problem to open the detail page
-3. **Code Your Solution**: Use the Monaco editor (supports autocomplete, syntax highlighting)
-4. **Run Tests**: Click "Submit & Run Tests" to execute your code
-5. **View Results**: See test results with performance metrics
+3. **Choose Language**: Select JavaScript, TypeScript, or Python
+4. **Code Your Solution**: Use the Monaco editor (supports autocomplete, syntax highlighting)
+5. **Run Tests**: Click "Submit & Run Tests" to execute your code
+6. **View Results**: See test results with execution time
 
 ### AI Problem Generation
 
@@ -152,139 +167,40 @@ To use the AI problem generator, you can configure any of these AI providers (or
 
 ##### First-run interactive AI configuration
 
-If no `.env` file exists when you run the provided startup scripts (`start-local.sh` or `start-local.bat`), the script will detect this as a first-time startup and offer to interactively configure AI features for you. In non-interactive mode (use `--yes` or `START_LOCAL_NONINTERACTIVE=1`) the script will try to copy `.env.example` to `.env` if present; otherwise it will create a minimal `.env` with default model names and empty API keys. The interactive flow will:
-
-- Ask whether you want to enable AI features.
-- For each provider (OpenAI, DeepSeek, Qwen, Claude, Ollama) ask whether to enable it, then prompt for model name and API key (for Ollama it will ask for endpoint and model).
-- Provide sensible defaults if you just press Enter:
-  - OpenAI model: `gpt-4-turbo`
-  - DeepSeek model: `deepseek-chat`
-  - Qwen model: `qwen-turbo`
-  - Claude model: `claude-3-haiku-20240307`
-  - Ollama endpoint: `http://localhost:11434`, model: `llama3`
-
-The script will write your choices into a `.env` file in the project root. If a `.env` already exists, the scripts will skip configuration. To change AI settings later, edit the `.env` file directly.
-
+If no `.env` file exists when you run the provided startup scripts (`start-local.sh` or `start-local.bat`), the script will detect this as a first-time startup and offer to interactively configure AI features for you.
 
 ##### Option 1: DeepSeek Cloud Service
 
-1. **Get API Key**: Obtain an API key from [DeepSeek Platform](https://platform.deepseek.com/)
-2. **Configure Key**: Add your API key to the application using one of these methods:
-   - Create a `.env.local` file in the project root with:
-     ```bash
-     DEEPSEEK_API_KEY=your_deepseek_api_key_here
-     ```
-   - Or set as an environment variable in your system:
-     ```bash
-     # Windows (PowerShell)
-     $env:DEEPSEEK_API_KEY="your_deepseek_api_key_here"
-     
-     # macOS/Linux (Bash)
-     export DEEPSEEK_API_KEY="your_deepseek_api_key_here"
-     ```
+```bash
+DEEPSEEK_API_KEY=your_deepseek_api_key_here
+```
 
 ##### Option 2: OpenAI
 
-1. **Get API Key**: Obtain an API key from [OpenAI Platform](https://platform.openai.com/)
-2. **Configure Key**: Add your API key to the application using one of these methods:
-   - Create a `.env.local` file in the project root with:
-     ```bash
-     OPENAI_API_KEY=your_openai_api_key_here
-     ```
-   - Or set as an environment variable in your system:
-     ```bash
-     # Windows (PowerShell)
-     $env:OPENAI_API_KEY="your_openai_api_key_here"
-     
-     # macOS/Linux (Bash)
-     export OPENAI_API_KEY="your_openai_api_key_here"
-     ```
+```bash
+OPENAI_API_KEY=your_openai_api_key_here
+```
 
 ##### Option 3: Qwen (通义千问)
 
-1. **Get API Key**: Obtain an API key from [Qwen Platform](https://dashscope.console.aliyun.com/)
-2. **Configure Key**: Add your API key to the application using one of these methods:
-   - Create a `.env.local` file in the project root with:
-     ```bash
-     QWEN_API_KEY=your_qwen_api_key_here
-     ```
-   - Or set as an environment variable in your system:
-     ```bash
-     # Windows (PowerShell)
-     $env:QWEN_API_KEY="your_qwen_api_key_here"
-     
-     # macOS/Linux (Bash)
-     export QWEN_API_KEY="your_qwen_api_key_here"
-     ```
+```bash
+QWEN_API_KEY=your_qwen_api_key_here
+```
 
 ##### Option 4: Claude
 
-1. **Get API Key**: Obtain an API key from [Claude Platform](https://console.anthropic.com/)
-2. **Configure Key**: Add your API key to the application using one of these methods:
-   - Create a `.env.local` file in the project root with:
-     ```bash
-     CLAUDE_API_KEY=your_claude_api_key_here
-     ```
-   - Or set as an environment variable in your system:
-     ```bash
-     # Windows (PowerShell)
-     $env:CLAUDE_API_KEY="your_claude_api_key_here"
-     
-     # macOS/Linux (Bash)
-     export CLAUDE_API_KEY="your_claude_api_key_here"
-     ```
+```bash
+CLAUDE_API_KEY=your_claude_api_key_here
+```
 
 ##### Option 5: Local Ollama Models
 
-1. **Install Ollama**: Download and install Ollama from https://ollama.com/
-2. **Download Model**: Run `ollama pull llama3` to download the recommended model
-3. **Configure Ollama**: Configure Ollama using one of these methods:
-   - Create a `.env.local` file in the project root with:
-     ```bash
-     # Optional: Set Ollama endpoint (default: http://localhost:11434)
-     # OLLAMA_ENDPOINT=http://localhost:11434
-     
-     # Optional: Set Ollama model (default: llama3)
-     # OLLAMA_MODEL=llama3
-     ```
-   - Or set as environment variables in your system:
-     ```bash
-     # Windows (PowerShell)
-     $env:OLLAMA_ENDPOINT="http://localhost:11434"  # Optional
-     $env:OLLAMA_MODEL="llama3"  # Optional
-     
-     # macOS/Linux (Bash)
-     export OLLAMA_ENDPOINT=http://localhost:11434  # Optional
-     export OLLAMA_MODEL=llama3  # Optional
-     ```
+```bash
+OLLAMA_ENDPOINT=http://localhost:11434
+OLLAMA_MODEL=llama3
+```
 
-4. **Start Ollama**: Ensure the Ollama service is running (it usually starts automatically)
-
-##### Using Multiple Providers
-
-If you have multiple AI providers configured, the system will automatically prefer them in this order:
-1. Ollama (local)
-2. OpenAI
-3. Claude
-4. Qwen
-5. DeepSeek
-
-You can switch between providers using the UI controls on the AI Generator page.
-
-The system automatically detects which providers are configured through a server-side check. The frontend fetches this configuration via the `/api/ai-providers` endpoint, ensuring proper security and compliance with Next.js environment variable restrictions.
-
-#### Using AI Generator
-
-1. Navigate to the AI Generator page by clicking the "🤖 AI Generator" button on the homepage
-2. Enter your problem request in English or Chinese, for example:
-   - "Generate a medium difficulty array manipulation problem"
-   - "我想做一道动态规划题目"
-   - "Create a binary search problem with edge cases"
-3. Click "Generate Problem" and wait for the AI to create your custom problem
-4. The generated problem will automatically be added to your local problem library
-5. Click "Try Last Generated Problem" to immediately start solving it
-
-See **`AI_PROVIDER_GUIDE.md`** for more detailed configuration instructions and troubleshooting guide!
+See **`AI_PROVIDER_GUIDE.md`** for more detailed configuration instructions!
 
 ### Adding Custom Problems
 
@@ -297,7 +213,11 @@ See **`AI_PROVIDER_GUIDE.md`** for more detailed configuration instructions and 
 - **Frontend**: React 18 + Next.js 13 + TypeScript
 - **UI Framework**: Mantine v7 (Modern React components)
 - **Code Editor**: Monaco Editor (VS Code engine)
-- **Code Execution**: vm2 (Secure JavaScript sandbox)
+- **Code Execution**: WASM-based browser execution
+  - JavaScript: Native browser `Function` constructor
+  - TypeScript: TypeScript compiler (CDN)
+  - Python: Pyodide (CPython compiled to WASM)
+- **Desktop App**: Electron
 
 ## Project Structure
 
@@ -306,24 +226,26 @@ OfflineLeetPractice/
 ├── pages/                  # Next.js pages and API routes
 │   ├── api/
 │   │   ├── problems.ts     # Problem data API
-│   │   ├── run.ts          # Code execution API
 │   │   ├── generate-problem.ts # AI problem generation API
 │   │   └── add-problem.ts  # Manual problem addition API
 │   ├── problems/[id].tsx   # Problem detail page
 │   ├── generator.tsx       # AI Generator page
 │   ├── add-problem.tsx     # Manual problem addition page
 │   └── index.tsx           # Homepage
-├── problems/
-│   └── problems.json       # Local problem database
 ├── src/
 │   ├── components/         # React components
-│   │   ├── ProblemGenerator.tsx # AI Generator component
-│   │   ├── ProblemForm.tsx     # Manual problem form
-│   │   └── LanguageThemeControls.tsx # Language/theme switcher
-│   └── styles/            # Global styles
-├── start-local.bat        # Windows startup script
-├── start-local.sh         # Unix startup script
-└── AI_PROVIDER_GUIDE.md # AI Provider configuration guide
+│   │   ├── CodeRunner.tsx  # Code editor and test runner
+│   │   └── ...
+│   ├── hooks/
+│   │   └── useWasmExecutor.ts # WASM code execution hook
+│   └── services/           # Service modules
+├── problems/
+│   └── problems.json       # Local problem database
+├── electron-main.js        # Electron main process
+├── electron-builder.config.js # Desktop app build config
+├── start-local.bat         # Windows startup script
+├── start-local.sh          # Unix startup script
+└── AI_PROVIDER_GUIDE.md    # AI Provider configuration guide
 ```
 
 ## Customization
@@ -362,25 +284,13 @@ OfflineLeetPractice/
 
 See **`MODIFY-PROBLEMS-GUIDE.md`** for complete instructions!
 
-### Supported Languages
-
-Currently supports multiple programming languages for problem solving:
-
-- **JavaScript** - Full support with VM sandbox execution
-- **Python** - Full support with interpreter execution
-- **Java** - Full support with compilation and execution
-- **C++** - Full support with compilation and execution
-- **C** - Full support with compilation and execution
-
-All languages are supported in the AI problem generator with appropriate templates and test cases.
-
 ## Contributing
 
 We welcome contributions! Areas for improvement:
 
 - **More Problems**: Add classic algorithm challenges
-- **More Languages**: Python, Java, C++ support
 - **Enhanced Features**: Better performance analytics
+- **UI Improvements**: Enhanced user experience
 
 ## License
 

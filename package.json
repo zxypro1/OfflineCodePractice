@@ -1,10 +1,27 @@
 {
-  "name": "offline-leet-practice",
-  "version": "0.0.8",
+  "name": "algorithm-practice",
+  "version": "0.0.9",
   "private": true,
   "main": "electron-main.js",
-  "description": "An offline code practice application",
-  "author": "zxypro1",
+  "description": "离线算法练习应用 - 基于 WASM 的浏览器端代码执行，支持 JavaScript、TypeScript 和 Python",
+  "author": {
+    "name": "zxypro1",
+    "url": "https://github.com/zxypro1"
+  },
+  "license": "MIT",
+  "homepage": "https://github.com/zxypro1/OfflineLeetPractice",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/zxypro1/OfflineLeetPractice.git"
+  },
+  "keywords": [
+    "algorithm",
+    "code-practice",
+    "programming",
+    "wasm",
+    "electron",
+    "offline"
+  ],
   "scripts": {
     "dev": "next dev",
     "build": "next build",
@@ -18,50 +35,27 @@
     "test:specific": "node scripts/test-runner.js specific",
     "test:solutions": "node scripts/test-runner.js specific solution",
     "test:data": "node scripts/test-runner.js specific data",
-    "electron-dev": "electron .",
-    "electron-build": "electron-builder --config electron-builder.config.js",
-    "pack": "electron-builder --config electron-builder.config.js --dir",
-    "dist": "electron-builder --config electron-builder.config.js",
-    "dist:all": "electron-builder --config electron-builder.config.js --mac --win --linux",
-    "dist:mac": "electron-builder --config electron-builder.config.js --mac",
-    "dist:win": "electron-builder --config electron-builder.config.js --win",
-    "dist:linux": "electron-builder --config electron-builder.config.js --linux"
-  },
-  "build": {
-    "appId": "com.offlineleetpractice.app",
-    "productName": "Offline Leet Practice",
-    "directories": {
-      "output": "dist"
-    },
-    "files": [
-      "electron-main.js",
-      "electron-preload.js",
-      "next.config.js",
-      "package.json",
-      "package-lock.json",
-      ".next/**/*",
-      "node_modules/**/*",
-      "public/**/*",
-      "problems/**/*",
-      "locales/**/*",
-      "scripts/**/*",
-      "src/**/*",
-      "pages/**/*"
-    ],
-    "win": {
-      "target": "nsis",
-      "icon": "public/icon.png"
-    },
-    "mac": {
-      "target": "dmg",
-      "icon": "public/icon.png",
-      "category": "public.app-category.education"
-    },
-    "linux": {
-      "target": "AppImage",
-      "icon": "public/icon.png",
-      "category": "Development"
-    }
+    "icons:generate": "node scripts/generate-icons.js",
+    "electron:dev": "npm run build && electron .",
+    "electron:start": "electron .",
+    "electron:build": "npm run build && electron-builder --config electron-builder.config.js",
+    "electron:build:mac": "npm run build && electron-builder --config electron-builder.config.js --mac",
+    "electron:build:win": "npm run build && electron-builder --config electron-builder.config.js --win",
+    "electron:build:linux": "npm run build && electron-builder --config electron-builder.config.js --linux",
+    "electron:build:all": "npm run build && electron-builder --config electron-builder.config.js --mac --win --linux",
+    "electron:pack": "npm run build && electron-builder --config electron-builder.config.js --dir",
+    "dist": "npm run electron:build",
+    "dist:mac": "npm run electron:build:mac",
+    "dist:win": "npm run electron:build:win",
+    "dist:linux": "npm run electron:build:linux",
+    "dist:all": "npm run electron:build:all",
+    "clean": "rm -rf .next dist node_modules/.cache",
+    "clean:all": "rm -rf .next dist node_modules",
+    "release": "bash scripts/release.sh",
+    "release:patch": "bash scripts/release.sh patch",
+    "release:minor": "bash scripts/release.sh minor",
+    "release:major": "bash scripts/release.sh major",
+    "release:dry": "bash scripts/release.sh patch --dry-run"
   },
   "dependencies": {
     "@mantine/core": "7.6.1",
@@ -84,8 +78,7 @@
     "rehype-mermaid": "^3.0.0",
     "rehype-raw": "^7.0.0",
     "remark-gfm": "^4.0.1",
-    "remark-math": "^6.0.0",
-    "vm2": "3.9.11"
+    "remark-math": "^6.0.0"
   },
   "devDependencies": {
     "@types/jest": "^29.5.14",
@@ -98,7 +91,12 @@
     "electron-next": "^3.1.5",
     "jest": "^29.7.0",
     "jest-environment-node": "^29.7.0",
+    "sharp": "^0.33.5",
     "supertest": "^6.3.4",
     "typescript": "5.1.6"
+  },
+  "engines": {
+    "node": ">=18.0.0",
+    "npm": ">=8.0.0"
   }
 }

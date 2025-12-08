@@ -10,20 +10,19 @@ import {
   LoadingOverlay,
   Alert,
   Code,
-  Divider,
-  Select
+  Select,
+  Tooltip
 } from '@mantine/core';
 import Editor from '@monaco-editor/react';
 import { useTranslation } from '../contexts/I18nContext';
 import { useTheme } from '../contexts/ThemeContext';
+import { useWasmExecutor } from '../hooks/useWasmExecutor';
 
-// Language configurations
-const SUPPORTED_LANGUAGES = [
+// WASM 支持的语言配置
+const WASM_SUPPORTED_LANGUAGES = [
   { value: 'javascript', label: 'JavaScript', monacoLang: 'javascript', templateKey: 'js' },
-  { value: 'python', label: 'Python', monacoLang: 'python', templateKey: 'python' },
-  { value: 'java', label: 'Java', monacoLang: 'java', templateKey: 'java' },
-  { value: 'cpp', label: 'C++', monacoLang: 'cpp', templateKey: 'cpp' },
-  { value: 'c', label: 'C', monacoLang: 'c', templateKey: 'c' }
+  { value: 'typescript', label: 'TypeScript', monacoLang: 'typescript', templateKey: 'typescript' },
+  { value: 'python', label: 'Python', monacoLang: 'python', templateKey: 'python' }
 ];
 
 // Format output results
@@ -60,9 +59,17 @@ export default function CodeRunner({ problem, onTestResult, showResults = true }
   const [result, setResult] = useState<any>(null);
   const [isRunning, setIsRunning] = useState(false);
   
+  // WASM 执行器 hook
+  const { runTests: runWasmTests, runtimeStatus, preloadRuntime } = useWasmExecutor();
+  
+  // 预加载选中语言的 WASM 运行时
+  useEffect(() => {
+    preloadRuntime(selectedLanguage);
+  }, [selectedLanguage, preloadRuntime]);
+  
   // Update code when language changes
   useEffect(() => {
-    const langConfig = SUPPORTED_LANGUAGES.find(l => l.value === selectedLanguage);
+    const langConfig = WASM_SUPPORTED_LANGUAGES.find(l => l.value === selectedLanguage);
     const templateKey = langConfig?.templateKey || 'js';
     let template = problem.template?.[templateKey];
     
@@ -71,12 +78,17 @@ export default function CodeRunner({ problem, onTestResult, showResults = true }
       template = problem.template.js;
     }
     
+    // TypeScript can use JavaScript template as base (since TS is superset of JS)
+    if (!template && selectedLanguage === 'typescript' && problem.template?.js) {
+      // Convert JS template to TS by adding type annotations hint
+      template = problem.template.js;
+    }
+    
     setCode(template || '');
   }, [selectedLanguage, problem]);
   
-  // Filter available languages based on problem templates
-  // Always include JavaScript if any template exists (backward compatibility)
-  const availableLanguages = SUPPORTED_LANGUAGES.filter(
+  // 过滤可用的 WASM 支持语言
+  const availableLanguages = WASM_SUPPORTED_LANGUAGES.filter(
     lang => {
       // Check if the specific template exists
       if (problem.template?.[lang.templateKey]) {
@@ -84,6 +96,11 @@ export default function CodeRunner({ problem, onTestResult, showResults = true }
       }
       // For JavaScript, also check for 'js' key (backward compatibility)
       if (lang.value === 'javascript' && problem.template?.js) {
+        return true;
+      }
+      // TypeScript is available when JavaScript template exists
+      // (TypeScript is a superset of JavaScript)
+      if (lang.value === 'typescript' && problem.template?.js) {
         return true;
       }
       return false;
@@ -101,26 +118,19 @@ export default function CodeRunner({ problem, onTestResult, showResults = true }
     }
     
     try {
-      const res = await fetch('/api/run', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ 
-          id: problem.id, 
-          code, 
-          language: selectedLanguage 
-        }),
-      });
-      const data = await res.json();
+      // 使用 WASM 执行器
+      const data = await runWasmTests(problem, code, selectedLanguage);
+      
       setResult(data);
       
       // Call the callback if provided
       if (onTestResult) {
         onTestResult(data);
       }
-    } catch (error) {
+    } catch (error: any) {
       const errorResult = { 
         status: 'error', 
-        error: t('codeRunner.networkError')
+        error: error.message || t('codeRunner.executionError') || '执行错误'
       };
       setResult(errorResult);
       
@@ -265,16 +275,38 @@ export default function CodeRunner({ problem, onTestResult, showResults = true }
             {t('codeRunner.title')}
           </Title>
           <Group>
+            {/* WASM 运行时状态指示器 */}
+            <Tooltip 
+              label={t('codeRunner.wasmEnabled') || 'WASM 浏览器端执行'}
+              position="bottom"
+            >
+              <Badge 
+                size="sm" 
+                color={
+                  runtimeStatus[selectedLanguage as 'javascript' | 'typescript' | 'python'] === 'ready' ? 'teal' :
+                  runtimeStatus[selectedLanguage as 'javascript' | 'typescript' | 'python'] === 'loading' ? 'yellow' :
+                  runtimeStatus[selectedLanguage as 'javascript' | 'typescript' | 'python'] === 'error' ? 'red' : 'gray'
+                }
+                variant="light"
+                leftSection={<Text size="xs">⚡</Text>}
+              >
+                {runtimeStatus[selectedLanguage as 'javascript' | 'typescript' | 'python'] === 'ready' ? 'WASM Ready' :
+                 runtimeStatus[selectedLanguage as 'javascript' | 'typescript' | 'python'] === 'loading' ? 'Loading...' :
+                 runtimeStatus[selectedLanguage as 'javascript' | 'typescript' | 'python'] === 'error' ? 'Error' : 
+                 'WASM'}
+              </Badge>
+            </Tooltip>
+            
             <Select
               value={selectedLanguage}
               onChange={(value) => setSelectedLanguage(value || 'javascript')}
               data={availableLanguages}
               size="sm"
-              w={120}
+              w={130}
             />
             <Button 
               onClick={runTests} 
-              disabled={isRunning}
+              disabled={isRunning || runtimeStatus[selectedLanguage as 'javascript' | 'typescript' | 'python'] === 'loading'}
               color="blue"
               variant="filled"
             >
@@ -286,7 +318,7 @@ export default function CodeRunner({ problem, onTestResult, showResults = true }
         <div style={{ flex: 1, minHeight: '300px' }}>
           <Editor
             height="100%"
-            language={SUPPORTED_LANGUAGES.find(l => l.value === selectedLanguage)?.monacoLang || 'javascript'}
+            language={WASM_SUPPORTED_LANGUAGES.find(l => l.value === selectedLanguage)?.monacoLang || 'javascript'}
             value={code}
             onChange={(v) => setCode(v || '')}
             theme={colorScheme === 'dark' ? 'vs-dark' : 'light'}

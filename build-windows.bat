@@ -1,59 +1,77 @@
-@ECHO OFF
-SETLOCAL
+@echo off
+chcp 65001 >nul
+setlocal enabledelayedexpansion
 
-ECHO Building Offline Leet Practice for Windows
-ECHO ========================================
+echo ==========================================
+echo Building Algorithm Practice for Windows
+echo WASM-based code execution (Browser-side)
+echo ==========================================
 
-:: Check if Node.js is installed
-WHERE node >nul 2>nul
-IF %ERRORLEVEL% NEQ 0 (
-    ECHO Error: Node.js not found
-    ECHO Please install Node.js: https://nodejs.org
-    EXIT /B 1
-)
-FOR /F "tokens=*" %%v IN ('node --version') DO ECHO Node.js installed: %%v
-
-:: Check if npm is installed
-WHERE npm >nul 2>nul
-IF %ERRORLEVEL% NEQ 0 (
-    ECHO Error: npm not found
-    ECHO Please install npm
-    EXIT /B 1
-)
-FOR /F "tokens=*" %%v IN ('npm --version') DO ECHO npm installed: %%v
-
-:: Install dependencies
-ECHO Installing dependencies...
-CALL npm install
-IF %ERRORLEVEL% NEQ 0 (
-    ECHO Failed to install dependencies
-    EXIT /B 1
-)
-ECHO Dependencies installed successfully
-
-:: Build Next.js app
-ECHO Building Next.js application...
-CALL npm run build
-IF %ERRORLEVEL% NEQ 0 (
-    ECHO Build failed
-    EXIT /B 1
-)
-ECHO Next.js build completed successfully
-
-:: Build Electron app for Windows with additional flags to handle symbolic links
-ECHO Building Electron app for Windows...
-CALL npx electron-builder --win --config electron-builder.config.js
-IF %ERRORLEVEL% NEQ 0 (
-    ECHO Electron build failed
-    ECHO.
-    ECHO Trying alternative build method with elevated privileges...
-    ECHO If this fails, please run this script as Administrator
-    EXIT /B 1
+REM Check if Node.js is installed
+where node >nul 2>&1
+if %ERRORLEVEL% neq 0 (
+    echo [ERROR] Node.js not found
+    echo Please install Node.js: https://nodejs.org
+    exit /b 1
 )
 
-ECHO.
-ECHO Windows build completed successfully!
-ECHO Installer can be found in the 'dist' folder
-ECHO.
+for /f "tokens=*" %%i in ('node --version') do set NODE_VER=%%i
+echo [OK] Node.js installed: %NODE_VER%
 
-ENDLOCAL
+REM Check if npm is installed
+where npm >nul 2>&1
+if %ERRORLEVEL% neq 0 (
+    echo [ERROR] npm not found
+    echo Please install npm
+    exit /b 1
+)
+
+for /f "tokens=*" %%i in ('npm --version') do set NPM_VER=%%i
+echo [OK] npm installed: %NPM_VER%
+
+REM Clean previous builds
+echo.
+echo Cleaning previous builds...
+if exist dist rmdir /s /q dist
+if exist .next rmdir /s /q .next
+
+REM Install dependencies
+echo.
+echo Installing dependencies...
+call npm install
+if %ERRORLEVEL% neq 0 (
+    echo [ERROR] Failed to install dependencies
+    exit /b 1
+)
+echo [OK] Dependencies installed successfully
+
+REM Build Next.js app
+echo.
+echo Building Next.js application...
+call npm run build
+if %ERRORLEVEL% neq 0 (
+    echo [ERROR] Next.js build failed
+    exit /b 1
+)
+echo [OK] Next.js build completed successfully
+
+REM Build Electron app for Windows
+echo.
+echo Building Electron app for Windows...
+echo    Targets: NSIS Installer (x64, ia32), Portable (x64)
+call npx electron-builder --config electron-builder.config.js --win
+if %ERRORLEVEL% neq 0 (
+    echo [ERROR] Electron build failed
+    exit /b 1
+)
+
+echo.
+echo ==========================================
+echo [OK] Windows build completed successfully!
+echo ==========================================
+echo.
+echo Output files in 'dist' folder:
+dir /b dist\*.exe dist\*.msi 2>nul
+echo.
+
+endlocal

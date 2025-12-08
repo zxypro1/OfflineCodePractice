@@ -1,19 +1,51 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
-  <!-- Background with gradient for depth -->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
   <defs>
-    <linearGradient id="bgGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" style="stop-color:#2563eb;stop-opacity:1" />
-      <stop offset="100%" style="stop-color:#1d4ed8;stop-opacity:1" />
+    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#1a1a2e"/>
+      <stop offset="100%" style="stop-color:#16213e"/>
+    </linearGradient>
+    <linearGradient id="codeGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#00d9ff"/>
+      <stop offset="100%" style="stop-color:#0099ff"/>
+    </linearGradient>
+    <linearGradient id="accentGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#ff6b6b"/>
+      <stop offset="100%" style="stop-color:#ffa502"/>
     </linearGradient>
   </defs>
   
-  <!-- Main background -->
-  <rect width="100" height="100" fill="url(#bgGradient)" rx="20" ry="20"/>
+  <!-- Background circle with rounded corners -->
+  <rect x="20" y="20" width="472" height="472" rx="100" ry="100" fill="url(#bgGrad)"/>
   
-  <!-- Code bracket elements -->
-  <path d="M30 25 L20 25 L20 75 L30 75" stroke="white" stroke-width="5" fill="none" stroke-linecap="round"/>
-  <path d="M70 25 L80 25 L80 75 L70 75" stroke="white" stroke-width="5" fill="none" stroke-linecap="round"/>
+  <!-- Code bracket left < -->
+  <path d="M180 180 L100 256 L180 332" 
+        stroke="url(#codeGrad)" 
+        stroke-width="32" 
+        stroke-linecap="round" 
+        stroke-linejoin="round"
+        fill="none"/>
   
-  <!-- Play/execute arrow in the center -->
-  <polygon points="45,35 45,65 65,50" fill="white"/>
+  <!-- Code bracket right > -->
+  <path d="M332 180 L412 256 L332 332" 
+        stroke="url(#codeGrad)" 
+        stroke-width="32" 
+        stroke-linecap="round" 
+        stroke-linejoin="round"
+        fill="none"/>
+  
+  <!-- Slash / in middle -->
+  <path d="M290 160 L222 352" 
+        stroke="url(#accentGrad)" 
+        stroke-width="28" 
+        stroke-linecap="round"
+        fill="none"/>
+  
+  <!-- Play/Run triangle -->
+  <path d="M232 390 L280 415 L232 440 Z" 
+        fill="url(#accentGrad)"/>
+  
+  <!-- Small dots representing code -->
+  <circle cx="140" cy="420" r="10" fill="#00d9ff" opacity="0.6"/>
+  <circle cx="175" cy="420" r="10" fill="#00d9ff" opacity="0.8"/>
+  <circle cx="210" cy="420" r="10" fill="#00d9ff" opacity="0.4"/>
 </svg>

@@ -1,245 +1,169 @@
-# Desktop App Packaging Guide
+# Desktop Application Build Guide
 
-This guide explains how to package the Offline Leet Practice application as a desktop app for Windows, macOS, and Linux using Electron.
+This guide explains how to build Algorithm Practice as a cross-platform desktop application (supporting Windows, macOS, and Linux).
+
+## Technology Stack
+
+- **Frontend Framework**: Next.js + React
+- **Desktop Framework**: Electron
+- **Code Execution**: Pure browser-side WASM execution
+  - JavaScript: Native browser execution
+  - TypeScript: TypeScript compiler transpilation
+  - Python: Pyodide (CPython WASM)
 
 ## Prerequisites
 
-Before packaging the application, ensure you have the following installed:
-- Node.js (version 16 or higher)
-- npm (comes with Node.js)
+- Node.js >= 18.x
+- npm >= 8.x
+- For macOS builds: macOS system
+- For Windows builds: Windows system or Wine
+- For Linux builds: Linux system or Docker
 
-## Project Structure for Desktop App
+## Quick Start
 
-The desktop app packaging adds the following files to the project:
-- `electron-main.js`: Main Electron process file
-- `build-windows.bat`: Windows build script
-- `build-mac.sh`: macOS build script
-- `public/desktop-index.html`: Desktop entry point
-
-## Building for All Platforms
-
-You can build the desktop app for all supported platforms (Windows, macOS, and Linux) using a single command:
+### Development Mode
 
 ```bash
-npm run dist:all
+# Install dependencies
+npm install
+
+# Build Next.js
+npm run build
+
+# Start Electron in development mode
+npm run electron:start
 ```
 
-This will generate installers for all platforms in the `dist` folder.
+### Building Desktop Application
 
-## Building for Windows
-
-### Using the build script (Recommended)
-
-1. Double-click on `build-windows.bat` or run it from the command line:
-   ```cmd
-   build-windows.bat
-   ```
-
-2. The script will:
-   - Install all dependencies
-   - Build the Next.js application
-   - Package the app as a Windows installer
-
-3. The installer will be created in the `dist` folder as an `.exe` file.
-
-### Manual build
-
-If you prefer to build manually:
-
-1. Install dependencies:
-   ```cmd
-   npm install
-   ```
-
-2. Build the Next.js application:
-   ```cmd
-   npm run build
-   ```
-
-3. Package for Windows:
-   ```cmd
-   npx electron-builder --win
-   ```
-   
-   Or use the npm script:
-   ```cmd
-   npm run dist:win
-   ```
-
-### Windows Build Issues and Solutions
-
-#### Symbolic Link Permission Error
-
-On Windows, you might encounter an error like:
-```
-ERROR: Cannot create symbolic link : 客户端没有所需的特权。(Client does not have required privileges)
-```
-
-This happens because electron-builder tries to extract dependencies that contain symbolic links, which requires administrator privileges on Windows.
-
-**Solutions:**
-
-1. **Run as Administrator (Recommended)**:
-   - Right-click on Command Prompt or PowerShell and select "Run as Administrator"
-   - Navigate to your project directory
-   - Run the build command: `npx electron-builder --win`
-
-2. **Use the PowerShell Script**:
-   - Run `build-windows.ps1` which can automatically request elevated privileges:
-   ```powershell
-   .\build-windows.ps1
-   ```
-
-3. **Developer Mode**:
-   - Enable Developer Mode in Windows Settings
-   - This may help with symbolic link creation without requiring administrator privileges
-
-## Building for macOS
-
-### Using the build script (Recommended)
-
-1. Make the script executable (if not already):
-   ```bash
-   chmod +x build-mac.sh
-   ```
-
-2. Run the build script:
-   ```bash
-   ./build-mac.sh
-   ```
-
-3. The script will:
-   - Install all dependencies
-   - Build the Next.js application
-   - Package the app as a macOS installer
-
-4. The installer will be created in the `dist` folder as a `.dmg` file.
-
-### Manual build
-
-If you prefer to build manually:
-
-1. Install dependencies:
-   ```bash
-   npm install
-   ```
-
-2. Build the Next.js application:
-   ```bash
-   npm run build
-   ```
-
-3. Package for macOS:
-   ```bash
-   npx electron-builder --mac
-   ```
-   
-   Or use the npm script:
-   ```bash
-   npm run dist:mac
-   ```
-
-## Building for Linux
-
-You can also build the app for Linux:
-
-1. Install dependencies:
-   ```bash
-   npm install
-   ```
-
-2. Build the Next.js application:
-   ```bash
-   npm run build
-   ```
-
-3. Package for Linux:
-   ```bash
-   npx electron-builder --linux
-   ```
-   
-   Or use the npm script:
-   ```bash
-   npm run dist:linux
-   ```
-
-This will generate an AppImage file in the `dist` folder.
-
-## Development
-
-To run the app in development mode with Electron:
+#### macOS
 
 ```bash
-npm run electron-dev
+# Using build script
+./build-mac.sh
+
+# Or using npm command
+npm run electron:build:mac
 ```
 
-This will start the Next.js development server and open the app in an Electron window.
+Output files:
+- `dist/Algorithm Practice-x.x.x-macOS-x64.dmg` (Intel Mac)
+- `dist/Algorithm Practice-x.x.x-macOS-arm64.dmg` (Apple Silicon)
 
-## Customization
+#### Windows
 
-### App Icon
+```powershell
+# Using PowerShell script
+.\build-windows.ps1
 
-To customize the app icon:
-1. Create your icon in PNG format (recommended size: 512x512 pixels)
-2. Save it as `public/icon.png`
-3. The build process will automatically use this icon
+# Or using npm command
+npm run electron:build:win
+```
 
-### App Metadata
+Or using batch script:
+```cmd
+build-windows.bat
+```
 
-You can customize the app metadata in the `build` section of `package.json`:
-- `appId`: Unique identifier for your app
-- `productName`: Display name of your app
-- Platform-specific settings for Windows, macOS, and Linux
+Output files:
+- `dist/Algorithm Practice-x.x.x-Windows-x64.exe` (64-bit installer)
+- `dist/Algorithm Practice-x.x.x-Windows-Portable.exe` (portable version)
 
-## Technical Details
+#### Linux
 
-The desktop app works by:
-1. Starting a local Next.js server on port 3000
-2. Opening an Electron window that loads the local server
-3. Bundling all necessary files into a standalone installer
+```bash
+npm run electron:build:linux
+```
 
-The app is completely offline-capable after installation, just like the web version.
+Output files:
+- `dist/Algorithm Practice-x.x.x-Linux.AppImage`
+- `dist/Algorithm Practice-x.x.x-Linux.deb`
+- `dist/Algorithm Practice-x.x.x-Linux.rpm`
+
+#### Build All Platforms
+
+```bash
+npm run electron:build:all
+```
+
+## Supported Languages
+
+The desktop app uses WASM to execute code in the browser, supporting:
+
+| Language | Status | Implementation |
+|----------|--------|----------------|
+| JavaScript | ✅ Supported | Native browser |
+| TypeScript | ✅ Supported | TypeScript compiler |
+| Python | ✅ Supported | Pyodide (WASM) |
+
+**Note**: Java, C, C++, Go and other languages requiring compilers are not supported in the pure browser-side WASM environment.
+
+## Project Structure
+
+```
+.
+├── electron-main.js          # Electron main process
+├── electron-preload.js       # Electron preload script
+├── electron-builder.config.js # Build configuration
+├── build/
+│   └── entitlements.mac.plist # macOS entitlements
+├── build-mac.sh              # macOS build script
+├── build-windows.ps1         # Windows PowerShell build script
+├── build-windows.bat         # Windows batch build script
+└── dist/                     # Build output directory
+```
+
+## Configuration
+
+### electron-builder.config.js
+
+Key configuration options:
+
+- `appId`: Application ID
+- `productName`: Application name
+- `files`: Files to include in package
+- `win/mac/linux`: Platform-specific configurations
+
+### Environment Variables
+
+The desktop app supports the following AI provider configurations (configured in app settings):
+
+- DeepSeek
+- OpenAI
+- Qwen
+- Claude
+- Ollama (local models)
+
+Configuration is saved in `~/.offline-leet-practice/config.json`
 
 ## Troubleshooting
 
-### Port Conflicts
+### macOS Security Warning
 
-If port 3000 is already in use, the app may fail to start. Either:
-- Close the application using port 3000
-- Modify the port in `electron-main.js`
+When first opening the app, macOS may show a security warning. Solution:
 
-### Build Failures
+1. Open "System Preferences" > "Security & Privacy"
+2. Click "Open Anyway"
 
-If you encounter build failures:
-1. Ensure all dependencies are installed: `npm install`
-2. Check that you're using Node.js 16 or higher
-3. Clear the build cache: delete the `.next` folder and try again
+### Windows SmartScreen Warning
 
-### Windows Symbolic Link Issues
+Windows may show a SmartScreen warning. Click "More info" > "Run anyway".
 
-If you encounter symbolic link errors on Windows:
-1. Run the build script as Administrator
-2. Use the PowerShell script which can request elevated privileges
-3. Enable Developer Mode in Windows Settings
+### Code Signing
 
-### macOS Security
+For production, code signing is recommended:
 
-On macOS, you might need to allow the app in System Preferences > Security & Privacy if it's blocked from opening.
+- macOS: Requires Apple Developer certificate
+- Windows: Requires EV code signing certificate
 
-## File Locations After Installation
+## Changelog
 
-### Windows
-- Program Files: `C:\Program Files\Offline Leet Practice\`
-- User data: `%APPDATA%\Offline Leet Practice\`
+### v0.0.9
+- Migrated to pure WASM browser-side code execution
+- Added TypeScript support
+- Removed dependency on server-side Node.js execution
+- Improved Electron build configuration
 
-### macOS
-- Applications folder: `/Applications/Offline Leet Practice.app`
-- User data: `~/Library/Application Support/Offline Leet Practice/`
+## License
 
-### Linux
-- AppImage can be run from any location
-- User data: `~/.config/Offline Leet Practice/`
-
-## Updating the App
-
-To update the app, you'll need to build a new version and reinstall it. The app doesn't have auto-update functionality built-in.
+MIT License

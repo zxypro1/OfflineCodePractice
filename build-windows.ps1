@@ -1,81 +1,71 @@
 # PowerShell script to build Offline Leet Practice for Windows
-# This script can request elevated privileges if needed
 
-param(
-    [switch]$ForceElevated = $false
-)
-
-function Test-Admin {
-    $currentUser = New-Object Security.Principal.WindowsPrincipal([Security.Principal.WindowsIdentity]::GetCurrent())
-    return $currentUser.IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)
-}
-
-function Start-ProcessAsAdmin {
-    $scriptPath = $MyInvocation.MyCommand.Definition
-    $arguments = "-File `"$scriptPath`" -ForceElevated"
-    
-    Start-Process powershell.exe -Verb RunAs -ArgumentList $arguments
-    exit
-}
-
-# Check if we need to run as admin
-if ($ForceElevated -and -not (Test-Admin)) {
-    Write-Host "Requesting elevated privileges..."
-    Start-ProcessAsAdmin
-}
-
-Write-Host "Building Offline Leet Practice for Windows"
-Write-Host "========================================"
+Write-Host "==========================================" -ForegroundColor Cyan
+Write-Host "Building Algorithm Practice for Windows" -ForegroundColor Cyan
+Write-Host "WASM-based code execution (Browser-side)" -ForegroundColor Cyan
+Write-Host "==========================================" -ForegroundColor Cyan
 
 # Check if Node.js is installed
-if (-not (Get-Command node -ErrorAction SilentlyContinue)) {
-    Write-Error "Error: Node.js not found. Please install Node.js: https://nodejs.org"
+try {
+    $nodeVersion = node --version
+    Write-Host "✅ Node.js installed: $nodeVersion" -ForegroundColor Green
+} catch {
+    Write-Host "❌ Error: Node.js not found" -ForegroundColor Red
+    Write-Host "Please install Node.js: https://nodejs.org" -ForegroundColor Yellow
     exit 1
 }
-
-$nodeVersion = node --version
-Write-Host "Node.js installed: $nodeVersion"
 
 # Check if npm is installed
-if (-not (Get-Command npm -ErrorAction SilentlyContinue)) {
-    Write-Error "Error: npm not found. Please install npm"
+try {
+    $npmVersion = npm --version
+    Write-Host "✅ npm installed: $npmVersion" -ForegroundColor Green
+} catch {
+    Write-Host "❌ Error: npm not found" -ForegroundColor Red
+    Write-Host "Please install npm" -ForegroundColor Yellow
     exit 1
 }
 
-$npmVersion = npm --version
-Write-Host "npm installed: $npmVersion"
+# Clean previous builds
+Write-Host ""
+Write-Host "🧹 Cleaning previous builds..." -ForegroundColor Yellow
+if (Test-Path "dist") { Remove-Item -Recurse -Force "dist" }
+if (Test-Path ".next") { Remove-Item -Recurse -Force ".next" }
 
 # Install dependencies
-Write-Host "Installing dependencies..."
+Write-Host ""
+Write-Host "📦 Installing dependencies..." -ForegroundColor Yellow
 npm install
 if ($LASTEXITCODE -ne 0) {
-    Write-Error "Failed to install dependencies"
+    Write-Host "❌ Failed to install dependencies" -ForegroundColor Red
     exit 1
 }
-Write-Host "Dependencies installed successfully"
+Write-Host "✅ Dependencies installed successfully" -ForegroundColor Green
 
 # Build Next.js app
-Write-Host "Building Next.js application..."
+Write-Host ""
+Write-Host "🔨 Building Next.js application..." -ForegroundColor Yellow
 npm run build
 if ($LASTEXITCODE -ne 0) {
-    Write-Error "Build failed"
+    Write-Host "❌ Next.js build failed" -ForegroundColor Red
     exit 1
 }
-Write-Host "Next.js build completed successfully"
+Write-Host "✅ Next.js build completed successfully" -ForegroundColor Green
 
 # Build Electron app for Windows
-Write-Host "Building Electron app for Windows..."
-npx electron-builder --win --config electron-builder.config.js
+Write-Host ""
+Write-Host "📱 Building Electron app for Windows..." -ForegroundColor Yellow
+Write-Host "   Targets: NSIS Installer (x64, ia32), Portable (x64)" -ForegroundColor Gray
+npx electron-builder --config electron-builder.config.js --win
 if ($LASTEXITCODE -ne 0) {
-    Write-Error "Electron build failed"
-    Write-Host ""
-    Write-Host "If this error persists, please run this script as Administrator:"
-    Write-Host "Right-click on PowerShell and select 'Run as Administrator'"
-    Write-Host "Then navigate to this directory and run: .\build-windows.ps1"
+    Write-Host "❌ Electron build failed" -ForegroundColor Red
     exit 1
 }
 
 Write-Host ""
-Write-Host "Windows build completed successfully!"
-Write-Host "Installer can be found in the 'dist' folder"
+Write-Host "==========================================" -ForegroundColor Cyan
+Write-Host "✅ Windows build completed successfully!" -ForegroundColor Green
+Write-Host "==========================================" -ForegroundColor Cyan
+Write-Host ""
+Write-Host "📁 Output files in 'dist' folder:" -ForegroundColor Yellow
+Get-ChildItem dist\*.exe, dist\*.msi 2>$null | ForEach-Object { Write-Host "   $_" }
 Write-Host ""

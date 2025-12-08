@@ -1,0 +1,222 @@
+name: Build and Release
+
+on:
+  push:
+    tags:
+      - 'v*'  # 触发条件：推送以 v 开头的 tag，如 v1.0.0
+
+permissions:
+  contents: write
+
+jobs:
+  # 生成 Changelog
+  changelog:
+    name: Generate Changelog
+    runs-on: ubuntu-latest
+    outputs:
+      changelog: ${{ steps.changelog.outputs.changelog }}
+      version: ${{ steps.version.outputs.version }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # 获取完整历史以生成 changelog
+
+      - name: Get version from tag
+        id: version
+        run: echo "version=${GITHUB_REF#refs/tags/v}" >> $GITHUB_OUTPUT
+
+      - name: Generate Changelog
+        id: changelog
+        uses: metcalfc/changelog-generator@v4.3.1
+        with:
+          myToken: ${{ secrets.GITHUB_TOKEN }}
+
+  # 构建 macOS 版本
+  build-macos:
+    name: Build macOS
+    runs-on: macos-latest
+    needs: changelog
+    strategy:
+      matrix:
+        arch: [x64, arm64]
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build Next.js
+        run: npm run build
+
+      - name: Build Electron app (macOS ${{ matrix.arch }})
+        run: |
+          npx electron-builder --mac --${{ matrix.arch }} --config electron-builder.config.js
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Upload macOS artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: macos-${{ matrix.arch }}
+          path: |
+            dist/*.dmg
+            dist/*.zip
+          if-no-files-found: error
+
+  # 构建 Windows 版本
+  build-windows:
+    name: Build Windows
+    runs-on: windows-latest
+    needs: changelog
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build Next.js
+        run: npm run build
+
+      - name: Build Electron app (Windows)
+        run: |
+          npx electron-builder --win --config electron-builder.config.js
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Upload Windows artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: windows
+          path: |
+            dist/*.exe
+          if-no-files-found: error
+
+  # 构建 Linux 版本
+  build-linux:
+    name: Build Linux
+    runs-on: ubuntu-latest
+    needs: changelog
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build Next.js
+        run: npm run build
+
+      - name: Build Electron app (Linux)
+        run: |
+          npx electron-builder --linux --config electron-builder.config.js
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Upload Linux artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: linux
+          path: |
+            dist/*.AppImage
+            dist/*.deb
+            dist/*.rpm
+          if-no-files-found: error
+
+  # 创建 Release
+  release:
+    name: Create Release
+    runs-on: ubuntu-latest
+    needs: [changelog, build-macos, build-windows, build-linux]
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Download all artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: artifacts
+
+      - name: List artifacts
+        run: |
+          echo "=== Downloaded artifacts ==="
+          find artifacts -type f -name "*" | head -50
+
+      - name: Prepare release assets
+        run: |
+          mkdir -p release-assets
+          # macOS
+          cp artifacts/macos-x64/*.dmg release-assets/ 2>/dev/null || true
+          cp artifacts/macos-x64/*.zip release-assets/ 2>/dev/null || true
+          cp artifacts/macos-arm64/*.dmg release-assets/ 2>/dev/null || true
+          cp artifacts/macos-arm64/*.zip release-assets/ 2>/dev/null || true
+          # Windows
+          cp artifacts/windows/*.exe release-assets/ 2>/dev/null || true
+          # Linux
+          cp artifacts/linux/*.AppImage release-assets/ 2>/dev/null || true
+          cp artifacts/linux/*.deb release-assets/ 2>/dev/null || true
+          cp artifacts/linux/*.rpm release-assets/ 2>/dev/null || true
+          
+          echo "=== Release assets ==="
+          ls -la release-assets/
+
+      - name: Create Release
+        uses: softprops/action-gh-release@v2
+        with:
+          name: Algorithm Practice v${{ needs.changelog.outputs.version }}
+          tag_name: ${{ github.ref_name }}
+          body: |
+            ## 🚀 Algorithm Practice v${{ needs.changelog.outputs.version }}
+            
+            ### 📦 下载 / Downloads
+            
+            | 平台 / Platform | 架构 / Architecture | 下载 / Download |
+            |----------------|---------------------|-----------------|
+            | **macOS** | Apple Silicon (M1/M2/M3) | `Algorithm-Practice-*-macOS-arm64.dmg` |
+            | **macOS** | Intel | `Algorithm-Practice-*-macOS-x64.dmg` |
+            | **Windows** | 64-bit 安装包 | `Algorithm-Practice-*-Windows-Setup.exe` |
+            | **Windows** | 64-bit 便携版 | `Algorithm-Practice-*-Windows-Portable.exe` |
+            | **Linux** | AppImage | `Algorithm-Practice-*-Linux.AppImage` |
+            | **Linux** | Debian/Ubuntu | `Algorithm-Practice-*-Linux.deb` |
+            | **Linux** | Fedora/RHEL | `Algorithm-Practice-*-Linux.rpm` |
+            
+            ### 📝 更新日志 / Changelog
+            
+            ${{ needs.changelog.outputs.changelog }}
+            
+            ---
+            
+            > 💡 **首次使用提示**: macOS 用户首次打开可能需要在"系统偏好设置 > 安全性与隐私"中允许运行。
+          files: release-assets/*
+          draft: false
+          prerelease: ${{ contains(github.ref_name, 'alpha') || contains(github.ref_name, 'beta') || contains(github.ref_name, 'rc') }}
+          generate_release_notes: false
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Release Summary
+        run: |
+          echo "✅ Release created successfully!"
+          echo "📦 Version: v${{ needs.changelog.outputs.version }}"
+          echo "🔗 Release URL: https://github.com/${{ github.repository }}/releases/tag/${{ github.ref_name }}"
+

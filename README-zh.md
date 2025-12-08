@@ -1,8 +1,8 @@
-# OfflineLeetPractice
+# 离线算法练习 (Algorithm Practice)
 
 快速链接: [讨论区](https://github.com/zxypro1/OfflineLeetPractice/discussions) • [Issues](https://github.com/zxypro1/OfflineLeetPractice/issues) • [Pull requests](https://github.com/zxypro1/OfflineLeetPractice/pulls)
 
-> 本地运行的 LeetCode 风格编程练习系统，让你在 100% 离线环境下浏览、编码和测试算法题目——非常适合飞机上、游轮上或任何无网络场景。
+> 本地运行的算法编程练习系统，让你在 100% 离线环境下浏览、编码和测试算法题目——非常适合飞机上、游轮上或任何无网络场景。采用 **WASM 浏览器端代码执行**，支持 JavaScript、TypeScript 和 Python。
 
 <img width="2524" height="1223" alt="2025-08-24165202" src="https://github.com/user-attachments/assets/0c5a4952-77c1-41be-9cdc-fd8fe1db4b8a" />
 
@@ -14,30 +14,31 @@
 
 ### 系统要求
 
-- **Node.js** 16+ ([点击下载](https://nodejs.org/))
+- **Node.js** 18+ ([点击下载](https://nodejs.org/))
 - 任意现代网页浏览器
 
 > **注意**: 仅在首次设置和构建时需要网络连接。构建完成后，应用可完全离线使用。
 
-<!-- ### 桌面应用程序（推荐）
+### 桌面应用程序（推荐）
 
-为了获得最佳的离线体验，您可以将 OfflineLeetPractice 安装为桌面应用程序：
+为了获得最佳的离线体验，您可以构建桌面应用程序：
 
-#### Windows
+#### 构建桌面应用
 
-1. 从 [Releases 页面](https://github.com/zxypro1/OfflineLeetPractice/releases) 下载 Windows 安装程序
-2. 运行安装程序并按照设置向导操作
-3. 从开始菜单启动应用程序
+```bash
+# macOS
+npm run dist:mac
 
-#### macOS
+# Windows  
+npm run dist:win
 
-1. 从 [Releases 页面](https://github.com/zxypro1/OfflineLeetPractice/releases) 下载 macOS 安装程序
-2. 打开 DMG 文件并将应用程序拖拽到 Applications 文件夹
-3. 从 Applications 文件夹启动应用程序
+# Linux
+npm run dist:linux
+```
 
-> 有关自己构建桌面应用程序的详细说明，请参见 [DESKTOP-APP-GUIDE-zh.md](./DESKTOP-APP-GUIDE-zh.md) 或英文版本 [DESKTOP-APP-GUIDE.md](./DESKTOP-APP-GUIDE.md)。 -->
+> 有关详细说明，请参见 [DESKTOP-APP-GUIDE-zh.md](./DESKTOP-APP-GUIDE-zh.md)。
 
-### 一键启动（Web）
+### 一键启动（Web 版本）
 
 #### Windows 用户
 
@@ -81,7 +82,7 @@ chmod +x start-local.sh
 
 ```bash
 # 克隆仓库
-git clone https://github.com/yourusername/OfflineLeetPractice.git
+git clone https://github.com/zxypro1/OfflineLeetPractice.git
 cd OfflineLeetPractice
 
 # 安装依赖 - 需要网络
@@ -100,11 +101,22 @@ npm start
 
 - **本地题库**: 内置 10+ 道经典算法题目
 - **AI 题目生成器**: 使用多种 AI 提供商生成无限自定义题目
-- **多语言支持**: 支持 JavaScript、Python、Java、C++ 和 C 语言编码和测试
+- **WASM 代码执行**: 浏览器端执行 JavaScript、TypeScript 和 Python
 - **Monaco 代码编辑器**: VS Code 级别的编辑体验
 - **即时测试**: 立即运行测试并查看详细结果
-- **性能指标**: 执行时间和内存使用量跟踪
+- **性能指标**: 执行时间跟踪
 - **动态题目管理**: 无需重新构建即可添加/编辑题目
+- **桌面应用**: 跨平台 Electron 应用（Windows、macOS、Linux）
+
+### 支持的语言（WASM 执行）
+
+| 语言 | 状态 | 实现方式 |
+|------|------|---------|
+| **JavaScript** | ✅ 支持 | 浏览器原生执行 |
+| **TypeScript** | ✅ 支持 | TypeScript 编译器转译 |
+| **Python** | ✅ 支持 | Pyodide (CPython WASM) |
+
+> **注意**: 所有代码执行都在浏览器端使用 WebAssembly 完成，无需服务器端执行。
 
 ### AI 智能题目生成
 
@@ -119,9 +131,10 @@ npm start
 
 1. **浏览题目**: 查看包含难度和标签的题目列表
 2. **选择题目**: 点击任意题目打开详情页面
-3. **编写解法**: 使用 Monaco 编辑器（支持自动补全、语法高亮）
-4. **运行测试**: 点击"提交并运行测试"执行你的代码
-5. **查看结果**: 查看测试结果和性能指标
+3. **选择语言**: 选择 JavaScript、TypeScript 或 Python
+4. **编写解法**: 使用 Monaco 编辑器（支持自动补全、语法高亮）
+5. **运行测试**: 点击"提交并运行测试"执行你的代码
+6. **查看结果**: 查看测试结果和执行时间
 
 ### AI 题目生成
 
@@ -145,7 +158,7 @@ npm start
 - Claude
 - Ollama (本地)
 
-在桌面模式下，配置保存到您的用户目录 (`~/.offline-leet-practice/config.json`)，在网页模式下进行模拟。详细说明请参见 [AI_PROVIDER_GUIDE.md](./AI_PROVIDER_GUIDE.md)。
+在桌面模式下，配置保存到您的用户目录 (`~/.offline-leet-practice/config.json`)。详细说明请参见 [AI_PROVIDER_GUIDE.md](./AI_PROVIDER_GUIDE.md)。
 
 #### AI 功能设置
 
@@ -153,139 +166,40 @@ npm start
 
 ##### 首次启动的交互式 AI 配置
 
-当您运行仓库根目录下的启动脚本（`start-local.sh` 或 `start-local.bat`）且项目中不存在 `.env` 文件时，脚本会将其视为首次启动并提供交互式配置 AI 的选项。在非交互模式下（使用 `--yes` 或 `START_LOCAL_NONINTERACTIVE=1`），脚本会尝试从 `.env.example` 复制到 `.env`；如果 `.env.example` 不存在，则创建包含默认模型名和空 API key 的最小 `.env`。交互流程包括：
-
-- 询问是否启用 AI 功能；
-- 对每个提供商（OpenAI、DeepSeek、Qwen、Claude、Ollama）询问是否启用，然后要求输入模型名和 API key（Ollama 会询问 endpoint 与 model）；
-- 若直接按回车接受默认值，将使用如下默认值：
-  - OpenAI model: `gpt-4-turbo`
-  - DeepSeek model: `deepseek-chat`
-  - Qwen model: `qwen-turbo`
-  - Claude model: `claude-3-haiku-20240307`
-  - Ollama endpoint: `http://localhost:11434`，model: `llama3`
-
-脚本会把配置写入项目根目录下的 `.env` 文件。如果 `.env` 已存在，脚本会跳过交互配置。之后要修改配置，请直接编辑 `.env` 文件。
+当您运行启动脚本（`start-local.sh` 或 `start-local.bat`）且项目中不存在 `.env` 文件时，脚本会提供交互式配置 AI 的选项。
 
 ##### 选项 1：DeepSeek 云服务
 
-1. **获取 API 密钥**: 从 [DeepSeek 平台](https://platform.deepseek.com/) 获取 API 密钥
-2. **配置密钥**: 通过以下方法之一将 API 密钥添加到应用程序：
-   - 在项目根目录创建 `.env.local` 文件，内容如下：
-     ```bash
-     DEEPSEEK_API_KEY=your_deepseek_api_key_here
-     ```
-   - 或者在系统中设置环境变量：
-     ```bash
-     # Windows (PowerShell)
-     $env:DEEPSEEK_API_KEY="your_deepseek_api_key_here"
-
-     # macOS/Linux (Bash)
-     export DEEPSEEK_API_KEY="your_deepseek_api_key_here"
-     ```
+```bash
+DEEPSEEK_API_KEY=your_deepseek_api_key_here
+```
 
 ##### 选项 2：OpenAI
 
-1. **获取 API 密钥**: 从 [OpenAI 平台](https://platform.openai.com/) 获取 API 密钥
-2. **配置密钥**: 通过以下方法之一将 API 密钥添加到应用程序：
-   - 在项目根目录创建 `.env.local` 文件，内容如下：
-     ```bash
-     OPENAI_API_KEY=your_openai_api_key_here
-     ```
-   - 或者在系统中设置环境变量：
-     ```bash
-     # Windows (PowerShell)
-     $env:OPENAI_API_KEY="your_openai_api_key_here"
-
-     # macOS/Linux (Bash)
-     export OPENAI_API_KEY="your_openai_api_key_here"
-     ```
+```bash
+OPENAI_API_KEY=your_openai_api_key_here
+```
 
 ##### 选项 3：Qwen (通义千问)
 
-1. **获取 API 密钥**: 从 [Qwen 平台](https://dashscope.console.aliyun.com/) 获取 API 密钥
-2. **配置密钥**: 通过以下方法之一将 API 密钥添加到应用程序：
-   - 在项目根目录创建 `.env.local` 文件，内容如下：
-     ```bash
-     QWEN_API_KEY=your_qwen_api_key_here
-     ```
-   - 或者在系统中设置环境变量：
-     ```bash
-     # Windows (PowerShell)
-     $env:QWEN_API_KEY="your_qwen_api_key_here"
-
-     # macOS/Linux (Bash)
-     export QWEN_API_KEY="your_qwen_api_key_here"
-     ```
+```bash
+QWEN_API_KEY=your_qwen_api_key_here
+```
 
 ##### 选项 4：Claude
 
-1. **获取 API 密钥**: 从 [Claude 平台](https://console.anthropic.com/) 获取 API 密钥
-2. **配置密钥**: 通过以下方法之一将 API 密钥添加到应用程序：
-   - 在项目根目录创建 `.env.local` 文件，内容如下：
-     ```bash
-     CLAUDE_API_KEY=your_claude_api_key_here
-     ```
-   - 或者在系统中设置环境变量：
-     ```bash
-     # Windows (PowerShell)
-     $env:CLAUDE_API_KEY="your_claude_api_key_here"
-
-     # macOS/Linux (Bash)
-     export CLAUDE_API_KEY="your_claude_api_key_here"
-     ```
+```bash
+CLAUDE_API_KEY=your_claude_api_key_here
+```
 
 ##### 选项 5：本地 Ollama 模型
 
-1. **安装 Ollama**: 从 https://ollama.com/ 下载并安装 Ollama
-2. **下载模型**: 运行 `ollama pull llama3` 下载推荐的模型
-3. **配置 Ollama**: 通过以下方法之一配置 Ollama：
+```bash
+OLLAMA_ENDPOINT=http://localhost:11434
+OLLAMA_MODEL=llama3
+```
 
-   - 在项目根目录创建 `.env.local` 文件，内容如下：
-     ```bash
-     # 可选：设置 Ollama 端点（默认：http://localhost:11434）
-     # OLLAMA_ENDPOINT=http://localhost:11434
-
-     # 可选：设置 Ollama 模型（默认：llama3）
-     # OLLAMA_MODEL=llama3
-     ```
-   - 或者在系统中设置环境变量：
-     ```bash
-     # Windows (PowerShell)
-     $env:OLLAMA_ENDPOINT="http://localhost:11434"  # 可选
-     $env:OLLAMA_MODEL="llama3"  # 可选
-
-     # macOS/Linux (Bash)
-     export OLLAMA_ENDPOINT=http://localhost:11434  # 可选
-     export OLLAMA_MODEL=llama3  # 可选
-     ```
-4. **启动 Ollama**: 确保 Ollama 服务正在运行（通常会自动启动）
-
-##### 使用多个提供商
-
-如果您配置了多个 AI 提供商，系统将按以下优先级顺序自动选择：
-
-1. Ollama（本地）
-2. OpenAI
-3. Claude
-4. Qwen
-5. DeepSeek
-
-您可以使用 AI 生成器页面上的 UI 控件在提供商之间切换。
-
-系统通过服务器端检查自动检测配置了哪些提供商。前端通过 `/api/ai-providers` 端点获取此配置，确保正确的安全性和符合 Next.js 环境变量限制。
-
-#### 使用 AI 生成器
-
-1. 通过点击首页的"🤖 AI 生成器"按钮导航到 AI 生成器页面
-2. 输入您的问题请求（中文或英文），例如：
-   - "Generate a medium difficulty array manipulation problem"
-   - "我想做一道动态规划题目"
-   - "创建一个包含边界情况的二分搜索问题"
-3. 点击"生成题目"并等待 AI 创建您的自定义问题
-4. 生成的问题将自动添加到您的本地问题库中
-5. 点击"尝试最后生成的问题"立即开始解决它
-
-查看 **`AI_PROVIDER_GUIDE.md`** 获取更详细的配置说明和故障排除指南！
+查看 **`AI_PROVIDER_GUIDE.md`** 获取更详细的配置说明！
 
 ### 添加自定义题目
 
@@ -298,7 +212,11 @@ npm start
 - **前端**: React 18 + Next.js 13 + TypeScript
 - **UI 框架**: Mantine v7 (现代 React 组件)
 - **代码编辑器**: Monaco Editor (VS Code 引擎)
-- **代码执行**: vm2 (安全的 JavaScript 沙箱)
+- **代码执行**: WASM 浏览器端执行
+  - JavaScript: 浏览器原生 `Function` 构造函数
+  - TypeScript: TypeScript 编译器 (CDN)
+  - Python: Pyodide (CPython 编译为 WASM)
+- **桌面应用**: Electron
 
 ## 项目结构
 
@@ -307,24 +225,26 @@ OfflineLeetPractice/
 ├── pages/                  # Next.js 页面和 API 路由
 │   ├── api/
 │   │   ├── problems.ts     # 题目数据 API
-│   │   ├── run.ts          # 代码执行 API
 │   │   ├── generate-problem.ts # AI 题目生成 API
 │   │   └── add-problem.ts  # 手动添加题目 API
 │   ├── problems/[id].tsx   # 题目详情页面
 │   ├── generator.tsx       # AI 生成器页面
 │   ├── add-problem.tsx     # 手动添加题目页面
 │   └── index.tsx           # 首页
-├── problems/
-│   └── problems.json       # 本地题目数据库
 ├── src/
 │   ├── components/         # React 组件
-│   │   ├── ProblemGenerator.tsx # AI 生成器组件
-│   │   ├── ProblemForm.tsx     # 手动添加题目表单
-│   │   └── LanguageThemeControls.tsx # 语言/主题切换器
-│   └── styles/            # 全局样式
-├── start-local.bat        # Windows 启动脚本
-├── start-local.sh         # Unix 启动脚本
-└── AI_PROVIDER_GUIDE.md # AI 提供商配置指南
+│   │   ├── CodeRunner.tsx  # 代码编辑器和测试运行器
+│   │   └── ...
+│   ├── hooks/
+│   │   └── useWasmExecutor.ts # WASM 代码执行 Hook
+│   └── services/           # 服务模块
+├── problems/
+│   └── problems.json       # 本地题目数据库
+├── electron-main.js        # Electron 主进程
+├── electron-builder.config.js # 桌面应用构建配置
+├── start-local.bat         # Windows 启动脚本
+├── start-local.sh          # Unix 启动脚本
+└── AI_PROVIDER_GUIDE.md    # AI 提供商配置指南
 ```
 
 ## 自定义
@@ -368,8 +288,8 @@ OfflineLeetPractice/
 我们欢迎贡献！改进方向：
 
 - **更多题目**: 添加经典算法挑战
-- **更多语言**: Python、Java、C++ 支持
 - **增强功能**: 更好的性能分析
+- **UI 改进**: 增强用户体验
 
 ## 许可证
 

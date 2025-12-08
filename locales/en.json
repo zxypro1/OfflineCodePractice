@@ -11,12 +11,12 @@
     "settings": "Settings"
   },
   "header": {
-    "title": "Offline LeetCode Practice",
-    "subtitle": "Local problem set, supports editing and running tests in browser (JavaScript)"
+    "title": "Offline Algorithm Practice",
+    "subtitle": "Local problem set, supports editing and running tests in browser (JavaScript, TypeScript, Python)"
   },
   "homepage": {
-    "title": "🚀 Offline LeetCode Practice",
-    "subtitle": "Local problem set, supports editing and running tests in browser (JavaScript)",
+    "title": "🚀 Offline Algorithm Practice",
+    "subtitle": "Local problem set, supports editing and running tests in browser (JavaScript, TypeScript, Python)",
     "problemList": "📚 Problem List",
     "problems": "problems",
     "addProblem": "Add Problem",
@@ -73,7 +73,13 @@
     "totalMemory": "Total Memory",
     "input": "Input",
     "copy": "Copy",
-    "copied": "Copied!"
+    "copied": "Copied!",
+    "wasmEnabled": "WASM Browser Execution",
+    "runtimeReady": "Ready",
+    "runtimeLoading": "Loading...",
+    "runtimeError": "Error",
+    "runtimeIdle": "Idle",
+    "executionError": "Execution Error"
   },
   "tags": {
     "array": "Array",
@@ -124,7 +130,7 @@
   },
   "aiGenerator": {
     "title": "AI Problem Generator",
-    "subtitle": "Describe the type of coding problem you want to practice. The AI will generate a custom LeetCode-style problem for you.",
+    "subtitle": "Describe the type of coding problem you want to practice. The AI will generate a custom algorithm problem for you.",
     "backToHome": "Back to Home",
     "tryLastProblem": "Try Last Problem",
     "requestLabel": "Describe your problem request",

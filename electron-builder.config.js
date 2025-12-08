@@ -84,14 +84,9 @@ module.exports = {
     createDesktopShortcut: true,
     createStartMenuShortcut: true,
     shortcutName: 'Algorithm Practice',
-    installerIcon: 'build/icon.ico',
-    uninstallerIcon: 'build/icon.ico',
-    installerHeaderIcon: 'build/icon.ico',
     // 安装语言
     language: 2052, // 简体中文
     multiLanguageInstaller: true,
-    // 安装时显示许可证
-    license: 'LICENSE',
     // 安装包命名
     artifactName: '${productName}-${version}-Windows-Setup.${ext}'
   },

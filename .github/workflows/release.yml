@@ -53,6 +53,9 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      - name: Generate icons
+        run: npm run icons:generate
+
       - name: Build Next.js
         run: npm run build
 
@@ -89,6 +92,9 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      - name: Generate icons
+        run: npm run icons:generate
+
       - name: Build Next.js
         run: npm run build
 
@@ -123,6 +129,9 @@ jobs:
 
       - name: Install dependencies
         run: npm ci
+
+      - name: Generate icons
+        run: npm run icons:generate
 
       - name: Build Next.js
         run: npm run build

@@ -63,7 +63,8 @@ module.exports = {
         arch: ['x64']
       }
     ],
-    icon: 'public/icon.png',
+    // Windows 需要 .ico 格式，electron-builder 会自动从 png 转换
+    icon: 'build/icon.ico',
     artifactName: '${productName}-${version}-Windows-${arch}.${ext}',
     // 文件关联
     fileAssociations: [
@@ -83,9 +84,9 @@ module.exports = {
     createDesktopShortcut: true,
     createStartMenuShortcut: true,
     shortcutName: 'Algorithm Practice',
-    installerIcon: 'public/icon.png',
-    uninstallerIcon: 'public/icon.png',
-    installerHeaderIcon: 'public/icon.png',
+    installerIcon: 'build/icon.ico',
+    uninstallerIcon: 'build/icon.ico',
+    installerHeaderIcon: 'build/icon.ico',
     // 安装语言
     language: 2052, // 简体中文
     multiLanguageInstaller: true,

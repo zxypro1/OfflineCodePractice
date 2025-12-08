@@ -4,8 +4,8 @@
  * 
  * 生成 Electron 应用所需的各种图标格式
  * 
- * 依赖：需要安装 sharp
- * npm install sharp --save-dev
+ * 依赖：需要安装 sharp 和 png-to-ico
+ * npm install sharp png-to-ico --save-dev
  * 
  * 使用方法：
  * node scripts/generate-icons.js
@@ -16,6 +16,8 @@ const path = require('path');
 
 async function generateIcons() {
   let sharp;
+  let pngToIco;
+  
   try {
     sharp = require('sharp');
   } catch (e) {
@@ -23,6 +25,15 @@ async function generateIcons() {
     const { execSync } = require('child_process');
     execSync('npm install sharp --save-dev', { stdio: 'inherit' });
     sharp = require('sharp');
+  }
+
+  try {
+    pngToIco = require('png-to-ico');
+  } catch (e) {
+    console.log('Installing png-to-ico for Windows icon generation...');
+    const { execSync } = require('child_process');
+    execSync('npm install png-to-ico --save-dev', { stdio: 'inherit' });
+    pngToIco = require('png-to-ico');
   }
 
   const svgPath = path.join(__dirname, '../public/favicon.svg');
@@ -46,7 +57,7 @@ async function generateIcons() {
   const sizes = {
     // macOS
     mac: [16, 32, 64, 128, 256, 512, 1024],
-    // Windows
+    // Windows (for .ico file)
     win: [16, 24, 32, 48, 64, 128, 256],
     // Linux
     linux: [16, 24, 32, 48, 64, 128, 256, 512]
@@ -62,6 +73,19 @@ async function generateIcons() {
       .png()
       .toFile(path.join(publicDir, 'icon.png'));
     console.log('   ✅ public/icon.png');
+
+    // Generate 256x256 PNG for Windows ICO conversion
+    const icon256Path = path.join(buildDir, 'icon-256.png');
+    await sharp(svgBuffer)
+      .resize(256, 256)
+      .png()
+      .toFile(icon256Path);
+    
+    // Generate Windows .ico file
+    console.log('\n🪟 Creating Windows .ico file...');
+    const icoBuffer = await pngToIco([icon256Path]);
+    fs.writeFileSync(path.join(buildDir, 'icon.ico'), icoBuffer);
+    console.log('   ✅ build/icon.ico');
 
     // Generate macOS icons
     console.log('\n🍎 Creating macOS icons...');
@@ -84,8 +108,8 @@ async function generateIcons() {
       console.log(`   ✅ ${filename}`);
     }
 
-    // Generate Windows icon sizes
-    console.log('\n🪟 Creating Windows icons...');
+    // Generate Windows icon sizes (individual PNGs)
+    console.log('\n🪟 Creating Windows PNG icons...');
     for (const size of sizes.win) {
       const filename = `icon_${size}.png`;
       await sharp(svgBuffer)
@@ -120,12 +144,14 @@ async function generateIcons() {
       console.log(`   ✅ ${filename}`);
     }
 
+    // Cleanup temporary file
+    fs.unlinkSync(icon256Path);
+
     console.log('\n✨ Icon generation complete!');
     console.log('\n📁 Generated files:');
     console.log('   - public/icon.png (main app icon)');
+    console.log('   - build/icon.ico (Windows installer icon)');
     console.log('   - build/icons/ (platform-specific icons)');
-    console.log('\n💡 Note: For Windows .ico and macOS .icns files,');
-    console.log('   electron-builder will automatically convert from PNG.');
 
   } catch (error) {
     console.error('❌ Error generating icons:', error);

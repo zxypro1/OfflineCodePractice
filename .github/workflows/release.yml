@@ -203,25 +203,31 @@ jobs:
           body: |
             ## 🚀 Algorithm Practice v${{ needs.changelog.outputs.version }}
             
-            ### 📦 下载 / Downloads
+            An offline algorithm practice application with WASM-based code execution.
             
-            | 平台 / Platform | 架构 / Architecture | 下载 / Download |
-            |----------------|---------------------|-----------------|
+            基于 WASM 的离线算法练习应用。
+            
+            ### 📦 Downloads
+            
+            | Platform | Architecture | File |
+            |----------|--------------|------|
             | **macOS** | Apple Silicon (M1/M2/M3) | `Algorithm-Practice-*-macOS-arm64.dmg` |
             | **macOS** | Intel | `Algorithm-Practice-*-macOS-x64.dmg` |
-            | **Windows** | 64-bit 安装包 | `Algorithm-Practice-*-Windows-Setup.exe` |
-            | **Windows** | 64-bit 便携版 | `Algorithm-Practice-*-Windows-Portable.exe` |
+            | **Windows** | 64-bit Installer | `Algorithm-Practice-*-Windows-Setup.exe` |
+            | **Windows** | 64-bit Portable | `Algorithm-Practice-*-Windows-Portable.exe` |
             | **Linux** | AppImage | `Algorithm-Practice-*-Linux.AppImage` |
             | **Linux** | Debian/Ubuntu | `Algorithm-Practice-*-Linux.deb` |
             | **Linux** | Fedora/RHEL | `Algorithm-Practice-*-Linux.rpm` |
             
-            ### 📝 更新日志 / Changelog
+            ### 📝 Changelog
             
             ${{ needs.changelog.outputs.changelog }}
             
             ---
             
-            > 💡 **首次使用提示**: macOS 用户首次打开可能需要在"系统偏好设置 > 安全性与隐私"中允许运行。
+            > 💡 **First-time users**: On macOS, you may need to allow the app in "System Preferences > Security & Privacy".
+            > 
+            > macOS 用户首次打开可能需要在"系统偏好设置 > 安全性与隐私"中允许运行。
           files: release-assets/*
           draft: false
           prerelease: ${{ contains(github.ref_name, 'alpha') || contains(github.ref_name, 'beta') || contains(github.ref_name, 'rc') }}

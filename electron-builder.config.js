@@ -99,16 +99,8 @@ module.exports = {
 
   // ==================== macOS 配置 ====================
   mac: {
-    target: [
-      {
-        target: 'dmg',
-        arch: ['x64', 'arm64']
-      },
-      {
-        target: 'zip',
-        arch: ['x64', 'arm64']
-      }
-    ],
+    // target 不指定 arch，由 CLI 参数 (--x64 / --arm64) 控制
+    target: ['dmg', 'zip'],
     icon: 'public/icon.png',
     category: 'public.app-category.developer-tools',
     artifactName: '${productName}-${version}-macOS-${arch}.${ext}',
@@ -152,7 +144,8 @@ module.exports = {
       height: 380
     },
     backgroundColor: '#1a1a2e',
-    title: '${productName} ${version}',
+    // 使用简化标题避免 CI 中的挂载问题
+    title: 'AlgorithmPractice',
     artifactName: '${productName}-${version}-macOS-${arch}.${ext}'
   },
 

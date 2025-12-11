@@ -23,9 +23,25 @@ Quick links: [Discussions](https://github.com/zxypro1/OfflineLeetPractice/discus
 
 ### Desktop App (Recommended)
 
-For the best offline experience, you can build the desktop application:
+For the best offline experience, download the pre-built desktop application:
 
-#### Build Desktop App
+#### 📥 Download
+
+**[⬇️ Download Latest Release](https://github.com/zxypro1/OfflineCodePractice/releases/latest)**
+
+| Platform | Download |
+|----------|----------|
+| **macOS** (Apple Silicon) | `Algorithm-Practice-*-macOS-arm64.dmg` |
+| **macOS** (Intel) | `Algorithm-Practice-*-macOS-x64.dmg` |
+| **Windows** (Installer) | `Algorithm-Practice-*-Windows-Setup.exe` |
+| **Windows** (Portable) | `Algorithm-Practice-*-Windows-Portable.exe` |
+| **Linux** (AppImage) | `Algorithm-Practice-*-Linux.AppImage` |
+| **Linux** (Debian/Ubuntu) | `Algorithm-Practice-*-Linux.deb` |
+| **Linux** (Fedora/RHEL) | `Algorithm-Practice-*-Linux.rpm` |
+
+#### Build from Source
+
+Alternatively, you can build the desktop app yourself:
 
 ```bash
 # macOS
@@ -38,7 +54,7 @@ npm run dist:win
 npm run dist:linux
 ```
 
-> See [DESKTOP-APP-GUIDE.md](./DESKTOP-APP-GUIDE.md) for detailed instructions.
+> See [DESKTOP-APP-GUIDE.md](./DESKTOP-APP-GUIDE.md) for detailed build instructions.
 
 ### One-Click Setup (Web Version)
 

@@ -21,9 +21,25 @@
 
 ### 桌面应用程序（推荐）
 
-为了获得最佳的离线体验，您可以构建桌面应用程序：
+为了获得最佳的离线体验，可以直接下载预构建的桌面应用：
 
-#### 构建桌面应用
+#### 📥 下载安装
+
+**[⬇️ 下载最新版本](https://github.com/zxypro1/OfflineCodePractice/releases/latest)**
+
+| 平台 | 下载文件 |
+|------|----------|
+| **macOS** (Apple Silicon) | `Algorithm-Practice-*-macOS-arm64.dmg` |
+| **macOS** (Intel) | `Algorithm-Practice-*-macOS-x64.dmg` |
+| **Windows** (安装版) | `Algorithm-Practice-*-Windows-Setup.exe` |
+| **Windows** (便携版) | `Algorithm-Practice-*-Windows-Portable.exe` |
+| **Linux** (AppImage) | `Algorithm-Practice-*-Linux.AppImage` |
+| **Linux** (Debian/Ubuntu) | `Algorithm-Practice-*-Linux.deb` |
+| **Linux** (Fedora/RHEL) | `Algorithm-Practice-*-Linux.rpm` |
+
+#### 从源码构建
+
+您也可以自行从源码构建桌面应用：
 
 ```bash
 # macOS
@@ -36,7 +52,7 @@ npm run dist:win
 npm run dist:linux
 ```
 
-> 有关详细说明，请参见 [DESKTOP-APP-GUIDE-zh.md](./DESKTOP-APP-GUIDE-zh.md)。
+> 有关详细构建说明，请参见 [DESKTOP-APP-GUIDE-zh.md](./DESKTOP-APP-GUIDE-zh.md)。
 
 ### 一键启动（Web 版本）
 

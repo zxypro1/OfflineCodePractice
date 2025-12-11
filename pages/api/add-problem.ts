@@ -27,8 +27,9 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       return res.status(400).json({ error: 'ID must contain only lowercase letters, numbers, and hyphens' });
     }
 
+    const appRoot = process.env.APP_ROOT || process.cwd();
     // Read current problems
-    const problemsPath = path.join(process.cwd(), 'public', 'problems.json');
+    const problemsPath = path.join(appRoot, 'public', 'problems.json');
     const problemsData = fs.readFileSync(problemsPath, 'utf8');
     const problems = JSON.parse(problemsData);
 
@@ -44,7 +45,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     fs.writeFileSync(problemsPath, JSON.stringify(problems, null, 2));
 
     // Also sync to problems/problems.json
-    const sourceProblemsPath = path.join(process.cwd(), 'problems', 'problems.json');
+    const sourceProblemsPath = path.join(appRoot, 'problems', 'problems.json');
     fs.writeFileSync(sourceProblemsPath, JSON.stringify(problems, null, 2));
 
     res.status(201).json({ message: 'Problem added successfully', id: problem.id });

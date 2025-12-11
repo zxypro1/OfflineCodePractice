@@ -22,10 +22,14 @@ module.exports = {
     'electron-preload.js',
     'next.config.js',
     'package.json',
+    'pages/**/*',
+    'src/**/*',
+    'styles/**/*',
     '.next/**/*',
     'public/**/*',
     'problems/**/*',
     'locales/**/*',
+    'node_modules/@swc/helpers/**/*',
     'node_modules/**/*',
     '!node_modules/**/test/**',
     '!node_modules/**/tests/**',
@@ -44,12 +48,9 @@ module.exports = {
     }
   ],
   
-  // ASAR 配置
-  asar: true,
-  asarUnpack: [
-    'node_modules/next/**/*',
-    '.next/**/*'
-  ],
+  // ASAR 配置（为避免 React 重复实例导致 useContext 为空，先关闭 asar）
+  asar: false,
+  asarUnpack: [],
 
   // ==================== Windows 配置 ====================
   win: {
@@ -115,6 +116,8 @@ module.exports = {
     gatekeeperAssess: false,
     entitlements: 'build/entitlements.mac.plist',
     entitlementsInherit: 'build/entitlements.mac.plist',
+    // CI 环境跳过签名：设置 CSC_IDENTITY_AUTO_DISCOVERY=false
+    identity: process.env.CSC_IDENTITY_AUTO_DISCOVERY === 'false' ? null : undefined,
     // 应用捆绑 ID
     bundleVersion: '1',
     bundleShortVersion: '0.0.9',

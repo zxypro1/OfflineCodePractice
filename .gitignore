@@ -3,3 +3,7 @@ node_modules
 .env
 temp
 dist
+
+# Debug logs
+*.log
+.cursor/debug.log

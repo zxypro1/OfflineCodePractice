@@ -599,8 +599,9 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       }
     }
 
+    const appRoot = process.env.APP_ROOT || process.cwd();
     // Load existing problems
-    const problemsPath = path.join(process.cwd(), 'public', 'problems.json');
+    const problemsPath = path.join(appRoot, 'public', 'problems.json');
     let existingProblems: Problem[] = [];
     
     try {

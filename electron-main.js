@@ -4,7 +4,21 @@ const fs = require('fs');
 const os = require('os');
 const { createServer } = require('http');
 
-const dev = process.env.NODE_ENV !== 'production';
+// Global error handlers
+process.on('uncaughtException', (error) => {
+  console.error('Uncaught Exception:', error);
+});
+
+process.on('unhandledRejection', (reason, promise) => {
+  console.error('Unhandled Rejection at:', promise, 'reason:', reason);
+});
+
+// Expose app root for Next.js API routes to locate resources correctly
+process.env.APP_ROOT = app.isPackaged ? path.join(process.resourcesPath, 'app') : __dirname;
+
+// In packaged apps, always use production mode
+// In development, use NODE_ENV to determine mode
+const dev = app.isPackaged ? false : (process.env.NODE_ENV !== 'production');
 const hostname = 'localhost';
 const port = 3000;
 
@@ -137,6 +151,13 @@ async function startNextServer() {
     // Load configuration first
     loadSavedConfig();
     
+    // Get the correct directory path for Next.js
+    let nextDir = __dirname;
+    if (app.isPackaged) {
+      // In packaged app, use the app path directly (asar disabled)
+      nextDir = app.getAppPath();
+    }
+    
     // Dynamically require next to handle potential issues
     const next = require('next');
     
@@ -144,7 +165,7 @@ async function startNextServer() {
       dev, 
       hostname, 
       port,
-      dir: __dirname 
+      dir: nextDir 
     });
     
     const nextHandler = nextApp.getRequestHandler();
@@ -156,9 +177,20 @@ async function startNextServer() {
         await nextHandler(req, res);
       } catch (error) {
         console.error('Error occurred handling', req.url, error);
-        res.statusCode = 500;
-        res.end('internal server error');
+        if (!res.headersSent) {
+          res.statusCode = 500;
+          res.end('internal server error');
+        }
       }
+    });
+    
+    // Listen for server errors
+    server.on('error', (error) => {
+      console.error('Server error:', error);
+    });
+    
+    server.on('clientError', (error, socket) => {
+      console.error('Client error:', error);
     });
 
     return new Promise((resolve, reject) => {
@@ -245,7 +277,8 @@ function createWindow() {
   });
 
   // Load the app
-  mainWindow.loadURL(`http://${hostname}:${port}`);
+  const loadUrl = `http://${hostname}:${port}`;
+  mainWindow.loadURL(loadUrl);
   
   mainWindow.on('closed', () => {
     mainWindow = null;

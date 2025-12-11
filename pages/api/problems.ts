@@ -4,8 +4,9 @@ import path from 'path';
 
 export default function handler(req: NextApiRequest, res: NextApiResponse) {
   try {
-    // Read problems.json from public folder at runtime
-    const problemsPath = path.join(process.cwd(), 'public', 'problems.json');
+    // 优先使用 Electron 主进程注入的 APP_ROOT，保证打包后路径正确
+    const appRoot = process.env.APP_ROOT || process.cwd();
+    const problemsPath = path.join(appRoot, 'public', 'problems.json');
     const problemsData = fs.readFileSync(problemsPath, 'utf8');
     const problems = JSON.parse(problemsData);
     

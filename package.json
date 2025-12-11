@@ -65,6 +65,7 @@
     "@tabler/icons-react": "^3.34.1",
     "@types/katex": "^0.16.7",
     "@types/react-syntax-highlighter": "^15.5.13",
+    "d3-sankey": "^0.12.3",
     "isomorphic-dompurify": "^2.26.0",
     "katex": "^0.16.22",
     "marked": "^16.2.0",

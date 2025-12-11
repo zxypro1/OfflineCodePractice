@@ -39,6 +39,11 @@ For the best offline experience, download the pre-built desktop application:
 | **Linux** (Debian/Ubuntu) | `Algorithm-Practice-*-Linux.deb` |
 | **Linux** (Fedora/RHEL) | `Algorithm-Practice-*-Linux.rpm` |
 
+> ⚠️ **macOS Users**: If you see "App is damaged and can't be opened", run this command in Terminal:
+> ```bash
+> xattr -cr "/Applications/Algorithm Practice.app"
+> ```
+
 #### Build from Source
 
 Alternatively, you can build the desktop app yourself:

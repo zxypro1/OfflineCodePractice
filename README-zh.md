@@ -37,6 +37,11 @@
 | **Linux** (Debian/Ubuntu) | `Algorithm-Practice-*-Linux.deb` |
 | **Linux** (Fedora/RHEL) | `Algorithm-Practice-*-Linux.rpm` |
 
+> ⚠️ **macOS 用户**：如果提示"应用已损坏，无法打开"，请在终端执行：
+> ```bash
+> xattr -cr "/Applications/Algorithm Practice.app"
+> ```
+
 #### 从源码构建
 
 您也可以自行从源码构建桌面应用：

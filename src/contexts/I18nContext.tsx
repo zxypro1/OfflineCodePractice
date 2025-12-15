@@ -1,8 +1,11 @@
-import React, { createContext, useContext, ReactNode } from 'react';
+import React, { createContext, useContext, ReactNode, useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
 // Dynamically import locale files
 import en from '../../locales/en.json';
 import zh from '../../locales/zh.json';
+
+// Key for localStorage
+const LOCALE_STORAGE_KEY = 'app-locale';
 
 type Translations = {
   common: {
@@ -199,12 +202,29 @@ const translations: Record<string, Translations> = {
 
 export function I18nProvider({ children }: { children: ReactNode }) {
   const router = useRouter();
-  const { locale = 'zh' } = router;
+  
+  // Initialize locale from localStorage or router, defaulting to 'zh'
+  const [locale, setLocale] = useState<string>('zh');
+  const [mounted, setMounted] = useState(false);
+
+  // Load locale from localStorage on mount
+  useEffect(() => {
+    setMounted(true);
+    if (typeof window !== 'undefined') {
+      const savedLocale = localStorage.getItem(LOCALE_STORAGE_KEY);
+      if (savedLocale && (savedLocale === 'zh' || savedLocale === 'en')) {
+        setLocale(savedLocale);
+      } else if (router.locale) {
+        setLocale(router.locale);
+      }
+    }
+  }, [router.locale]);
 
   const t = (key: string, params?: Record<string, string | number>): string => {
     try {
       const keys = key.split('.');
-      let value: any = translations[locale];
+      const currentLocale = mounted ? locale : 'zh';
+      let value: any = translations[currentLocale];
       
       for (const k of keys) {
         if (value && typeof value === 'object') {
@@ -227,7 +247,7 @@ export function I18nProvider({ children }: { children: ReactNode }) {
       }
       
       // 如果找不到翻译，返回key或者使用中文作为fallback
-      if (locale !== 'zh') {
+      if (currentLocale !== 'zh') {
         let fallbackValue: any = translations.zh;
         for (const k of keys) {
           if (fallbackValue && typeof fallbackValue === 'object') {
@@ -249,8 +269,20 @@ export function I18nProvider({ children }: { children: ReactNode }) {
   };
 
   const switchLocale = (newLocale: string) => {
-    const { pathname, asPath, query } = router;
-    router.push({ pathname, query }, asPath, { locale: newLocale });
+    // Save to localStorage
+    if (typeof window !== 'undefined') {
+      localStorage.setItem(LOCALE_STORAGE_KEY, newLocale);
+    }
+    // Update state (this will trigger re-render)
+    setLocale(newLocale);
+    
+    // Also try to update router locale for consistency
+    try {
+      const { pathname, asPath, query } = router;
+      router.push({ pathname, query }, asPath, { locale: newLocale, shallow: true });
+    } catch (e) {
+      // Ignore router errors, state update will handle the UI
+    }
   };
 
   return (

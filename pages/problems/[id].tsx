@@ -1,17 +1,12 @@
 import { useRouter } from 'next/router';
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { 
-  Container, 
-  Grid, 
   Title, 
   Paper, 
   Text, 
   Badge, 
   Group, 
   Stack, 
-  Divider,
-  Breadcrumbs,
-  Anchor,
   Code,
   Button,
   Collapse,
@@ -19,12 +14,10 @@ import {
   Alert,
   Center,
   AppShell,
-  Box,
   Tabs,
   Select
 } from '@mantine/core';
 import dynamic from 'next/dynamic';
-import Link from 'next/link';
 import { useTranslation, useI18n } from '../../src/contexts/I18nContext';
 import { useTheme } from '../../src/contexts/ThemeContext';
 import { LanguageThemeControls } from '../../src/components/LanguageThemeControls';
@@ -130,23 +123,23 @@ export default function ProblemPage() {
         <AppShell.Header>
           <Stack gap="xs" h="100%" justify="center" px="md">
             <Group justify="space-between" align="flex-start">
-              <Link href="/" style={{ textDecoration: 'none', color: 'inherit' }}>
-                <div style={{ cursor: 'pointer' }}>
-                  <Title order={2} mb={4}>{t('homepage.title')}</Title>
-                  <Text size="sm" c="dimmed">{t('homepage.subtitle')}</Text>
-                </div>
-              </Link>
+              <div 
+                style={{ cursor: 'pointer' }}
+                onClick={() => router.push('/')}
+              >
+                <Title order={2} mb={4}>{t('homepage.title')}</Title>
+                <Text size="sm" c="dimmed">{t('homepage.subtitle')}</Text>
+              </div>
               <Group>
-                <Link href="/add-problem">
-                  <Badge 
-                    size="lg" 
-                    variant="outline" 
-                    color="blue" 
-                    style={{ cursor: 'pointer', padding: '8px 16px' }}
-                  >
-                    + {t('homepage.addProblem')}
-                  </Badge>
-                </Link>
+                <Badge 
+                  size="lg" 
+                  variant="outline" 
+                  color="blue" 
+                  style={{ cursor: 'pointer', padding: '8px 16px' }}
+                  onClick={() => router.push('/add-problem')}
+                >
+                  + {t('homepage.addProblem')}
+                </Badge>
                 <LanguageThemeControls />
               </Group>
             </Group>
@@ -174,23 +167,32 @@ export default function ProblemPage() {
         <AppShell.Header>
           <Stack gap="xs" h="100%" justify="center" px="md">
             <Group justify="space-between" align="flex-start">
-              <Link href="/" style={{ textDecoration: 'none', color: 'inherit' }}>
-                <div style={{ cursor: 'pointer' }}>
-                  <Title order={2} mb={4}>{t('homepage.title')}</Title>
-                  <Text size="sm" c="dimmed">{t('homepage.subtitle')}</Text>
-                </div>
-              </Link>
+              <div 
+                style={{ cursor: 'pointer' }}
+                onClick={() => router.push('/')}
+              >
+                <Title order={2} mb={4}>{t('homepage.title')}</Title>
+                <Text size="sm" c="dimmed">{t('homepage.subtitle')}</Text>
+              </div>
               <Group>
-                <Link href="/add-problem">
-                  <Badge 
-                    size="lg" 
-                    variant="outline" 
-                    color="blue" 
-                    style={{ cursor: 'pointer', padding: '8px 16px' }}
-                  >
-                    + {t('homepage.addProblem')}
-                  </Badge>
-                </Link>
+                <Badge 
+                  size="lg" 
+                  variant="outline" 
+                  color="gray" 
+                  style={{ cursor: 'pointer', padding: '8px 16px' }}
+                  onClick={() => router.push('/')}
+                >
+                  ← {t('common.home')}
+                </Badge>
+                <Badge 
+                  size="lg" 
+                  variant="outline" 
+                  color="blue" 
+                  style={{ cursor: 'pointer', padding: '8px 16px' }}
+                  onClick={() => router.push('/add-problem')}
+                >
+                  + {t('homepage.addProblem')}
+                </Badge>
                 <LanguageThemeControls />
               </Group>
             </Group>
@@ -361,19 +363,6 @@ export default function ProblemPage() {
     );
   };
   
-  const breadcrumbItems = [
-    { title: t('common.home'), href: '/' },
-    { title: problem.title[locale as keyof typeof problem.title] || problem.title.zh, href: '#' }
-  ].map((item, index) => (
-    item.href === '#' ? (
-      <Text key={index}>{item.title}</Text>
-    ) : (
-      <Anchor component={Link} href={item.href} key={index}>
-        {item.title}
-      </Anchor>
-    )
-  ));
-
   return (
     <AppShell
       header={{ height: 80 }}
@@ -383,33 +372,32 @@ export default function ProblemPage() {
       <AppShell.Header>
         <Stack gap="xs" h="100%" justify="center" px="md">
           <Group justify="space-between" align="flex-start">
-            <Link href="/" style={{ textDecoration: 'none', color: 'inherit' }}>
-              <div style={{ cursor: 'pointer' }}>
-                <Title order={2} mb={4}>{t('homepage.title')}</Title>
-                <Text size="sm" c="dimmed">{t('homepage.subtitle')}</Text>
-              </div>
-            </Link>
+            <div 
+              style={{ cursor: 'pointer' }}
+              onClick={() => router.push('/')}
+            >
+              <Title order={2} mb={4}>{t('homepage.title')}</Title>
+              <Text size="sm" c="dimmed">{t('homepage.subtitle')}</Text>
+            </div>
             <Group>
-              <Link href="/">
-                <Badge 
-                  size="lg" 
-                  variant="outline" 
-                  color="gray" 
-                  style={{ cursor: 'pointer', padding: '8px 16px' }}
-                >
-                  ← {t('common.home')}
-                </Badge>
-              </Link>
-              <Link href="/add-problem">
-                <Badge 
-                  size="lg" 
-                  variant="outline" 
-                  color="blue" 
-                  style={{ cursor: 'pointer', padding: '8px 16px' }}
-                >
-                  + {t('homepage.addProblem')}
-                </Badge>
-              </Link>
+              <Badge 
+                size="lg" 
+                variant="outline" 
+                color="gray" 
+                style={{ cursor: 'pointer', padding: '8px 16px' }}
+                onClick={() => router.push('/')}
+              >
+                ← {t('common.home')}
+              </Badge>
+              <Badge 
+                size="lg" 
+                variant="outline" 
+                color="blue" 
+                style={{ cursor: 'pointer', padding: '8px 16px' }}
+                onClick={() => router.push('/add-problem')}
+              >
+                + {t('homepage.addProblem')}
+              </Badge>
               <LanguageThemeControls />
             </Group>
           </Group>

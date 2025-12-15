@@ -55,11 +55,23 @@ export default function ManageProblems() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   
-  // State for import
+  // State for URL import
   const [importUrls, setImportUrls] = useState('');
   const [importing, setImporting] = useState(false);
   const [importProgress, setImportProgress] = useState<{ current: number; total: number; currentUrl?: string } | null>(null);
   const [importResult, setImportResult] = useState<{ success: number; failed: number; skipped: number; urlResults?: Array<{ url: string; success: number; failed: number; skipped: number; error?: string }> } | null>(null);
+  
+  // State for folder import
+  const [folderPath, setFolderPath] = useState('');
+  const [importingFolder, setImportingFolder] = useState(false);
+  const [folderImportResult, setFolderImportResult] = useState<{ 
+    success: number; 
+    failed: number; 
+    skipped: number; 
+    total: number;
+    fileResults?: Array<{ file: string; success: number; failed: number; skipped: number; error?: string }>;
+    message?: string;
+  } | null>(null);
   
   // State for delete
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
@@ -150,6 +162,63 @@ export default function ManageProblems() {
     setImportProgress(null);
     fetchProblems(); // Refresh list
     setImporting(false);
+  };
+
+  // Handle import from problems folder
+  const handleImportFromProblemsFolder = async () => {
+    setImportingFolder(true);
+    setFolderImportResult(null);
+    
+    try {
+      const response = await fetch('/api/import-from-folder', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ useProblemsFolder: true }),
+      });
+      
+      const result = await response.json();
+      
+      if (!response.ok) {
+        throw new Error(result.error || 'Import failed');
+      }
+      
+      setFolderImportResult(result);
+      fetchProblems();
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Import failed');
+    } finally {
+      setImportingFolder(false);
+    }
+  };
+
+  // Handle import from custom folder
+  const handleImportFromCustomFolder = async () => {
+    if (!folderPath.trim()) return;
+    
+    setImportingFolder(true);
+    setFolderImportResult(null);
+    
+    try {
+      const response = await fetch('/api/import-from-folder', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ folderPath: folderPath.trim() }),
+      });
+      
+      const result = await response.json();
+      
+      if (!response.ok) {
+        throw new Error(result.error || 'Import failed');
+      }
+      
+      setFolderImportResult(result);
+      setFolderPath('');
+      fetchProblems();
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Import failed');
+    } finally {
+      setImportingFolder(false);
+    }
   };
 
   // Handle delete
@@ -244,87 +313,189 @@ export default function ManageProblems() {
 
               {/* Import Tab */}
               <Tabs.Panel value="import" pt="md">
-                <Card withBorder p="lg">
-                  <Stack gap="md">
-                    <Title order={4}>{t('manage.importFromUrl')}</Title>
-                    <Text size="sm" c="dimmed">
-                      {t('manage.importDescription')}
-                    </Text>
-                    
-                    <Textarea
-                      label={t('manage.remoteUrl')}
-                      description={t('manage.multiUrlHint')}
-                      placeholder={"https://example.com/problems1.json\nhttps://example.com/problems2.json"}
-                      value={importUrls}
-                      onChange={(e) => setImportUrls(e.currentTarget.value)}
-                      disabled={importing}
-                      minRows={3}
-                      autosize
-                    />
-                    
-                    <Group>
-                      <Button 
-                        onClick={handleImportFromUrl}
-                        loading={importing}
-                        disabled={!importUrls.trim()}
-                      >
-                        {t('manage.importButton')}
-                      </Button>
-                    </Group>
-                    
-                    {importProgress && (
-                      <Stack gap="xs">
-                        <Progress 
-                          value={(importProgress.current / importProgress.total) * 100} 
-                          size="sm"
-                          animated
-                        />
-                        <Text size="xs" c="dimmed">
-                          {t('manage.importProgress', { current: importProgress.current, total: importProgress.total })}
-                          {importProgress.currentUrl && ` - ${importProgress.currentUrl.substring(0, 50)}...`}
-                        </Text>
-                      </Stack>
-                    )}
-                    
-                    {importResult && (
-                      <Alert 
-                        color={importResult.failed > 0 ? 'yellow' : 'green'} 
-                        title={t('manage.importComplete')}
-                      >
-                        <Stack gap="xs">
-                          <Text size="sm">
-                            {t('manage.importResultSuccess', { count: importResult.success })}
-                          </Text>
-                          {importResult.skipped > 0 && (
-                            <Text size="sm">
-                              {t('manage.importResultSkipped', { count: importResult.skipped })}
-                            </Text>
-                          )}
-                          {importResult.failed > 0 && (
-                            <Text size="sm" c="red">
-                              {t('manage.importResultFailed', { count: importResult.failed })}
-                            </Text>
-                          )}
-                          {importResult.urlResults && importResult.urlResults.some(r => r.error) && (
-                            <Divider my="xs" />
-                          )}
-                          {importResult.urlResults?.filter(r => r.error).map((r, i) => (
-                            <Text key={i} size="xs" c="red">
-                              {r.url.substring(0, 40)}... : {r.error}
-                            </Text>
-                          ))}
-                        </Stack>
-                      </Alert>
-                    )}
+                <Stack gap="lg">
+                  {/* Import from Local Folder */}
+                  <Card withBorder p="lg">
+                    <Stack gap="md">
+                      <Title order={4}>{t('manage.importFromFolder')}</Title>
+                      <Text size="sm" c="dimmed">
+                        {t('manage.importFromFolderDescription')}
+                      </Text>
+                      
+                      {/* Import from problems folder */}
+                      <Paper p="md" withBorder bg="var(--mantine-color-gray-light)">
+                        <Group justify="space-between" align="center">
+                          <div>
+                            <Text fw={500}>{t('manage.problemsFolder')}</Text>
+                            <Text size="xs" c="dimmed">{t('manage.problemsFolderHint')}</Text>
+                          </div>
+                          <Button 
+                            onClick={handleImportFromProblemsFolder}
+                            loading={importingFolder}
+                            variant="light"
+                          >
+                            {t('manage.loadFromProblemsFolder')}
+                          </Button>
+                        </Group>
+                      </Paper>
+                      
+                      <Divider label={t('manage.or')} labelPosition="center" />
+                      
+                      {/* Import from custom folder */}
+                      <TextInput
+                        label={t('manage.customFolderPath')}
+                        description={t('manage.customFolderHint')}
+                        placeholder="/path/to/your/problems/folder"
+                        value={folderPath}
+                        onChange={(e) => setFolderPath(e.currentTarget.value)}
+                        disabled={importingFolder}
+                      />
+                      
+                      <Group>
+                        <Button 
+                          onClick={handleImportFromCustomFolder}
+                          loading={importingFolder}
+                          disabled={!folderPath.trim()}
+                        >
+                          {t('manage.importFromCustomFolder')}
+                        </Button>
+                      </Group>
+                      
+                      {folderImportResult && (
+                        <Alert 
+                          color={folderImportResult.failed > 0 ? 'yellow' : 'green'} 
+                          title={t('manage.importComplete')}
+                          withCloseButton
+                          onClose={() => setFolderImportResult(null)}
+                        >
+                          <Stack gap="xs">
+                            {folderImportResult.message && (
+                              <Text size="sm">{folderImportResult.message}</Text>
+                            )}
+                            {folderImportResult.total > 0 && (
+                              <>
+                                <Text size="sm">
+                                  {t('manage.filesScanned', { count: folderImportResult.total })}
+                                </Text>
+                                <Text size="sm">
+                                  {t('manage.importResultSuccess', { count: folderImportResult.success })}
+                                </Text>
+                                {folderImportResult.skipped > 0 && (
+                                  <Text size="sm">
+                                    {t('manage.importResultSkipped', { count: folderImportResult.skipped })}
+                                  </Text>
+                                )}
+                                {folderImportResult.failed > 0 && (
+                                  <Text size="sm" c="red">
+                                    {t('manage.importResultFailed', { count: folderImportResult.failed })}
+                                  </Text>
+                                )}
+                              </>
+                            )}
+                            {folderImportResult.fileResults && folderImportResult.fileResults.some(r => r.error) && (
+                              <>
+                                <Divider my="xs" />
+                                <Text size="xs" fw={500}>{t('manage.errorDetails')}:</Text>
+                                {folderImportResult.fileResults.filter(r => r.error).map((r, i) => (
+                                  <Text key={i} size="xs" c="red">
+                                    {r.file}: {r.error}
+                                  </Text>
+                                ))}
+                              </>
+                            )}
+                          </Stack>
+                        </Alert>
+                      )}
+                    </Stack>
+                  </Card>
 
-                    <Divider my="md" />
-                    
-                    <Title order={5}>{t('manage.jsonFormat')}</Title>
-                    <Text size="sm" c="dimmed">
-                      {t('manage.jsonFormatDescription')}
-                    </Text>
-                    <Paper p="sm" withBorder style={{ fontFamily: 'monospace', fontSize: '12px', overflow: 'auto' }}>
-                      <pre style={{ margin: 0 }}>{`[
+                  {/* Import from URL */}
+                  <Card withBorder p="lg">
+                    <Stack gap="md">
+                      <Title order={4}>{t('manage.importFromUrl')}</Title>
+                      <Text size="sm" c="dimmed">
+                        {t('manage.importDescription')}
+                      </Text>
+                      
+                      <Textarea
+                        label={t('manage.remoteUrl')}
+                        description={t('manage.multiUrlHint')}
+                        placeholder={"https://example.com/problems1.json\nhttps://example.com/problems2.json"}
+                        value={importUrls}
+                        onChange={(e) => setImportUrls(e.currentTarget.value)}
+                        disabled={importing}
+                        minRows={3}
+                        autosize
+                      />
+                      
+                      <Group>
+                        <Button 
+                          onClick={handleImportFromUrl}
+                          loading={importing}
+                          disabled={!importUrls.trim()}
+                        >
+                          {t('manage.importButton')}
+                        </Button>
+                      </Group>
+                      
+                      {importProgress && (
+                        <Stack gap="xs">
+                          <Progress 
+                            value={(importProgress.current / importProgress.total) * 100} 
+                            size="sm"
+                            animated
+                          />
+                          <Text size="xs" c="dimmed">
+                            {t('manage.importProgress', { current: importProgress.current, total: importProgress.total })}
+                            {importProgress.currentUrl && ` - ${importProgress.currentUrl.substring(0, 50)}...`}
+                          </Text>
+                        </Stack>
+                      )}
+                      
+                      {importResult && (
+                        <Alert 
+                          color={importResult.failed > 0 ? 'yellow' : 'green'} 
+                          title={t('manage.importComplete')}
+                          withCloseButton
+                          onClose={() => setImportResult(null)}
+                        >
+                          <Stack gap="xs">
+                            <Text size="sm">
+                              {t('manage.importResultSuccess', { count: importResult.success })}
+                            </Text>
+                            {importResult.skipped > 0 && (
+                              <Text size="sm">
+                                {t('manage.importResultSkipped', { count: importResult.skipped })}
+                              </Text>
+                            )}
+                            {importResult.failed > 0 && (
+                              <Text size="sm" c="red">
+                                {t('manage.importResultFailed', { count: importResult.failed })}
+                              </Text>
+                            )}
+                            {importResult.urlResults && importResult.urlResults.some(r => r.error) && (
+                              <Divider my="xs" />
+                            )}
+                            {importResult.urlResults?.filter(r => r.error).map((r, i) => (
+                              <Text key={i} size="xs" c="red">
+                                {r.url.substring(0, 40)}... : {r.error}
+                              </Text>
+                            ))}
+                          </Stack>
+                        </Alert>
+                      )}
+                    </Stack>
+                  </Card>
+
+                  {/* JSON Format Reference */}
+                  <Card withBorder p="lg">
+                    <Stack gap="md">
+                      <Title order={5}>{t('manage.jsonFormat')}</Title>
+                      <Text size="sm" c="dimmed">
+                        {t('manage.jsonFormatDescription')}
+                      </Text>
+                      <Paper p="sm" withBorder style={{ fontFamily: 'monospace', fontSize: '12px', overflow: 'auto' }}>
+                        <pre style={{ margin: 0 }}>{`[
   {
     "id": "problem-id",
     "title": { "en": "Title", "zh": "标题" },
@@ -336,9 +507,10 @@ export default function ManageProblems() {
     "tests": [{ "input": "...", "output": "..." }]
   }
 ]`}</pre>
-                    </Paper>
-                  </Stack>
-                </Card>
+                      </Paper>
+                    </Stack>
+                  </Card>
+                </Stack>
               </Tabs.Panel>
 
               {/* Problem List Tab */}

@@ -209,5 +209,38 @@
       "model": "模型",
       "modelPlaceholder": "输入模型名称 (例如: llama3)"
     }
+  },
+  "manage": {
+    "title": "管理题目",
+    "backToProblems": "返回题目列表",
+    "importTab": "导入题目",
+    "listTab": "题目列表",
+    "importFromUrl": "从远程URL导入",
+    "importDescription": "输入一个或多个包含题目的JSON文件的URL。每个URL应指向一个题目对象数组。可以输入多个URL，每行一个。",
+    "remoteUrl": "远程JSON URL",
+    "multiUrlHint": "每行输入一个URL，可同时从多个源导入",
+    "importButton": "导入",
+    "importComplete": "导入完成",
+    "importProgress": "正在导入第 {{current}} / {{total}} 个URL",
+    "importResultSuccess": "成功导入 {{count}} 道题目",
+    "importResultSkipped": "跳过 {{count}} 道题目（已存在）",
+    "importResultFailed": "失败 {{count}} 道题目（格式无效）",
+    "jsonFormat": "预期的JSON格式",
+    "jsonFormatDescription": "远程JSON应该是具有以下结构的题目对象数组：",
+    "searchPlaceholder": "按ID或标题搜索...",
+    "selectedCount": "已选择 {{count}} 项",
+    "deleteSelected": "删除所选",
+    "noProblems": "没有找到题目",
+    "columnTitle": "标题",
+    "columnDifficulty": "难度",
+    "columnTags": "标签",
+    "columnActions": "操作",
+    "viewProblem": "查看题目",
+    "deleteProblem": "删除题目",
+    "deleteConfirmTitle": "确认删除",
+    "deleteConfirmMessage": "确定要删除 {{count}} 道题目吗？此操作无法撤销。",
+    "cancel": "取消",
+    "confirmDelete": "删除",
+    "manageProblems": "管理"
   }
 }

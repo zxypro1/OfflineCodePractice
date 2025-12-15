@@ -108,8 +108,8 @@ module.exports = {
     gatekeeperAssess: false,
     entitlements: 'build/entitlements.mac.plist',
     entitlementsInherit: 'build/entitlements.mac.plist',
-    // CI 环境跳过签名：设置 CSC_IDENTITY_AUTO_DISCOVERY=false
-    identity: process.env.CSC_IDENTITY_AUTO_DISCOVERY === 'false' ? null : undefined,
+    // 签名配置：如果提供了证书则签名，否则跳过
+    // 注意：不设置 identity: null，让 electron-builder 自动检测证书
     // 应用捆绑 ID
     bundleVersion: '1',
     bundleShortVersion: '0.0.9',
@@ -122,7 +122,11 @@ module.exports = {
       }
     ],
     // Dock 图标弹跳
-    darkModeSupport: true
+    darkModeSupport: true,
+    // 公证配置
+    notarize: process.env.APPLE_ID && process.env.APPLE_APP_SPECIFIC_PASSWORD ? {
+      teamId: process.env.APPLE_TEAM_ID
+    } : false
   },
   
   // DMG 配置

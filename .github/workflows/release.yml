@@ -64,12 +64,58 @@ jobs:
       - name: Build Next.js
         run: npm run build
 
+      # 导入 Apple 开发者证书用于签名
+      - name: Import Code Signing Certificate
+        if: ${{ secrets.APPLE_CERTIFICATE_BASE64 != '' }}
+        env:
+          APPLE_CERTIFICATE_BASE64: ${{ secrets.APPLE_CERTIFICATE_BASE64 }}
+          APPLE_CERTIFICATE_PASSWORD: ${{ secrets.APPLE_CERTIFICATE_PASSWORD }}
+        run: |
+          # 创建临时钥匙串
+          KEYCHAIN_PATH=$RUNNER_TEMP/app-signing.keychain-db
+          KEYCHAIN_PASSWORD=$(openssl rand -base64 32)
+          
+          # 创建钥匙串
+          security create-keychain -p "$KEYCHAIN_PASSWORD" $KEYCHAIN_PATH
+          security set-keychain-settings -lut 21600 $KEYCHAIN_PATH
+          security unlock-keychain -p "$KEYCHAIN_PASSWORD" $KEYCHAIN_PATH
+          
+          # 导入证书
+          echo "$APPLE_CERTIFICATE_BASE64" | base64 --decode > $RUNNER_TEMP/certificate.p12
+          security import $RUNNER_TEMP/certificate.p12 -P "$APPLE_CERTIFICATE_PASSWORD" -A -t cert -f pkcs12 -k $KEYCHAIN_PATH
+          
+          # 设置钥匙串搜索列表
+          security list-keychain -d user -s $KEYCHAIN_PATH
+          
+          # 允许 codesign 访问钥匙串中的密钥
+          security set-key-partition-list -S apple-tool:,apple:,codesign: -s -k "$KEYCHAIN_PASSWORD" $KEYCHAIN_PATH
+          
+          # 清理证书文件
+          rm -f $RUNNER_TEMP/certificate.p12
+          
+          echo "✅ Code signing certificate imported successfully"
+
       - name: Build Electron app (macOS ${{ matrix.arch }})
         run: |
           npx electron-builder --mac --${{ matrix.arch }} --config electron-builder.config.js
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          CSC_IDENTITY_AUTO_DISCOVERY: false
+          # 签名相关环境变量
+          # 如果没有配置证书，CSC_IDENTITY_AUTO_DISCOVERY=false 会跳过签名
+          CSC_IDENTITY_AUTO_DISCOVERY: ${{ secrets.APPLE_CERTIFICATE_BASE64 != '' }}
+          # 公证相关环境变量
+          APPLE_ID: ${{ secrets.APPLE_ID }}
+          APPLE_APP_SPECIFIC_PASSWORD: ${{ secrets.APPLE_APP_SPECIFIC_PASSWORD }}
+          APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
+
+      # 清理钥匙串
+      - name: Cleanup Keychain
+        if: always()
+        run: |
+          KEYCHAIN_PATH=$RUNNER_TEMP/app-signing.keychain-db
+          if [ -f "$KEYCHAIN_PATH" ]; then
+            security delete-keychain $KEYCHAIN_PATH 2>/dev/null || true
+          fi
 
       - name: Upload macOS artifacts
         uses: actions/upload-artifact@v4
@@ -205,8 +251,6 @@ jobs:
             
             An offline algorithm practice application with WASM-based code execution.
             
-            基于 WASM 的离线算法练习应用。
-            
             ### 📦 Downloads
             
             | Platform | Architecture | File |
@@ -219,15 +263,33 @@ jobs:
             | **Linux** | Debian/Ubuntu | `Algorithm-Practice-*-Linux.deb` |
             | **Linux** | Fedora/RHEL | `Algorithm-Practice-*-Linux.rpm` |
             
+            ### ⚠️ macOS Installation Note
+            
+            If you see **"damaged"** or **"cannot verify developer"** message when opening the app, run this command in Terminal:
+            
+            ```bash
+            # For app installed from DMG
+            sudo xattr -rd com.apple.quarantine /Applications/Algorithm\ Practice.app
+            
+            # Or for app extracted from ZIP (adjust path accordingly)
+            sudo xattr -rd com.apple.quarantine ~/Downloads/Algorithm\ Practice.app
+            ```
+            
             ### 📝 Changelog
             
             ${{ needs.changelog.outputs.changelog }}
             
             ---
             
-            > 💡 **First-time users**: On macOS, you may need to allow the app in "System Preferences > Security & Privacy".
-            > 
-            > macOS 用户首次打开可能需要在"系统偏好设置 > 安全性与隐私"中允许运行。
+            ### 中文说明
+            
+            基于 WASM 的离线算法练习应用。
+            
+            **macOS 安装提示**：如果打开应用时提示"已损坏"或"无法验证开发者"，请在终端运行：
+            
+            ```bash
+            sudo xattr -rd com.apple.quarantine /Applications/Algorithm\ Practice.app
+            ```
           files: release-assets/*
           draft: false
           prerelease: ${{ contains(github.ref_name, 'alpha') || contains(github.ref_name, 'beta') || contains(github.ref_name, 'rc') }}

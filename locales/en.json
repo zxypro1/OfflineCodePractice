@@ -209,5 +209,38 @@
       "model": "Model",
       "modelPlaceholder": "Enter model name (e.g., llama3)"
     }
+  },
+  "manage": {
+    "title": "Manage Problems",
+    "backToProblems": "Back to Problems",
+    "importTab": "Import Problems",
+    "listTab": "Problem List",
+    "importFromUrl": "Import from Remote URL",
+    "importDescription": "Enter one or more URLs to JSON files containing problems. Each URL should point to an array of problem objects. You can enter multiple URLs, one per line.",
+    "remoteUrl": "Remote JSON URL(s)",
+    "multiUrlHint": "Enter one URL per line to import from multiple sources",
+    "importButton": "Import",
+    "importComplete": "Import Complete",
+    "importProgress": "Importing {{current}} of {{total}} URL(s)",
+    "importResultSuccess": "{{count}} problem(s) imported successfully",
+    "importResultSkipped": "{{count}} problem(s) skipped (already exist)",
+    "importResultFailed": "{{count}} problem(s) failed (invalid format)",
+    "jsonFormat": "Expected JSON Format",
+    "jsonFormatDescription": "The remote JSON should be an array of problem objects with the following structure:",
+    "searchPlaceholder": "Search by ID or title...",
+    "selectedCount": "{{count}} selected",
+    "deleteSelected": "Delete Selected",
+    "noProblems": "No problems found",
+    "columnTitle": "Title",
+    "columnDifficulty": "Difficulty",
+    "columnTags": "Tags",
+    "columnActions": "Actions",
+    "viewProblem": "View Problem",
+    "deleteProblem": "Delete Problem",
+    "deleteConfirmTitle": "Confirm Delete",
+    "deleteConfirmMessage": "Are you sure you want to delete {{count}} problem(s)? This action cannot be undone.",
+    "cancel": "Cancel",
+    "confirmDelete": "Delete",
+    "manageProblems": "Manage"
   }
 }

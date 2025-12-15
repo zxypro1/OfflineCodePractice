@@ -215,6 +215,16 @@ export default function Home() {
                     🤖 {t('homepage.aiGenerator')}
                   </Badge>
                 </Link>
+                <Link href="/manage">
+                  <Badge 
+                    size="lg" 
+                    variant="outline" 
+                    color="teal" 
+                    style={{ cursor: 'pointer', padding: '8px 16px' }}
+                  >
+                    📦 {t('manage.manageProblems')}
+                  </Badge>
+                </Link>
                 <Link href="/settings">
                   <Badge 
                     size="lg" 
@@ -278,6 +288,26 @@ export default function Home() {
                     🤖 {t('homepage.aiGenerator')}
                   </Badge>
                 </Link>
+                <Link href="/manage">
+                  <Badge 
+                    size="lg" 
+                    variant="outline" 
+                    color="teal" 
+                    style={{ cursor: 'pointer', padding: '8px 16px' }}
+                  >
+                    📦 {t('manage.manageProblems')}
+                  </Badge>
+                </Link>
+                <Link href="/settings">
+                  <Badge 
+                    size="lg" 
+                    variant="outline" 
+                    color="gray" 
+                    style={{ cursor: 'pointer', padding: '8px 16px' }}
+                  >
+                    ⚙️ {t('common.settings')}
+                  </Badge>
+                </Link>
                 <LanguageThemeControls />
               </Group>
             </Group>
@@ -328,6 +358,16 @@ export default function Home() {
                   style={{ cursor: 'pointer', padding: '8px 16px' }}
                 >
                   🤖 {t('homepage.aiGenerator')}
+                </Badge>
+              </Link>
+              <Link href="/manage">
+                <Badge 
+                  size="lg" 
+                  variant="outline" 
+                  color="teal" 
+                  style={{ cursor: 'pointer', padding: '8px 16px' }}
+                >
+                  📦 {t('manage.manageProblems')}
                 </Badge>
               </Link>
               <Link href="/settings">

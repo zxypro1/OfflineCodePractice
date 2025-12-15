@@ -71,22 +71,23 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       return res.status(400).json({ error: 'Remote URL does not return JSON content' });
     }
 
-    let importedProblems: any[];
+    let importedData: any;
     try {
       const text = await response.text();
-      importedProblems = JSON.parse(text);
+      importedData = JSON.parse(text);
     } catch {
       return res.status(400).json({ error: 'Failed to parse remote JSON' });
     }
 
-    // Validate that it's an array
-    if (!Array.isArray(importedProblems)) {
+    // Validate and normalize to array
+    let importedProblems: any[];
+    if (Array.isArray(importedData)) {
+      importedProblems = importedData;
+    } else if (typeof importedData === 'object' && importedData !== null && importedData.id) {
       // If it's a single problem object, wrap it in an array
-      if (typeof importedProblems === 'object' && importedProblems.id) {
-        importedProblems = [importedProblems];
-      } else {
-        return res.status(400).json({ error: 'Remote JSON must be an array of problems' });
-      }
+      importedProblems = [importedData];
+    } else {
+      return res.status(400).json({ error: 'Remote JSON must be an array of problems or a single problem object' });
     }
 
     // Read current problems

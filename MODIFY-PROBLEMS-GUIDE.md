@@ -1,14 +1,14 @@
-# How to Add/Modify Problems in Offline Mode 📝
+# Problem Database Modification Guide
 
-This guide explains how to add your own problems or modify existing ones in the built application without needing to rebuild or have internet access.
+This guide explains how to add or modify problems in the application without rebuilding or requiring internet access.
 
-## 🎯 Quick Overview
+## Overview
 
-The application is designed to allow users to modify the problem database even in offline environments like airplanes, remote locations, or secure networks. All problem data is stored in a single JSON file that you can edit directly.
+The application supports modifying the problem database in offline environments such as flights, remote locations, or secure networks. All problem data is stored in a single JSON file that can be edited directly.
 
-## 📍 Problem File Location
+## Problem File Location
 
-After building the application, the problem database is located at:
+After building or installing the application, the problem database is located at:
 
 ```
 your-app-folder/public/problems.json
@@ -16,18 +16,18 @@ your-app-folder/public/problems.json
 
 **Important**: Always edit the file in the `public` folder, not the original `problems` folder, as the application reads from the public location at runtime.
 
-## 🚀 How It Works
+## How It Works
 
 1. **No Rebuild Required**: Changes to `problems.json` take effect immediately
 2. **Runtime Loading**: The application reads the file on each request
 3. **Offline Friendly**: Works completely without internet connection
 4. **Real-time Updates**: Refresh your browser to see changes
 
-## 📝 Adding a New Problem
+## Adding a New Problem
 
 ### Step 1: Open the Problems File
 
-Navigate to your built application folder and open:
+Navigate to your application folder and open:
 ```
 public/problems.json
 ```
@@ -71,63 +71,68 @@ Copy this template and add it to the problems array:
 ### Step 3: Save and Test
 
 1. Save the file
-2. Refresh your browser (or visit the app)
-3. Your new problem should appear immediately!
+2. Refresh your browser (or restart the desktop app)
+3. Your new problem should appear immediately
 
-## 🔧 Field Explanations
+## Field Reference
 
 ### Required Fields
 
-- **`id`**: Unique identifier (use lowercase with hyphens)
-- **`title`**: Problem title in English and Chinese
-- **`difficulty`**: "Easy", "Medium", or "Hard"
-- **`description`**: Problem description in both languages
-- **`template`**: Starting code template for users
-- **`tests`**: Array of test cases for validation
+| Field | Description |
+|-------|-------------|
+| `id` | Unique identifier (lowercase with hyphens) |
+| `title` | Problem title in English and Chinese |
+| `difficulty` | "Easy", "Medium", or "Hard" |
+| `description` | Problem description in both languages |
+| `template` | Starting code template for users |
+| `tests` | Array of test cases for validation |
 
 ### Optional Fields
 
-- **`tags`**: Array of tags like ["array", "hash-table"]
-- **`examples`**: Sample input/output for clarification
-- **`solution`**: Reference solution (hidden by default)
+| Field | Description |
+|-------|-------------|
+| `tags` | Array of tags like ["array", "hash-table"] |
+| `examples` | Sample input/output for clarification |
+| `solution` | Reference solution (hidden by default) |
 
-## 🧪 Testing Your Changes
+## Testing Your Changes
 
 ### Quick Test
+
 1. Add a problem using the template above
 2. Visit the homepage to see it in the list
 3. Click on it to test the code editor
 4. Submit some code to verify the tests work
 
 ### Automated Testing
+
 ```bash
-# Add a test problem
-npm run test:dynamic
-
+npm run test:dynamic   # Add a test problem
 # Visit the app to verify it appears
-
-# Remove the test problem
-npm run test:cleanup
+npm run test:cleanup   # Remove the test problem
 ```
 
-## 💡 Best Practices
+## Best Practices
 
 ### Problem ID Guidelines
+
 - Use lowercase letters and hyphens: `two-sum`, `binary-search`
 - Keep it descriptive but concise
 - Ensure uniqueness across all problems
 
 ### Test Case Guidelines
+
 - Include edge cases (empty arrays, single elements)
 - Test both positive and negative scenarios
 - Keep input/output format consistent
 
 ### Code Template Tips
+
 - Provide a meaningful function signature
 - Include helpful comments
 - Always end with `module.exports = yourFunction;`
 
-## 🔍 Example: Adding "Reverse String" Problem
+## Example: Reverse String Problem
 
 ```json
 {
@@ -161,56 +166,65 @@ npm run test:cleanup
 }
 ```
 
-## 🚨 Common Issues
+## Common Issues
 
 ### JSON Syntax Errors
+
 - Always validate JSON syntax before saving
 - Watch out for trailing commas
 - Ensure proper quote escaping in strings
 
 ### Test Format Issues
+
 - Input parameters must be JSON-parseable
 - Multiple parameters: use comma separation like `"[1,2,3],5"`
 - String inputs: use proper JSON string format `"\"hello\""`
 
 ### Function Export Issues
+
 - Always include `module.exports = yourFunction;`
 - Function name must match the one being exported
 - Ensure function signature matches test expectations
 
-## 🛟 Troubleshooting
+## Troubleshooting
 
 ### Problem Not Appearing
+
 1. Check JSON syntax validity
 2. Ensure the file is saved in `public/problems.json`
 3. Refresh the browser page
 4. Check browser console for errors
 
 ### Tests Failing
+
 1. Verify input/output formats match
 2. Check function signature
 3. Ensure `module.exports` is correct
 4. Test function logic independently
 
 ### Performance Issues
+
 - Large problem sets (100+ problems) may load slower
 - Consider splitting into categories if needed
 - Each problem adds ~1-2KB to the JSON file
 
-## 🌟 Advanced Tips
+## Advanced Tips
 
 ### Organizing Problems
+
 Group related problems using consistent naming:
 - `array-easy-1`, `array-easy-2`
 - `dp-medium-1`, `dp-medium-2`
 
 ### Multi-language Support
+
 Always provide both English and Chinese translations for:
 - Title
 - Description
 - Consider adding comments in both languages
 
 ### Custom Tags
+
 Create your own tag system:
 - `custom-algorithm`
 - `interview-prep`
@@ -218,6 +232,4 @@ Create your own tag system:
 
 ---
 
-**Happy Coding! ✈️💻**
-
-*Perfect for offline algorithm practice anywhere!*
+**Practice algorithms offline, anywhere.**

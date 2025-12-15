@@ -1,102 +1,99 @@
 # Desktop Application Build Guide
 
-This guide explains how to build Algorithm Practice as a cross-platform desktop application (supporting Windows, macOS, and Linux).
+This guide covers building Algorithm Practice as a cross-platform desktop application for Windows, macOS, and Linux.
+
+## Overview
+
+The desktop application is a standalone, self-contained package that requires no external dependencies. Users can download and run the application immediately without installing Node.js, Python, or any development tools.
 
 ## Technology Stack
 
 - **Frontend Framework**: Next.js + React
 - **Desktop Framework**: Electron
-- **Code Execution**: Pure browser-side WASM execution
+- **Code Execution**: Browser-side WASM
   - JavaScript: Native browser execution
   - TypeScript: TypeScript compiler transpilation
   - Python: Pyodide (CPython WASM)
 
-## Prerequisites
+## Prerequisites (For Building Only)
+
+These requirements apply only to developers building from source:
 
 - Node.js >= 18.x
 - npm >= 8.x
-- For macOS builds: macOS system
-- For Windows builds: Windows system or Wine
-- For Linux builds: Linux system or Docker
+- Platform-specific requirements:
+  - macOS builds: macOS system
+  - Windows builds: Windows system or Wine
+  - Linux builds: Linux system or Docker
 
-## Quick Start
+## Building the Application
 
 ### Development Mode
 
 ```bash
-# Install dependencies
 npm install
-
-# Build Next.js
 npm run build
-
-# Start Electron in development mode
 npm run electron:start
 ```
 
-### Building Desktop Application
+### Production Builds
 
 #### macOS
 
 ```bash
-# Using build script
 ./build-mac.sh
-
-# Or using npm command
-npm run electron:build:mac
+# or
+npm run dist:mac
 ```
 
-Output files:
-- `dist/Algorithm Practice-x.x.x-macOS-x64.dmg` (Intel Mac)
+Output:
+- `dist/Algorithm Practice-x.x.x-macOS-x64.dmg` (Intel)
 - `dist/Algorithm Practice-x.x.x-macOS-arm64.dmg` (Apple Silicon)
 
 #### Windows
 
+PowerShell:
 ```powershell
-# Using PowerShell script
 .\build-windows.ps1
-
-# Or using npm command
-npm run electron:build:win
+# or
+npm run dist:win
 ```
 
-Or using batch script:
+Command Prompt:
 ```cmd
 build-windows.bat
 ```
 
-Output files:
-- `dist/Algorithm Practice-x.x.x-Windows-x64.exe` (64-bit installer)
-- `dist/Algorithm Practice-x.x.x-Windows-Portable.exe` (portable version)
+Output:
+- `dist/Algorithm Practice-x.x.x-Windows-x64.exe` (Installer)
+- `dist/Algorithm Practice-x.x.x-Windows-Portable.exe` (Portable)
 
 #### Linux
 
 ```bash
-npm run electron:build:linux
+npm run dist:linux
 ```
 
-Output files:
+Output:
 - `dist/Algorithm Practice-x.x.x-Linux.AppImage`
 - `dist/Algorithm Practice-x.x.x-Linux.deb`
 - `dist/Algorithm Practice-x.x.x-Linux.rpm`
 
-#### Build All Platforms
+#### All Platforms
 
 ```bash
-npm run electron:build:all
+npm run dist:all
 ```
 
 ## Supported Languages
 
-The desktop app uses WASM to execute code in the browser, supporting:
-
 | Language | Status | Implementation |
 |----------|--------|----------------|
-| JavaScript | ✅ Supported | Native browser |
-| TypeScript | ✅ Supported | TypeScript compiler |
-| Python | ✅ Supported | Pyodide (WASM) |
+| JavaScript | Supported | Native browser |
+| TypeScript | Supported | TypeScript compiler |
+| Python | Supported | Pyodide (WASM) |
 
-**Note**: Java, C, C++, Go and other languages requiring compilers are not supported in the pure browser-side WASM environment.
+Note: Languages requiring native compilers (Java, C, C++, Go) are not supported in the browser-side WASM environment.
 
 ## Project Structure
 
@@ -119,50 +116,59 @@ The desktop app uses WASM to execute code in the browser, supporting:
 
 Key configuration options:
 
-- `appId`: Application ID
-- `productName`: Application name
+- `appId`: Application identifier
+- `productName`: Application display name
 - `files`: Files to include in package
 - `win/mac/linux`: Platform-specific configurations
 
-### Environment Variables
+### AI Provider Settings
 
-The desktop app supports the following AI provider configurations (configured in app settings):
+The desktop application supports configuration through the built-in settings page:
 
 - DeepSeek
 - OpenAI
-- Qwen
-- Claude
-- Ollama (local models)
+- Qwen (Alibaba Cloud)
+- Claude (Anthropic)
+- Ollama (Local)
 
-Configuration is saved in `~/.offline-leet-practice/config.json`
+Configuration is stored in `~/.offline-leet-practice/config.json`.
 
 ## Troubleshooting
 
-### macOS Security Warning
+### macOS: Security Warning
 
-When first opening the app, macOS may show a security warning. Solution:
+When first opening the application, macOS may display a security warning.
 
-1. Open "System Preferences" > "Security & Privacy"
+Solution:
+1. Open System Preferences > Security & Privacy
 2. Click "Open Anyway"
 
-### Windows SmartScreen Warning
+Or run in Terminal:
+```bash
+xattr -cr "/Applications/Algorithm Practice.app"
+```
 
-Windows may show a SmartScreen warning. Click "More info" > "Run anyway".
+### Windows: SmartScreen Warning
+
+Windows may display a SmartScreen warning for unsigned applications.
+
+Solution: Click "More info" > "Run anyway"
 
 ### Code Signing
 
-For production, code signing is recommended:
+For production distribution, code signing is recommended:
 
-- macOS: Requires Apple Developer certificate
-- Windows: Requires EV code signing certificate
+- **macOS**: Requires Apple Developer certificate
+- **Windows**: Requires EV code signing certificate
 
 ## Changelog
 
 ### v0.0.9
 - Migrated to pure WASM browser-side code execution
 - Added TypeScript support
-- Removed dependency on server-side Node.js execution
+- Removed dependency on server-side execution
 - Improved Electron build configuration
+- Enhanced settings page for AI provider configuration
 
 ## License
 

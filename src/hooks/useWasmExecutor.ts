@@ -6,7 +6,7 @@
  * TypeScript: 使用 TypeScript 编译器转译后执行
  * Python: 使用 Pyodide WASM
  */
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useRef } from 'react';
 
 export interface WasmExecutionResult {
   output: string;
@@ -540,19 +540,27 @@ export function useWasmExecutor() {
     python: 'idle'       // Python 需要加载 Pyodide
   });
 
+  // 使用 ref 跟踪状态，避免 preloadRuntime 依赖 runtimeStatus 导致循环
+  const runtimeStatusRef = useRef(runtimeStatus);
+  runtimeStatusRef.current = runtimeStatus;
+
   /**
    * 预加载运行时
+   * 注意：不依赖 runtimeStatus state，使用 ref 来检查当前状态
    */
   const preloadRuntime = useCallback(async (language: string) => {
-    // JavaScript 原生支持，无需预加载
+    // JavaScript 原生支持，无需预加载，初始状态已经是 ready
     if (language === 'javascript') {
-      setRuntimeStatus(prev => ({ ...prev, javascript: 'ready' }));
       return;
     }
     
     // TypeScript 需要加载编译器
     if (language === 'typescript') {
-      if (runtimeStatus.typescript === 'ready') return;
+      // 使用 ref 检查状态，避免依赖 state
+      if (runtimeStatusRef.current.typescript === 'ready' || 
+          runtimeStatusRef.current.typescript === 'loading') {
+        return;
+      }
       setRuntimeStatus(prev => ({ ...prev, typescript: 'loading' }));
       try {
         await loadTypeScript();
@@ -565,7 +573,11 @@ export function useWasmExecutor() {
     
     // Python 需要加载 Pyodide
     if (language === 'python') {
-      if (runtimeStatus.python === 'ready') return;
+      // 使用 ref 检查状态，避免依赖 state
+      if (runtimeStatusRef.current.python === 'ready' || 
+          runtimeStatusRef.current.python === 'loading') {
+        return;
+      }
       setRuntimeStatus(prev => ({ ...prev, python: 'loading' }));
       try {
         await loadPyodide();
@@ -574,7 +586,7 @@ export function useWasmExecutor() {
         setRuntimeStatus(prev => ({ ...prev, python: 'error' }));
       }
     }
-  }, [runtimeStatus]);
+  }, []); // 移除 runtimeStatus 依赖，使用 ref 代替
 
   /**
    * 运行测试（纯 WASM 执行）

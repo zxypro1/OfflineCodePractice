@@ -14,7 +14,10 @@ process.on('unhandledRejection', (reason, promise) => {
 });
 
 // Expose app root for Next.js API routes to locate resources correctly
-process.env.APP_ROOT = app.isPackaged ? path.join(process.resourcesPath, 'app') : __dirname;
+// 当使用 asar 打包并配置 asarUnpack 时，解包的资源位于 app.asar.unpacked 目录
+process.env.APP_ROOT = app.isPackaged 
+  ? path.join(process.resourcesPath, 'app.asar.unpacked') 
+  : __dirname;
 
 // In packaged apps, always use production mode
 // In development, use NODE_ENV to determine mode

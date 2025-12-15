@@ -29,14 +29,47 @@ module.exports = {
     'public/**/*',
     'problems/**/*',
     'locales/**/*',
-    'node_modules/@swc/helpers/**/*',
     'node_modules/**/*',
+    // 排除不必要的文件以减小体积
     '!node_modules/**/test/**',
     '!node_modules/**/tests/**',
+    '!node_modules/**/__tests__/**',
+    '!node_modules/**/testing/**',
     '!node_modules/**/*.md',
+    '!node_modules/**/*.markdown',
     '!node_modules/**/LICENSE*',
+    '!node_modules/**/license*',
+    '!node_modules/**/CHANGELOG*',
+    '!node_modules/**/changelog*',
+    '!node_modules/**/HISTORY*',
+    '!node_modules/**/history*',
     '!node_modules/**/.github/**',
-    '!node_modules/**/*.map'
+    '!node_modules/**/.vscode/**',
+    '!node_modules/**/*.map',
+    '!node_modules/**/*.ts',
+    '!node_modules/**/*.tsx',
+    '!node_modules/**/tsconfig.json',
+    '!node_modules/**/.eslintrc*',
+    '!node_modules/**/.prettierrc*',
+    '!node_modules/**/example/**',
+    '!node_modules/**/examples/**',
+    '!node_modules/**/docs/**',
+    '!node_modules/**/doc/**',
+    '!node_modules/**/*.d.ts.map',
+    '!node_modules/**/Makefile',
+    '!node_modules/**/Gruntfile.js',
+    '!node_modules/**/gulpfile.js',
+    '!node_modules/**/.travis.yml',
+    '!node_modules/**/.npmignore',
+    '!node_modules/**/.editorconfig',
+    // 排除 devDependencies 相关
+    '!node_modules/electron/**',
+    '!node_modules/electron-builder/**',
+    '!node_modules/jest/**',
+    '!node_modules/@types/**',
+    '!node_modules/typescript/**',
+    '!node_modules/sharp/**',
+    '!node_modules/png-to-ico/**'
   ],
   
   // 额外资源
@@ -48,9 +81,15 @@ module.exports = {
     }
   ],
   
-  // ASAR 配置（为避免 React 重复实例导致 useContext 为空，先关闭 asar）
-  asar: false,
-  asarUnpack: [],
+  // ASAR 配置 - 启用 asar 大幅加速安装
+  // 注意：如果遇到 React Context/useContext 为空的问题，可以尝试设置 asar: false
+  asar: true,
+  asarUnpack: [
+    // 需要直接文件访问的资源
+    'public/problems.json',
+    'public/icon.png',
+    'public/favicon.ico'
+  ],
 
   // ==================== Windows 配置 ====================
   win: {
@@ -64,10 +103,8 @@ module.exports = {
         arch: ['x64']
       }
     ],
-    // Windows 需要 .ico 格式，electron-builder 会自动从 png 转换
     icon: 'build/icon.ico',
     artifactName: '${productName}-${version}-Windows-${arch}.${ext}',
-    // 文件关联
     fileAssociations: [
       {
         ext: 'algo',
@@ -78,17 +115,15 @@ module.exports = {
     ]
   },
   
-  // NSIS 安装程序配置
+  // NSIS 安装程序配置 - 优化安装速度
   nsis: {
-    oneClick: false,
-    allowToChangeInstallationDirectory: true,
+    oneClick: true,                              // 一键安装，最快
+    perMachine: false,                           // 仅当前用户，无需管理员权限
+    allowToChangeInstallationDirectory: false,   // 禁用目录选择，加速安装
     createDesktopShortcut: true,
     createStartMenuShortcut: true,
     shortcutName: 'Algorithm Practice',
-    // 安装语言
-    language: 2052, // 简体中文
-    multiLanguageInstaller: true,
-    // 安装包命名
+    deleteAppDataOnUninstall: false,
     artifactName: '${productName}-${version}-Windows-Setup.${ext}'
   },
 
@@ -99,7 +134,6 @@ module.exports = {
 
   // ==================== macOS 配置 ====================
   mac: {
-    // target 不指定 arch，由 CLI 参数 (--x64 / --arm64) 控制
     target: ['dmg', 'zip'],
     icon: 'public/icon.png',
     category: 'public.app-category.developer-tools',
@@ -108,12 +142,8 @@ module.exports = {
     gatekeeperAssess: false,
     entitlements: 'build/entitlements.mac.plist',
     entitlementsInherit: 'build/entitlements.mac.plist',
-    // 签名配置：如果提供了证书则签名，否则跳过
-    // 注意：不设置 identity: null，让 electron-builder 自动检测证书
-    // 应用捆绑 ID
     bundleVersion: '1',
     bundleShortVersion: '0.0.9',
-    // 文件关联
     fileAssociations: [
       {
         ext: 'algo',
@@ -121,9 +151,7 @@ module.exports = {
         role: 'Editor'
       }
     ],
-    // Dock 图标弹跳
     darkModeSupport: true,
-    // 公证配置
     notarize: process.env.APPLE_ID && process.env.APPLE_APP_SPECIFIC_PASSWORD ? {
       teamId: process.env.APPLE_TEAM_ID
     } : false
@@ -148,7 +176,6 @@ module.exports = {
       height: 380
     },
     backgroundColor: '#1a1a2e',
-    // 使用简化标题避免 CI 中的挂载问题
     title: 'AlgorithmPractice',
     artifactName: '${productName}-${version}-macOS-${arch}.${ext}'
   },
@@ -176,14 +203,12 @@ module.exports = {
     vendor: 'Algorithm Practice',
     synopsis: '离线算法练习应用',
     description: '基于 WASM 的离线算法练习应用，支持 JavaScript、TypeScript 和 Python',
-    // 桌面文件
     desktop: {
       Name: 'Algorithm Practice',
       Comment: '离线算法练习',
       Categories: 'Development;IDE;',
       Keywords: 'algorithm;code;practice;programming;'
     },
-    // 文件关联
     fileAssociations: [
       {
         ext: 'algo',
@@ -211,6 +236,6 @@ module.exports = {
     artifactName: '${productName}-${version}-Linux.${ext}'
   },
 
-  // 发布配置（可选，用于自动更新）
+  // 发布配置
   publish: null
 };

@@ -25,9 +25,11 @@ import {
   Paper,
   Progress,
   Divider,
+  ScrollArea,
 } from '@mantine/core';
 import { useTranslation, useI18n } from '../src/contexts/I18nContext';
 import { LanguageThemeControls } from '../src/components/LanguageThemeControls';
+import ProblemForm from '../src/components/ProblemForm';
 
 type Problem = {
   id: string;
@@ -35,6 +37,10 @@ type Problem = {
   difficulty: string;
   tags: string[];
   description: { en: string; zh: string };
+  examples?: Array<{ input: string; output: string }>;
+  template?: { js?: string; python?: string; java?: string; cpp?: string; c?: string };
+  solution?: { js?: string; python?: string; java?: string; cpp?: string; c?: string };
+  tests?: Array<{ input: string; output: string }>;
 };
 
 const getDifficultyColor = (difficulty: string) => {
@@ -80,6 +86,10 @@ export default function ManageProblems() {
   
   // State for search
   const [searchQuery, setSearchQuery] = useState('');
+
+  // State for edit modal
+  const [editModalOpen, setEditModalOpen] = useState(false);
+  const [editingProblem, setEditingProblem] = useState<Problem | null>(null);
 
   // Fetch problems
   const fetchProblems = async () => {
@@ -248,6 +258,23 @@ export default function ManageProblems() {
     } finally {
       setDeleting(false);
     }
+  };
+
+  // Handle edit
+  const handleEdit = (problem: Problem) => {
+    setEditingProblem(problem);
+    setEditModalOpen(true);
+  };
+
+  const handleEditSuccess = () => {
+    setEditModalOpen(false);
+    setEditingProblem(null);
+    fetchProblems(); // Refresh list
+  };
+
+  const handleEditCancel = () => {
+    setEditModalOpen(false);
+    setEditingProblem(null);
   };
 
   // Toggle selection
@@ -565,7 +592,7 @@ export default function ManageProblems() {
                           <Table.Th>{t('manage.columnTitle')}</Table.Th>
                           <Table.Th>{t('manage.columnDifficulty')}</Table.Th>
                           <Table.Th>{t('manage.columnTags')}</Table.Th>
-                          <Table.Th style={{ width: 100 }}>{t('manage.columnActions')}</Table.Th>
+                          <Table.Th style={{ width: 120 }}>{t('manage.columnActions')}</Table.Th>
                         </Table.Tr>
                       </Table.Thead>
                       <Table.Tbody>
@@ -619,6 +646,15 @@ export default function ManageProblems() {
                                     👁
                                   </ActionIcon>
                                 </Tooltip>
+                                <Tooltip label={t('manage.editProblem')}>
+                                  <ActionIcon 
+                                    variant="subtle" 
+                                    color="blue"
+                                    onClick={() => handleEdit(problem)}
+                                  >
+                                    ✏️
+                                  </ActionIcon>
+                                </Tooltip>
                                 <Tooltip label={t('manage.deleteProblem')}>
                                   <ActionIcon 
                                     variant="subtle" 
@@ -665,7 +701,30 @@ export default function ManageProblems() {
           </Group>
         </Stack>
       </Modal>
+
+      {/* Edit Problem Modal */}
+      <Modal
+        opened={editModalOpen}
+        onClose={handleEditCancel}
+        title={t('manage.editProblemTitle')}
+        size="xl"
+        styles={{
+          body: {
+            maxHeight: 'calc(100vh - 200px)',
+            overflowY: 'auto'
+          }
+        }}
+      >
+        {editingProblem && (
+          <ProblemForm
+            mode="edit"
+            initialData={editingProblem as any}
+            onSuccess={handleEditSuccess}
+            onCancel={handleEditCancel}
+            compact
+          />
+        )}
+      </Modal>
     </AppShell>
   );
 }
-

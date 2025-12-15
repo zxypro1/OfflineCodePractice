@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Container,
   Title,
@@ -56,30 +56,69 @@ interface ProblemFormData {
   }>;
 }
 
-const ProblemForm: React.FC = () => {
+interface ProblemFormProps {
+  mode?: 'add' | 'edit';
+  initialData?: ProblemFormData;
+  onSuccess?: () => void;
+  onCancel?: () => void;
+  compact?: boolean;
+}
+
+const defaultFormData: ProblemFormData = {
+  id: '',
+  title: { en: '', zh: '' },
+  difficulty: 'Easy',
+  tags: [],
+  description: { en: '', zh: '' },
+  examples: [{ input: '', output: '' }],
+  template: {
+    js: 'function solution() {\n  // write your code here\n}\nmodule.exports = solution;',
+    python: 'def solution():\n    # write your code here\n    pass',
+    java: 'public class Solution {\n    public void solution() {\n        // write your code here\n    }\n}',
+    cpp: '#include <iostream>\nusing namespace std;\n\nclass Solution {\npublic:\n    void solution() {\n        // write your code here\n    }\n};',
+    c: '#include <stdio.h>\n\nvoid solution() {\n    // write your code here\n}'
+  },
+  solution: {},
+  tests: [{ input: '', output: '' }]
+};
+
+const ProblemForm: React.FC<ProblemFormProps> = ({ 
+  mode = 'add', 
+  initialData, 
+  onSuccess,
+  onCancel,
+  compact = false
+}) => {
   const { t } = useTranslation();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [message, setMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
   const [importMode, setImportMode] = useState<'form' | 'json'>('form');
   const [jsonInput, setJsonInput] = useState('');
+  const [originalId, setOriginalId] = useState<string>('');
 
-  const [formData, setFormData] = useState<ProblemFormData>({
-    id: '',
-    title: { en: '', zh: '' },
-    difficulty: 'Easy',
-    tags: [],
-    description: { en: '', zh: '' },
-    examples: [{ input: '', output: '' }],
-    template: {
-      js: 'function solution() {\n  // write your code here\n}\nmodule.exports = solution;',
-      python: 'def solution():\n    # write your code here\n    pass',
-      java: 'public class Solution {\n    public void solution() {\n        // write your code here\n    }\n}',
-      cpp: '#include <iostream>\nusing namespace std;\n\nclass Solution {\npublic:\n    void solution() {\n        // write your code here\n    }\n};',
-      c: '#include <stdio.h>\n\nvoid solution() {\n    // write your code here\n}'
-    },
-    solution: {},
-    tests: [{ input: '', output: '' }]
-  });
+  const [formData, setFormData] = useState<ProblemFormData>(defaultFormData);
+
+  // Initialize form data when initialData changes (for edit mode)
+  useEffect(() => {
+    if (initialData) {
+      setFormData({
+        ...defaultFormData,
+        ...initialData,
+        // Ensure nested objects are properly merged
+        title: { ...defaultFormData.title, ...initialData.title },
+        description: { ...defaultFormData.description, ...initialData.description },
+        template: { ...defaultFormData.template, ...initialData.template },
+        solution: { ...defaultFormData.solution, ...initialData.solution },
+        examples: initialData.examples?.length ? initialData.examples : defaultFormData.examples,
+        tests: initialData.tests?.length ? initialData.tests : defaultFormData.tests,
+        tags: initialData.tags || []
+      });
+      setOriginalId(initialData.id);
+    } else {
+      setFormData(defaultFormData);
+      setOriginalId('');
+    }
+  }, [initialData]);
 
   const handleInputChange = (field: string, value: any) => {
     setFormData(prev => ({
@@ -143,42 +182,48 @@ const ProblemForm: React.FC = () => {
     }
   };
 
+  const resetForm = () => {
+    setFormData(defaultFormData);
+    setOriginalId('');
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
     setMessage(null);
 
     try {
-      const response = await fetch('/api/add-problem', {
+      const isEdit = mode === 'edit';
+      const apiUrl = isEdit ? '/api/update-problem' : '/api/add-problem';
+      const body = isEdit 
+        ? { problem: formData, originalId } 
+        : { problem: formData };
+
+      const response = await fetch(apiUrl, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ problem: formData }),
+        body: JSON.stringify(body),
       });
 
       const result = await response.json();
 
       if (response.ok) {
-        setMessage({ type: 'success', text: t('addProblem.problemAddedSuccess', { id: formData.id }) });
-        // Reset form
-        setFormData({
-          id: '',
-          title: { en: '', zh: '' },
-          difficulty: 'Easy',
-          tags: [],
-          description: { en: '', zh: '' },
-          examples: [{ input: '', output: '' }],
-          template: {
-            js: 'function solution() {\n  // write your code here\n}\nmodule.exports = solution;',
-            python: 'def solution():\n    # write your code here\n    pass',
-            java: 'public class Solution {\n    public void solution() {\n        // write your code here\n    }\n}',
-            cpp: '#include <iostream>\nusing namespace std;\n\nclass Solution {\npublic:\n    void solution() {\n        // write your code here\n    }\n};',
-            c: '#include <stdio.h>\n\nvoid solution() {\n    // write your code here\n}'
-          },
-          solution: {},
-          tests: [{ input: '', output: '' }]
-        });
+        const successMessage = isEdit 
+          ? t('addProblem.problemUpdatedSuccess', { id: formData.id })
+          : t('addProblem.problemAddedSuccess', { id: formData.id });
+        setMessage({ type: 'success', text: successMessage });
+        
+        if (!isEdit) {
+          // Reset form only when adding new problem
+          resetForm();
+        }
+        
+        // Call onSuccess callback if provided
+        if (onSuccess) {
+          onSuccess();
+        }
       } else {
         setMessage({ type: 'error', text: result.error || t('common.error') });
       }
@@ -189,30 +234,38 @@ const ProblemForm: React.FC = () => {
     }
   };
 
+  const isEditMode = mode === 'edit';
+
   return (
-    <Container size="xl">
-      <Title order={1} mb="xl">{t('addProblem.title')}</Title>
+    <Container size={compact ? "lg" : "xl"} p={compact ? 0 : undefined}>
+      {!compact && (
+        <Title order={1} mb="xl">
+          {isEditMode ? t('addProblem.editTitle') : t('addProblem.title')}
+        </Title>
+      )}
       
-      {/* Mode Toggle */}
-      <Paper p="md" mb="xl">
-        <Group gap="md">
-          <Button
-            variant={importMode === 'form' ? 'filled' : 'outline'}
-            onClick={() => setImportMode('form')}
-          >
-            {t('addProblem.manualForm')}
-          </Button>
-          <Button
-            variant={importMode === 'json' ? 'filled' : 'outline'}
-            onClick={() => setImportMode('json')}
-          >
-            {t('addProblem.importJson')}
-          </Button>
-        </Group>
-      </Paper>
+      {/* Mode Toggle - only show for add mode */}
+      {!isEditMode && !compact && (
+        <Paper p="md" mb="xl">
+          <Group gap="md">
+            <Button
+              variant={importMode === 'form' ? 'filled' : 'outline'}
+              onClick={() => setImportMode('form')}
+            >
+              {t('addProblem.manualForm')}
+            </Button>
+            <Button
+              variant={importMode === 'json' ? 'filled' : 'outline'}
+              onClick={() => setImportMode('json')}
+            >
+              {t('addProblem.importJson')}
+            </Button>
+          </Group>
+        </Paper>
+      )}
 
       {/* JSON Import Mode */}
-      {importMode === 'json' && (
+      {importMode === 'json' && !isEditMode && (
         <Paper p="md" mb="xl" withBorder>
           <Title order={2} size="h3" mb="md">{t('addProblem.importJson')}</Title>
           
@@ -261,7 +314,7 @@ const ProblemForm: React.FC = () => {
       )}
 
       {/* Form Mode */}
-      {importMode === 'form' && (
+      {(importMode === 'form' || isEditMode) && (
         <form onSubmit={handleSubmit}>
           <Stack gap="xl">
             {/* Basic Information */}
@@ -276,6 +329,7 @@ const ProblemForm: React.FC = () => {
                     placeholder="e.g., two-sum"
                     required
                     description={t('addProblem.problemIdHint')}
+                    disabled={isEditMode}
                   />
                 </Grid.Col>
                 
@@ -409,13 +463,25 @@ const ProblemForm: React.FC = () => {
 
             {/* Submit Button */}
             <Group justify="flex-end">
+              {onCancel && (
+                <Button
+                  variant="default"
+                  onClick={onCancel}
+                  disabled={isSubmitting}
+                >
+                  {t('manage.cancel')}
+                </Button>
+              )}
               <Button
                 type="submit"
                 loading={isSubmitting}
                 size="lg"
                 color="green"
               >
-                {isSubmitting ? t('addProblem.addingProblem') : t('addProblem.addProblemButton')}
+                {isSubmitting 
+                  ? (isEditMode ? t('addProblem.updatingProblem') : t('addProblem.addingProblem'))
+                  : (isEditMode ? t('addProblem.updateProblemButton') : t('addProblem.addProblemButton'))
+                }
               </Button>
             </Group>
           </Stack>

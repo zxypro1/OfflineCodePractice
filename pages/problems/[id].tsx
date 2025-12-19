@@ -26,6 +26,7 @@ import { CodeWithCopy } from '../../src/components/CodeWithCopy';
 import MarkdownRenderer from '../../src/components/MarkdownRenderer';
 
 const CodeRunner = dynamic(() => import('../../src/components/CodeRunner'), { ssr: false });
+const AIChatDialog = dynamic(() => import('../../src/components/AIChatDialog'), { ssr: false });
 
 export default function ProblemPage() {
   const router = useRouter();
@@ -40,6 +41,16 @@ export default function ProblemPage() {
   const [testResult, setTestResult] = useState<any>(null);
   const [activeTab, setActiveTab] = useState<string>('description');
   const [selectedSolutionIndex, setSelectedSolutionIndex] = useState<number>(0);
+  
+  // Track current code for AI chat context
+  const [currentCode, setCurrentCode] = useState<string>('');
+  const [codeLanguage, setCodeLanguage] = useState<string>('javascript');
+  
+  // Handle code changes from CodeRunner
+  const handleCodeChange = useCallback((code: string, language: string) => {
+    setCurrentCode(code);
+    setCodeLanguage(language);
+  }, []);
   
   // Resizable split pane state
   const [leftWidth, setLeftWidth] = useState(30); // percentage - default 30% for problem & results, 70% for code editor
@@ -670,11 +681,19 @@ if (error || !problem) {
                 problem={problem} 
                 onTestResult={handleTestResult}
                 showResults={false}
+                onCodeChange={handleCodeChange}
               />
             </div>
           </div>
         </div>
       </AppShell.Main>
+      
+      {/* AI Chat Dialog */}
+      <AIChatDialog 
+        problem={problem} 
+        currentCode={currentCode}
+        codeLanguage={codeLanguage}
+      />
     </AppShell>
   );
 }

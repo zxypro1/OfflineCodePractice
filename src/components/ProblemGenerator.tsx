@@ -55,7 +55,7 @@ const ProblemGenerator: React.FC<ProblemGeneratorProps> = ({ onProblemGenerated,
   const [isUsingLocalAI, setIsUsingLocalAI] = useState(false);
   const [currentAIProvider, setCurrentAIProvider] = useState<string | null>(null);
   const [availableProviders, setAvailableProviders] = useState<string[]>([]);
-  const [selectedAIProvider, setSelectedAIProvider] = useState('auto');
+  const [configSelectedProvider, setConfigSelectedProvider] = useState('auto');
   
   // AI Provider configuration states
   const [isDeepSeekConfigured, setIsDeepSeekConfigured] = useState(false);
@@ -103,6 +103,7 @@ const ProblemGenerator: React.FC<ProblemGeneratorProps> = ({ onProblemGenerated,
               setIsOpenAIConfigured(!!config.openAI?.apiKey);
               setIsQwenConfigured(!!config.qwen?.apiKey);
               setIsClaudeConfigured(!!config.claude?.apiKey);
+              setConfigSelectedProvider(config.selectedProvider || 'auto');
             } catch (parseError) {
               console.error('Error parsing saved configuration:', parseError);
               // Fallback to API
@@ -147,25 +148,25 @@ const ProblemGenerator: React.FC<ProblemGeneratorProps> = ({ onProblemGenerated,
     }
   }, [mounted]);
 
-  // Determine which AI provider is currently selected
+  // Determine which AI provider is currently selected (from settings page config)
   const getCurrentAIProvider = () => {
-    if (selectedAIProvider === 'auto') {
+    if (configSelectedProvider === 'auto') {
       // Auto-select based on what's available (in order of preference)
-      if (isOllamaConfigured) {
-        return 'ollama';
+      if (isDeepSeekConfigured) {
+        return 'deepseek';
       } else if (isOpenAIConfigured) {
         return 'openai';
-      } else if (isClaudeConfigured) {
-        return 'claude';
       } else if (isQwenConfigured) {
         return 'qwen';
-      } else if (isDeepSeekConfigured) {
-        return 'deepseek';
+      } else if (isClaudeConfigured) {
+        return 'claude';
+      } else if (isOllamaConfigured) {
+        return 'ollama';
       } else {
         return null; // None configured
       }
     }
-    return selectedAIProvider;
+    return configSelectedProvider;
   };
 
   useEffect(() => {
@@ -183,7 +184,7 @@ const ProblemGenerator: React.FC<ProblemGeneratorProps> = ({ onProblemGenerated,
     setAvailableProviders(providers);
     setCanGenerate(providers.length > 0);
   }, [
-    selectedAIProvider,
+    configSelectedProvider,
     isDeepSeekConfigured,
     isOpenAIConfigured,
     isQwenConfigured,
@@ -231,10 +232,9 @@ const ProblemGenerator: React.FC<ProblemGeneratorProps> = ({ onProblemGenerated,
     setJsonError(null);
 
     try {
-      // Prepare request body
+      // Prepare request body - config contains selectedProvider from settings
       const requestBody: any = { 
-        request: request.trim(),
-        aiProvider: selectedAIProvider === 'auto' ? undefined : selectedAIProvider
+        request: request.trim()
       };
 
       // Check if we're in web mode and have saved configuration
@@ -396,83 +396,20 @@ const ProblemGenerator: React.FC<ProblemGeneratorProps> = ({ onProblemGenerated,
               {t('aiGenerator.noAIProviderConfigured')}
             </Alert>
           ) : (
-            <>
-              {/* AI Provider Indicator */}
-              <Alert color={isUsingLocalAI ? 'blue' : 'violet'} variant="light">
-                <Group gap="xs">
-                  <IconBrain size={16} />
-                  <Text size="sm" fw={500}>
-                    {currentAIProvider === 'ollama' 
-                      ? t('aiGenerator.usingLocalAI') 
-                      : t('aiGenerator.usingOnlineAI', { provider: currentAIProvider || 'unknown' })}
-                  </Text>
-                </Group>
-              </Alert>
-
-              {/* AI Provider Selection */}
-              {availableProviders.length > 1 && (
-                <Group>
-                  <Text size="sm">{t('aiGenerator.selectAIProvider')}:</Text>
-                  <Button
-                    variant={selectedAIProvider === 'auto' ? 'filled' : 'outline'}
-                    size="xs"
-                    onClick={() => setSelectedAIProvider('auto')}
-                  >
-                    {t('aiGenerator.autoSelect')}
-                  </Button>
-                  {isDeepSeekConfigured && (
-                    <Button
-                      variant={selectedAIProvider === 'deepseek' ? 'filled' : 'outline'}
-                      size="xs"
-                      onClick={() => setSelectedAIProvider('deepseek')}
-                      color="violet"
-                    >
-                      {t('aiGenerator.deepseek')}
-                    </Button>
-                  )}
-                  {isOpenAIConfigured && (
-                    <Button
-                      variant={selectedAIProvider === 'openai' ? 'filled' : 'outline'}
-                      size="xs"
-                      onClick={() => setSelectedAIProvider('openai')}
-                      color="blue"
-                    >
-                      {t('aiGenerator.openai')}
-                    </Button>
-                  )}
-                  {isQwenConfigured && (
-                    <Button
-                      variant={selectedAIProvider === 'qwen' ? 'filled' : 'outline'}
-                      size="xs"
-                      onClick={() => setSelectedAIProvider('qwen')}
-                      color="green"
-                    >
-                      {t('aiGenerator.qwen')}
-                    </Button>
-                  )}
-                  {isClaudeConfigured && (
-                    <Button
-                      variant={selectedAIProvider === 'claude' ? 'filled' : 'outline'}
-                      size="xs"
-                      onClick={() => setSelectedAIProvider('claude')}
-                      color="orange"
-                    >
-                      {t('aiGenerator.claude')}
-                    </Button>
-                  )}
-                  {isOllamaConfigured && (
-                    <Button
-                      variant={selectedAIProvider === 'ollama' ? 'filled' : 'outline'}
-                      size="xs"
-                      onClick={() => setSelectedAIProvider('ollama')}
-                      color="teal"
-                    >
-                      {t('aiGenerator.localAI')}
-                    </Button>
-                  )}
-                </Group>
-              )}
-            </>
+            /* AI Provider Indicator - shows which provider is selected in settings */
+            <Alert color={isUsingLocalAI ? 'blue' : 'violet'} variant="light">
+              <Group gap="xs">
+                <IconBrain size={16} />
+                <Text size="sm" fw={500}>
+                  {currentAIProvider === 'ollama' 
+                    ? t('aiGenerator.usingLocalAI') 
+                    : t('aiGenerator.usingOnlineAI', { provider: currentAIProvider || 'unknown' })}
+                </Text>
+                <Text size="xs" c="dimmed">
+                  ({t('aiGenerator.changeInSettings')})
+                </Text>
+              </Group>
+            </Alert>
           )}
 
           {/* Request Input */}

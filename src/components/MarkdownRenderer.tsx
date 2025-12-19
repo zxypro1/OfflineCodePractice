@@ -7,6 +7,7 @@ import rehypeRaw from 'rehype-raw';
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { atomDark } from 'react-syntax-highlighter/dist/cjs/styles/prism';
 import { Box, Paper, Text, Table, Code, Title } from '@mantine/core';
+import { useTheme } from '../contexts/ThemeContext';
 import 'katex/dist/katex.min.css';
 
 interface MarkdownRendererProps {
@@ -67,6 +68,7 @@ const MermaidChart: React.FC<{ chart: string }> = ({ chart }) => {
 };
 
 export const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({ content }) => {
+  const { colorScheme } = useTheme();
   const components = {
     // Custom code block renderer with syntax highlighting
     code({ node, inline, className, children, ...props }: any) {
@@ -176,7 +178,8 @@ export const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({ content }) =
           withBorder 
           style={{ 
             borderLeft: '4px solid #339af0',
-            backgroundColor: 'var(--mantine-color-gray-0)'
+            backgroundColor: colorScheme === 'dark' ? 'var(--mantine-color-dark-6)' : 'var(--mantine-color-gray-0)',
+            color: colorScheme === 'dark' ? 'var(--mantine-color-gray-1)' : undefined
           }}
         >
           {children}

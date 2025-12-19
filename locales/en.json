@@ -79,7 +79,30 @@
     "runtimeLoading": "Loading...",
     "runtimeError": "Error",
     "runtimeIdle": "Idle",
-    "executionError": "Execution Error"
+    "executionError": "Execution Error",
+    "aiSolution": "AI Solution",
+    "aiSolutionTooltip": "Generate multiple solutions with AI",
+    "generating": "Generating...",
+    "aiSolutionConfirmTitle": "Replace Current Code?",
+    "aiSolutionConfirmMessage": "You have modified the code. Generating an AI solution will replace your current code. Do you want to continue?",
+    "generateAnyway": "Generate Anyway",
+    "selectSolution": "Select a Solution",
+    "comparisonAnalysis": "📊 Comparison Analysis",
+    "approach": "💡 Approach",
+    "timeComplexity": "⏱️ Time Complexity",
+    "spaceComplexity": "💾 Space Complexity",
+    "codePreview": "📝 Code Preview",
+    "applySolution": "Apply This Solution"
+  },
+  "aiChat": {
+    "title": "AI Assistant",
+    "emptyState": "Ask me anything about this problem! I can help with hints, approaches, and explanations.",
+    "quickPrompts": "Quick prompts:",
+    "you": "You",
+    "assistant": "AI Assistant",
+    "thinking": "Thinking...",
+    "inputPlaceholder": "Type your question...",
+    "clearChat": "Clear chat"
   },
   "tags": {
     "array": "Array",
@@ -158,6 +181,7 @@
     "unlimitedProblems": "Generate unlimited coding problems",
     "usingOnlineAI": "Using Online AI ({{provider}})",
     "usingLocalAI": "Using Local AI (Ollama)",
+    "changeInSettings": "Change in Settings",
     "selectAIProvider": "Select AI Provider",
     "autoSelect": "Auto",
     "onlineAI": "Online (DeepSeek)",
@@ -176,9 +200,17 @@
   },
   "settings": {
     "title": "Settings",
-    "description": "Configure AI model providers for problem generation",
+    "description": "Configure AI model providers for problem generation, AI chat, and AI solutions",
     "save": "Save Configuration",
     "saving": "Saving...",
+    "defaultProvider": {
+      "title": "Default AI Provider",
+      "description": "Select the default AI provider for all AI features (problem generation, AI chat, AI solution). You can configure multiple providers below and switch between them.",
+      "label": "AI Provider",
+      "selectDescription": "Choose which AI provider to use by default",
+      "auto": "Auto (use first available)",
+      "currentSelection": "Current"
+    },
     "deepseek": {
       "apiKey": "API Key",
       "apiKeyPlaceholder": "Enter your DeepSeek API key",

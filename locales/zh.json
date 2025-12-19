@@ -79,7 +79,30 @@
     "runtimeLoading": "加载中...",
     "runtimeError": "错误",
     "runtimeIdle": "待机",
-    "executionError": "执行错误"
+    "executionError": "执行错误",
+    "aiSolution": "AI 题解",
+    "aiSolutionTooltip": "让 AI 生成多个解法",
+    "generating": "生成中...",
+    "aiSolutionConfirmTitle": "替换当前代码？",
+    "aiSolutionConfirmMessage": "你已经修改了代码。生成 AI 题解将替换你当前的代码。是否继续？",
+    "generateAnyway": "继续生成",
+    "selectSolution": "选择解法",
+    "comparisonAnalysis": "📊 解法对比分析",
+    "approach": "💡 解题思路",
+    "timeComplexity": "⏱️ 时间复杂度",
+    "spaceComplexity": "💾 空间复杂度",
+    "codePreview": "📝 代码预览",
+    "applySolution": "应用此解法"
+  },
+  "aiChat": {
+    "title": "AI 助手",
+    "emptyState": "有任何关于这道题的问题都可以问我！我可以提供提示、解题思路和讲解。",
+    "quickPrompts": "快捷提问：",
+    "you": "你",
+    "assistant": "AI 助手",
+    "thinking": "思考中...",
+    "inputPlaceholder": "输入你的问题...",
+    "clearChat": "清空对话"
   },
   "tags": {
     "array": "数组",
@@ -158,6 +181,7 @@
     "unlimitedProblems": "生成无限编程题目",
     "usingOnlineAI": "使用在线 AI ({{provider}})",
     "usingLocalAI": "使用本地 AI (Ollama)",
+    "changeInSettings": "在设置中更改",
     "selectAIProvider": "选择 AI 提供商",
     "autoSelect": "自动选择",
     "onlineAI": "在线 (DeepSeek)",
@@ -176,9 +200,17 @@
   },
   "settings": {
     "title": "设置",
-    "description": "配置用于题目生成的 AI 模型提供商",
+    "description": "配置用于题目生成、AI 对话和 AI 题解的模型提供商",
     "save": "保存配置",
     "saving": "保存中...",
+    "defaultProvider": {
+      "title": "默认 AI 供应商",
+      "description": "选择所有 AI 功能（题目生成、AI 对话、AI 题解）使用的默认供应商。您可以在下方配置多个供应商并在它们之间切换。",
+      "label": "AI 供应商",
+      "selectDescription": "选择默认使用哪个 AI 供应商",
+      "auto": "自动（使用第一个可用的）",
+      "currentSelection": "当前选择"
+    },
     "deepseek": {
       "apiKey": "API 密钥",
       "apiKeyPlaceholder": "输入您的 DeepSeek API 密钥",

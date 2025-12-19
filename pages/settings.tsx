@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { 
   Container, 
   Title, 
@@ -13,8 +13,11 @@ import {
   Box,
   Divider,
   PasswordInput,
-  Center
+  Center,
+  Select,
+  Badge
 } from '@mantine/core';
+import { IconRobot } from '@tabler/icons-react';
 import { useTranslation, useI18n } from '../src/contexts/I18nContext';
 import { LanguageThemeControls } from '../src/components/LanguageThemeControls';
 
@@ -54,7 +57,8 @@ export default function SettingsPage() {
     model: ''
   });
   
-  // Language preference is handled by the main UI, not in settings
+  // Global AI provider selection
+  const [selectedProvider, setSelectedProvider] = useState('auto');
 
   // Load current configuration
   useEffect(() => {
@@ -71,6 +75,7 @@ export default function SettingsPage() {
             setQwenConfig(data.qwen || { apiKey: '', model: '' });
             setClaudeConfig(data.claude || { apiKey: '', model: '' });
             setOllamaConfig(data.ollama || { endpoint: '', model: '' });
+            setSelectedProvider(data.selectedProvider || 'auto');
           }
         } else {
           // Web mode: Load from localStorage first, fallback to environment variables
@@ -83,6 +88,7 @@ export default function SettingsPage() {
               setQwenConfig(config.qwen || { apiKey: '', model: '' });
               setClaudeConfig(config.claude || { apiKey: '', model: '' });
               setOllamaConfig(config.ollama || { endpoint: '', model: '' });
+              setSelectedProvider(config.selectedProvider || 'auto');
             } catch (parseError) {
               console.error('Error parsing saved configuration:', parseError);
               // Fallback to environment variables
@@ -166,7 +172,8 @@ export default function SettingsPage() {
         openAI: openAIConfig,
         qwen: qwenConfig,
         claude: claudeConfig,
-        ollama: ollamaConfig
+        ollama: ollamaConfig,
+        selectedProvider: selectedProvider
       };
       
       // Check if we're running in Electron
@@ -258,6 +265,39 @@ export default function SettingsPage() {
                 {success}
               </Alert>
             )}
+            
+            {/* Global AI Provider Selection */}
+            <Box>
+              <Group gap="sm" mb="md">
+                <IconRobot size={24} />
+                <Title order={3}>{t('settings.defaultProvider.title')}</Title>
+              </Group>
+              <Text size="sm" c="dimmed" mb="md">
+                {t('settings.defaultProvider.description')}
+              </Text>
+              <Select
+                label={t('settings.defaultProvider.label')}
+                description={t('settings.defaultProvider.selectDescription')}
+                value={selectedProvider}
+                onChange={(value) => setSelectedProvider(value || 'auto')}
+                data={[
+                  { value: 'auto', label: t('settings.defaultProvider.auto') },
+                  { value: 'deepseek', label: 'DeepSeek', disabled: !deepSeekConfig.apiKey },
+                  { value: 'openai', label: 'OpenAI', disabled: !openAIConfig.apiKey },
+                  { value: 'qwen', label: 'Qwen (通义千问)', disabled: !qwenConfig.apiKey },
+                  { value: 'claude', label: 'Claude', disabled: !claudeConfig.apiKey },
+                  { value: 'ollama', label: 'Ollama (Local)', disabled: !ollamaConfig.endpoint && !ollamaConfig.model },
+                ]}
+                w={300}
+              />
+              {selectedProvider !== 'auto' && (
+                <Badge mt="sm" color="blue" variant="light">
+                  {t('settings.defaultProvider.currentSelection')}: {selectedProvider}
+                </Badge>
+              )}
+            </Box>
+            
+            <Divider />
             
             {/* DeepSeek Configuration */}
             <Box>

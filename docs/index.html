@@ -1,0 +1,964 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    
+    <!-- SEO Meta Tags -->
+    <title>Offline Code Practice - Free LeetCode-Style Algorithm Practice App | No Internet Required</title>
+    <meta name="description" content="Practice coding algorithms 100% offline with our free desktop app. Supports JavaScript, TypeScript, and Python. Built-in problem library, AI problem generator, and VS Code-like editor. Available for Windows, macOS, and Linux.">
+    <meta name="keywords" content="LeetCode, algorithm practice, coding interview, offline coding, JavaScript, TypeScript, Python, programming practice, data structures, coding problems, free, open source">
+    <meta name="author" content="zxypro1">
+    <meta name="robots" content="index, follow">
+    <link rel="canonical" href="https://zxypro1.github.io/OfflineCodePractice/">
+    <link rel="alternate" href="https://zxypro1.github.io/OfflineCodePractice/" hreflang="en">
+    <link rel="alternate" href="https://zxypro1.github.io/OfflineCodePractice/zh/" hreflang="zh-CN">
+    
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://zxypro1.github.io/OfflineCodePractice/">
+    <meta property="og:title" content="Offline Code Practice - Free Algorithm Practice App">
+    <meta property="og:description" content="Practice coding algorithms 100% offline. Supports JavaScript, TypeScript, and Python. Free and open source.">
+    <meta property="og:image" content="https://raw.githubusercontent.com/zxypro1/OfflineCodePractice/main/public/icon.png">
+    
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:url" content="https://zxypro1.github.io/OfflineCodePractice/">
+    <meta name="twitter:title" content="Offline Code Practice - Free Algorithm Practice App">
+    <meta name="twitter:description" content="Practice coding algorithms 100% offline. Supports JavaScript, TypeScript, and Python. Free and open source.">
+    <meta name="twitter:image" content="https://raw.githubusercontent.com/zxypro1/OfflineCodePractice/main/public/icon.png">
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="https://raw.githubusercontent.com/zxypro1/OfflineCodePractice/main/public/icon.png">
+    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    
+    <!-- Structured Data for SEO -->
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "SoftwareApplication",
+        "name": "Offline Code Practice",
+        "operatingSystem": "Windows, macOS, Linux",
+        "applicationCategory": "DeveloperApplication",
+        "offers": {
+            "@type": "Offer",
+            "price": "0",
+            "priceCurrency": "USD"
+        },
+        "description": "A standalone algorithm coding practice application that works 100% offline.",
+        "downloadUrl": "https://github.com/zxypro1/OfflineCodePractice/releases",
+        "softwareVersion": "0.1.7",
+        "author": {
+            "@type": "Person",
+            "name": "zxypro1"
+        }
+    }
+    </script>
+    
+    <style>
+        :root {
+            --primary: #6366f1;
+            --primary-dark: #4f46e5;
+            --primary-light: #818cf8;
+            --secondary: #0ea5e9;
+            --accent: #f472b6;
+            --bg-dark: #0f0f23;
+            --bg-card: #1a1a2e;
+            --bg-card-hover: #252542;
+            --text-primary: #f1f5f9;
+            --text-secondary: #94a3b8;
+            --text-muted: #64748b;
+            --border: #334155;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        html {
+            scroll-behavior: smooth;
+        }
+        
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: var(--bg-dark);
+            color: var(--text-primary);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+        
+        /* Animated Background */
+        .bg-gradient {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: 
+                radial-gradient(ellipse 80% 50% at 50% -20%, rgba(99, 102, 241, 0.15), transparent),
+                radial-gradient(ellipse 60% 40% at 100% 50%, rgba(14, 165, 233, 0.1), transparent),
+                radial-gradient(ellipse 60% 40% at 0% 80%, rgba(244, 114, 182, 0.1), transparent);
+            z-index: -1;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 24px;
+        }
+        
+        /* Navigation */
+        nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            padding: 16px 0;
+            background: rgba(15, 15, 35, 0.8);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+        
+        nav .container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-weight: 700;
+            font-size: 1.25rem;
+            color: var(--text-primary);
+            text-decoration: none;
+        }
+        
+        .logo img {
+            width: 36px;
+            height: 36px;
+            border-radius: 8px;
+        }
+        
+        .nav-links {
+            display: flex;
+            align-items: center;
+            gap: 32px;
+        }
+        
+        .nav-links a {
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-size: 0.95rem;
+            font-weight: 500;
+            transition: color 0.2s;
+        }
+        
+        .nav-links a:hover {
+            color: var(--text-primary);
+        }
+        
+        .github-btn {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 20px;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            color: var(--text-primary);
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.2s;
+        }
+        
+        .github-btn:hover {
+            background: var(--bg-card-hover);
+            border-color: var(--primary);
+        }
+        
+        .github-btn svg {
+            width: 20px;
+            height: 20px;
+        }
+
+        .lang-btn {
+            display: inline-flex;
+            align-items: center;
+            padding: 10px 14px;
+            border-radius: 8px;
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.2s;
+        }
+
+        .lang-btn:hover {
+            color: var(--text-primary);
+            border-color: var(--primary);
+            background: rgba(99, 102, 241, 0.08);
+        }
+        
+        /* Hero Section */
+        .hero {
+            padding: 160px 0 100px;
+            text-align: center;
+        }
+        
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 16px;
+            background: rgba(99, 102, 241, 0.1);
+            border: 1px solid rgba(99, 102, 241, 0.3);
+            border-radius: 100px;
+            font-size: 0.875rem;
+            color: var(--primary-light);
+            margin-bottom: 24px;
+        }
+        
+        .badge::before {
+            content: '';
+            width: 8px;
+            height: 8px;
+            background: var(--success);
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+        
+        h1 {
+            font-size: clamp(2.5rem, 6vw, 4rem);
+            font-weight: 800;
+            line-height: 1.1;
+            margin-bottom: 24px;
+            background: linear-gradient(135deg, var(--text-primary) 0%, var(--primary-light) 50%, var(--secondary) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .hero p {
+            font-size: 1.25rem;
+            color: var(--text-secondary);
+            max-width: 600px;
+            margin: 0 auto 40px;
+        }
+        
+        .hero-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 16px;
+            flex-wrap: wrap;
+            margin-bottom: 60px;
+        }
+        
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            padding: 14px 28px;
+            border-radius: 12px;
+            font-size: 1rem;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.3s;
+            cursor: pointer;
+            border: none;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: white;
+            box-shadow: 0 4px 20px rgba(99, 102, 241, 0.4);
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 30px rgba(99, 102, 241, 0.5);
+        }
+        
+        .btn-secondary {
+            background: var(--bg-card);
+            color: var(--text-primary);
+            border: 1px solid var(--border);
+        }
+        
+        .btn-secondary:hover {
+            background: var(--bg-card-hover);
+            border-color: var(--primary);
+        }
+        
+        .hero-image {
+            max-width: 100%;
+            border-radius: 16px;
+            box-shadow: 
+                0 0 0 1px rgba(255, 255, 255, 0.05),
+                0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            margin: 0 auto;
+        }
+        
+        /* Features Section */
+        .features {
+            padding: 100px 0;
+        }
+        
+        .section-title {
+            text-align: center;
+            margin-bottom: 60px;
+        }
+        
+        .section-title h2 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 16px;
+        }
+        
+        .section-title p {
+            color: var(--text-secondary);
+            font-size: 1.1rem;
+        }
+        
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 24px;
+        }
+        
+        .feature-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 32px;
+            transition: all 0.3s;
+        }
+        
+        .feature-card:hover {
+            background: var(--bg-card-hover);
+            border-color: var(--primary);
+            transform: translateY(-4px);
+        }
+        
+        .feature-icon {
+            width: 56px;
+            height: 56px;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.75rem;
+            margin-bottom: 20px;
+        }
+        
+        .feature-card h3 {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 12px;
+        }
+        
+        .feature-card p {
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+        }
+        
+        /* Languages Section */
+        .languages {
+            padding: 100px 0;
+            background: rgba(26, 26, 46, 0.5);
+        }
+        
+        .languages-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 24px;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        @media (max-width: 640px) {
+            .languages-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        .language-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 32px;
+            text-align: center;
+            transition: all 0.3s;
+        }
+        
+        .language-card:hover {
+            border-color: var(--primary);
+            transform: scale(1.02);
+        }
+        
+        .language-icon {
+            width: 64px;
+            height: 64px;
+            margin: 0 auto 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.5rem;
+        }
+        
+        .language-card h3 {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+        
+        .language-card p {
+            color: var(--text-secondary);
+            font-size: 0.875rem;
+        }
+        
+        /* Download Section */
+        .download {
+            padding: 100px 0;
+        }
+        
+        .download-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 24px;
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+        
+        .download-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 32px;
+            text-align: center;
+            transition: all 0.3s;
+        }
+        
+        .download-card:hover {
+            border-color: var(--primary);
+            background: var(--bg-card-hover);
+        }
+        
+        .platform-icon {
+            width: 64px;
+            height: 64px;
+            margin: 0 auto 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .platform-icon svg {
+            width: 48px;
+            height: 48px;
+            fill: var(--text-primary);
+        }
+        
+        .download-card h3 {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+        
+        .download-card .version {
+            color: var(--text-muted);
+            font-size: 0.875rem;
+            margin-bottom: 20px;
+        }
+        
+        .download-options {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        
+        .download-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 12px 20px;
+            background: var(--primary);
+            color: white;
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: 500;
+            font-size: 0.95rem;
+            transition: all 0.2s;
+        }
+        
+        .download-btn:hover {
+            background: var(--primary-dark);
+        }
+        
+        .download-btn.secondary {
+            background: transparent;
+            border: 1px solid var(--border);
+            color: var(--text-secondary);
+        }
+        
+        .download-btn.secondary:hover {
+            border-color: var(--primary);
+            color: var(--text-primary);
+        }
+        
+        /* AI Section */
+        .ai-section {
+            padding: 100px 0;
+            background: rgba(26, 26, 46, 0.5);
+        }
+        
+        .ai-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 60px;
+            align-items: center;
+        }
+        
+        @media (max-width: 900px) {
+            .ai-content {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        .ai-text h2 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 24px;
+        }
+        
+        .ai-text p {
+            color: var(--text-secondary);
+            font-size: 1.1rem;
+            margin-bottom: 32px;
+        }
+        
+        .ai-providers {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+        
+        .provider-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 16px;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+        }
+        
+        .ai-visual {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 32px;
+        }
+        
+        .code-block {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.875rem;
+            line-height: 1.8;
+        }
+        
+        .code-comment {
+            color: var(--text-muted);
+        }
+        
+        .code-keyword {
+            color: var(--accent);
+        }
+        
+        .code-string {
+            color: var(--success);
+        }
+        
+        .code-function {
+            color: var(--secondary);
+        }
+        
+        /* Footer */
+        footer {
+            padding: 60px 0 40px;
+            border-top: 1px solid var(--border);
+        }
+        
+        .footer-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 24px;
+        }
+        
+        .footer-links {
+            display: flex;
+            gap: 32px;
+        }
+        
+        .footer-links a {
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-size: 0.95rem;
+            transition: color 0.2s;
+        }
+        
+        .footer-links a:hover {
+            color: var(--text-primary);
+        }
+        
+        .footer-info {
+            text-align: right;
+            color: var(--text-muted);
+            font-size: 0.875rem;
+        }
+        
+        .footer-info a {
+            color: var(--primary-light);
+            text-decoration: none;
+        }
+        
+        .footer-info a:hover {
+            text-decoration: underline;
+        }
+        
+        /* Mobile Navigation */
+        .mobile-menu-btn {
+            display: none;
+            background: none;
+            border: none;
+            color: var(--text-primary);
+            cursor: pointer;
+            padding: 8px;
+        }
+        
+        @media (max-width: 768px) {
+            .nav-links {
+                display: none;
+            }
+            
+            .mobile-menu-btn {
+                display: block;
+            }
+            
+            .hero {
+                padding: 120px 0 60px;
+            }
+            
+            .hero-buttons {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .btn {
+                width: 100%;
+                max-width: 300px;
+                justify-content: center;
+            }
+            
+            .footer-content {
+                flex-direction: column;
+                text-align: center;
+            }
+            
+            .footer-info {
+                text-align: center;
+            }
+        }
+        
+        /* Scroll animations */
+        .fade-in {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: all 0.6s ease-out;
+        }
+        
+        .fade-in.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    </style>
+</head>
+<body>
+    <div class="bg-gradient"></div>
+    
+    <!-- Navigation -->
+    <nav>
+        <div class="container">
+            <a href="#" class="logo">
+                <img src="https://raw.githubusercontent.com/zxypro1/OfflineCodePractice/main/public/icon.png" alt="Offline Code Practice Logo">
+                <span>Offline Code Practice</span>
+            </a>
+            <div class="nav-links">
+                <a href="#features">Features</a>
+                <a href="#languages">Languages</a>
+                <a href="#download">Download</a>
+                <a href="./zh/" class="lang-btn" aria-label="Switch to Chinese">中文</a>
+                <a href="https://github.com/zxypro1/OfflineCodePractice" target="_blank" rel="noopener" class="github-btn">
+                    <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></svg>
+                    GitHub
+                </a>
+            </div>
+            <button class="mobile-menu-btn" aria-label="Menu">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12h18M3 6h18M3 18h18"/></svg>
+            </button>
+        </div>
+    </nav>
+    
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="container">
+            <div class="badge">
+                <span>v0.1.7 Released</span>
+            </div>
+            <h1>Practice Algorithms<br>Anywhere, Anytime</h1>
+            <p>A 100% offline LeetCode-style coding practice app. No internet required. Supports JavaScript, TypeScript, and Python with WASM-powered browser execution.</p>
+            <div class="hero-buttons">
+                <a href="#download" class="btn btn-primary">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                    Download Free
+                </a>
+                <a href="https://github.com/zxypro1/OfflineCodePractice" target="_blank" rel="noopener" class="btn btn-secondary">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></svg>
+                    View on GitHub
+                </a>
+            </div>
+            <img src="https://github.com/user-attachments/assets/17846e96-32e8-479f-9193-02a2fc8db017" alt="Offline Code Practice Screenshot" class="hero-image fade-in" loading="lazy">
+        </div>
+    </section>
+    
+    <!-- Features Section -->
+    <section class="features" id="features">
+        <div class="container">
+            <div class="section-title fade-in">
+                <h2>Why Offline Code Practice?</h2>
+                <p>Everything you need to ace your coding interviews, without internet dependency</p>
+            </div>
+            <div class="features-grid">
+                <article class="feature-card fade-in">
+                    <div class="feature-icon">✈️</div>
+                    <h3>100% Offline</h3>
+                    <p>Practice on flights, trains, or anywhere without internet. Your coding practice never stops.</p>
+                </article>
+                <article class="feature-card fade-in">
+                    <div class="feature-icon">⚡</div>
+                    <h3>Instant Execution</h3>
+                    <p>WASM-powered code execution runs directly in your browser. No server round-trips needed.</p>
+                </article>
+                <article class="feature-card fade-in">
+                    <div class="feature-icon">🎨</div>
+                    <h3>VS Code Experience</h3>
+                    <p>Monaco Editor with syntax highlighting, autocomplete, and all the features you love.</p>
+                </article>
+                <article class="feature-card fade-in">
+                    <div class="feature-icon">🤖</div>
+                    <h3>AI Problem Generator</h3>
+                    <p>Generate custom problems using AI. Supports DeepSeek, OpenAI, Claude, Qwen, and Ollama.</p>
+                </article>
+                <article class="feature-card fade-in">
+                    <div class="feature-icon">📚</div>
+                    <h3>Built-in Library</h3>
+                    <p>10+ classic algorithm problems included. Add your own or import from JSON files.</p>
+                </article>
+                <article class="feature-card fade-in">
+                    <div class="feature-icon">🌍</div>
+                    <h3>Cross-Platform</h3>
+                    <p>Available for Windows, macOS, and Linux. Same great experience everywhere.</p>
+                </article>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Languages Section -->
+    <section class="languages" id="languages">
+        <div class="container">
+            <div class="section-title fade-in">
+                <h2>Supported Languages</h2>
+                <p>Write solutions in your preferred programming language</p>
+            </div>
+            <div class="languages-grid">
+                <article class="language-card fade-in">
+                    <div class="language-icon">🟨</div>
+                    <h3>JavaScript</h3>
+                    <p>Native browser execution with full ES6+ support</p>
+                </article>
+                <article class="language-card fade-in">
+                    <div class="language-icon">🔷</div>
+                    <h3>TypeScript</h3>
+                    <p>Real-time transpilation with type safety</p>
+                </article>
+                <article class="language-card fade-in">
+                    <div class="language-icon">🐍</div>
+                    <h3>Python</h3>
+                    <p>Pyodide WASM for CPython compatibility</p>
+                </article>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Download Section -->
+    <section class="download" id="download">
+        <div class="container">
+            <div class="section-title fade-in">
+                <h2>Download Now</h2>
+                <p>Free and open source. No account required.</p>
+            </div>
+            <div class="download-grid">
+                <!-- macOS -->
+                <article class="download-card fade-in">
+                    <div class="platform-icon">
+                        <svg viewBox="0 0 24 24"><path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.81-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/></svg>
+                    </div>
+                    <h3>macOS</h3>
+                    <p class="version">Version 0.1.7</p>
+                    <div class="download-options">
+                        <a href="https://github.com/zxypro1/OfflineCodePractice/releases/download/v0.1.7/Algorithm.Practice-0.1.7-macOS-arm64.dmg" class="download-btn">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                            Apple Silicon (M1/M2/M3)
+                        </a>
+                        <a href="https://github.com/zxypro1/OfflineCodePractice/releases/download/v0.1.7/Algorithm.Practice-0.1.7-macOS-x64.dmg" class="download-btn secondary">
+                            Intel Mac
+                        </a>
+                    </div>
+                </article>
+                
+                <!-- Windows -->
+                <article class="download-card fade-in">
+                    <div class="platform-icon">
+                        <svg viewBox="0 0 24 24"><path d="M0 3.449L9.75 2.1v9.451H0m10.949-9.602L24 0v11.4H10.949M0 12.6h9.75v9.451L0 20.699M10.949 12.6H24V24l-12.9-1.801"/></svg>
+                    </div>
+                    <h3>Windows</h3>
+                    <p class="version">Version 0.1.7</p>
+                    <div class="download-options">
+                        <a href="https://github.com/zxypro1/OfflineCodePractice/releases/download/v0.1.7/Algorithm.Practice-0.1.7-Windows-Setup.exe" class="download-btn">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                            Installer (.exe)
+                        </a>
+                        <a href="https://github.com/zxypro1/OfflineCodePractice/releases/download/v0.1.7/Algorithm.Practice-0.1.7-Windows-Portable.exe" class="download-btn secondary">
+                            Portable Version
+                        </a>
+                    </div>
+                </article>
+                
+                <!-- Linux -->
+                <article class="download-card fade-in">
+                    <div class="platform-icon">
+                        <svg viewBox="0 0 24 24"><path d="M12.504 0c-.155 0-.315.008-.48.021-4.226.333-3.105 4.807-3.17 6.298-.076 1.092-.3 1.953-1.05 3.02-.885 1.051-2.127 2.75-2.716 4.521-.278.832-.41 1.684-.287 2.489a.424.424 0 00-.11.135c-.26.268-.45.6-.663.839-.199.199-.485.267-.797.4-.313.136-.658.269-.864.68-.09.189-.136.394-.132.602 0 .199.027.4.055.536.058.399.116.728.04.97-.249.68-.28 1.145-.106 1.484.174.334.535.47.94.601.81.2 1.91.135 2.774.6.926.466 1.866.67 2.616.47.526-.116.97-.464 1.208-.946.587-.003 1.23-.269 2.26-.334.699-.058 1.574.267 2.577.2.025.134.063.198.114.333l.003.003c.391.778 1.113 1.132 1.884 1.071.771-.06 1.592-.536 2.257-1.306.631-.765 1.683-1.084 2.378-1.503.348-.199.629-.469.649-.853.023-.4-.2-.811-.714-1.376v-.097l-.003-.003c-.17-.2-.25-.535-.338-.926-.085-.401-.182-.786-.492-1.046h-.003c-.059-.054-.123-.067-.188-.135a.357.357 0 00-.19-.064c.431-1.278.264-2.55-.173-3.694-.533-1.41-1.465-2.638-2.175-3.483-.796-1.005-1.576-1.957-1.56-3.368.026-2.152.236-6.133-3.544-6.139zm.529 3.405h.013c.213 0 .396.062.584.198.19.135.33.332.438.533.105.259.158.459.166.724 0-.02.006-.04.006-.06v.105a.086.086 0 01-.004-.021l-.004-.024a1.807 1.807 0 01-.15.706.953.953 0 01-.213.335.71.71 0 00-.088-.042c-.104-.045-.198-.064-.284-.133a1.312 1.312 0 00-.22-.066c.05-.06.146-.133.183-.198.053-.128.082-.264.088-.402v-.02a1.21 1.21 0 00-.061-.4c-.045-.134-.101-.2-.183-.333-.084-.066-.167-.132-.267-.132h-.016c-.093 0-.176.03-.262.132a.8.8 0 00-.205.334 1.18 1.18 0 00-.09.4v.019c.002.089.008.179.02.267-.193-.067-.438-.135-.607-.202a1.635 1.635 0 01-.018-.2v-.02a1.772 1.772 0 01.15-.768c.082-.22.232-.406.43-.533a.985.985 0 01.594-.2zm-2.962.059h.036c.142 0 .27.048.399.135.146.129.264.288.344.465.09.199.14.4.153.667v.004c.007.134.006.2-.002.266v.08c-.03.007-.056.018-.083.024-.152.055-.274.135-.393.2.012-.09.013-.18.003-.267v-.015c-.012-.133-.04-.2-.082-.333a.613.613 0 00-.166-.267.248.248 0 00-.183-.064h-.021c-.071.006-.13.04-.186.132a.552.552 0 00-.12.27.944.944 0 00-.023.33v.015c.012.135.037.2.08.334.046.134.098.2.166.268.01.009.02.018.034.024-.07.057-.117.07-.176.136a.304.304 0 01-.131.068 2.62 2.62 0 01-.275-.402 1.772 1.772 0 01-.155-.667 1.759 1.759 0 01.08-.668 1.43 1.43 0 01.283-.535c.128-.133.26-.2.418-.2zm1.37 1.706c.332 0 .733.065 1.216.399.293.2.523.269 1.052.468h.003c.255.136.405.266.478.399v-.131a.571.571 0 01.016.47c-.123.31-.516.643-1.063.842v.002c-.268.135-.501.333-.775.465-.276.135-.588.292-1.012.267a1.139 1.139 0 01-.448-.067 3.566 3.566 0 01-.322-.198c-.195-.135-.363-.332-.612-.465v-.005h-.005c-.4-.246-.616-.512-.686-.71-.07-.268-.005-.47.193-.6.224-.135.38-.271.483-.336.104-.074.143-.102.176-.131h.002v-.003c.169-.202.436-.47.839-.601.139-.036.294-.065.466-.065zm2.8 2.142c.358 1.417 1.196 3.475 1.735 4.473.286.534.855 1.659 1.102 3.024.156-.005.33.018.513.064.646-1.671-.546-3.467-1.089-3.966-.22-.2-.232-.335-.123-.335.59.534 1.365 1.572 1.646 2.757.13.535.16 1.104.021 1.67.067.028.135.06.205.067 1.032.534 1.413.938 1.23 1.537v-.002c-.06-.135-.12-.2-.18-.264-.312-.334-.661-.47-.99-.534-.3-.066-.568-.068-.79-.002a.086.086 0 00-.035-.018c-.046-.032-.157-.067-.178-.136a.507.507 0 01-.018-.2v-.02c.017-.2.036-.333.106-.465.023-.066.047-.064.074-.198h-.002c-.028.006-.067-.066-.095-.132-.026-.066-.073-.2-.106-.267-.035-.134-.106-.2-.153-.333-.012-.067-.018-.135-.018-.2 0-.27-.062-.933-.235-1.37a5.302 5.302 0 00-.393-.865c-.105-.198-.227-.333-.337-.465-.11-.135-.203-.2-.27-.267a.67.67 0 00-.09-.067h-.008c-.012 0-.018.006-.024.006l-.015-.003h.005l.009-.003a1.66 1.66 0 00-.088-.067c-.067-.054-.12-.067-.173-.133-.06-.075-.12-.198-.181-.265-.123-.135-.177-.202-.305-.269l.005.003c-.027-.018-.054-.03-.08-.045-.088.06-.176.118-.263.18-.153.135-.227.268-.227.4 0 .066.012.134.036.267.024.066.06.198.096.268.036.133.09.4.09.533v.006c-.001.2-.017.332-.062.464l-.012.039h.002c-.06.135-.12.335-.21.4-.087.133-.192.333-.315.4-.12.135-.27.334-.512.467-.239.133-.571.334-1.073.334-.502-.001-.904-.068-1.186-.134l.003-.001c-.487-.138-.878-.4-1.154-.8-.277-.4-.426-.933-.398-1.537.054-1.134.18-1.735.303-2.2.06-.466.21-.667.303-.8v-.003c.04-.068.06-.068.08-.135 0 0-.007-.003-.014-.005-.201.4-.403.734-.506 1.068-.1.333-.123.666-.077 1 .015.134.04.2.063.265a.981.981 0 00.078.265c.107.267.252.4.404.533.153.135.319.2.485.267.166.066.332.133.503.133h.02c.178-.002.29-.068.366-.2.07-.067.08-.132.08-.2-.003-.333-.125-.467-.347-.6-.224-.135-.48-.467-.55-.733-.07-.267-.037-.6.116-.866.154-.267.415-.534.72-.534h.035c.164 0 .32.038.462.08l.015.003c.15.072.294.13.425.263.08.066.137.2.181.332v.003c.048.135.094.2.13.333h.003c.054.135.086.4.116.466h.004v.003h.002c.017.134.023.268-.004.4-.026.134-.077.266-.204.333-.21.133-.303.066-.334 0-.03-.066-.03-.135-.03-.2.004-.067-.01-.135-.045-.2a.386.386 0 00-.135-.135c-.063-.03-.136-.046-.197-.046h-.037c-.066.003-.128.02-.184.048-.082.04-.15.102-.196.18-.05.08-.076.175-.076.265-.002.225.122.342.296.408.18.066.387.066.557 0 .17-.068.293-.2.37-.4.077-.202.115-.47.093-.737-.021-.27-.067-.606-.166-.87-.046-.134-.098-.2-.158-.333-.06-.135-.125-.267-.224-.4v-.003c-.1-.067-.21-.334-.426-.534-.217-.135-.5-.4-.916-.4h-.055c-.333.004-.567.133-.723.332-.153.2-.216.467-.232.735-.023.265-.003.467.05.667.057.2.153.4.332.534.178.133.43.267.74.334.31.067.693.2 1.173.2a2.08 2.08 0 001.18-.333c.166-.134.3-.334.393-.534.094-.2.146-.467.146-.733 0-.268-.046-.533-.123-.8-.074-.266-.183-.466-.313-.665-.283-.4-.606-.933-.842-1.067-.24-.135-.414-.2-.556-.332-.144-.068-.28-.2-.382-.333a1.32 1.32 0 01-.205-.468c.017.002.034.006.05.006l.002.003h.032c.077.008.15.002.224-.005a.78.78 0 00.216-.05c.066-.03.14-.078.2-.133l.02-.018h.002c.11-.066.2-.132.26-.197.062-.072.094-.132.136-.2a.668.668 0 00.04-.266v-.033c-.005-.07-.018-.134-.038-.2l-.003-.008c-.012-.03-.027-.076-.05-.118a.74.74 0 00-.122-.18l-.006-.005-.007-.008a2.27 2.27 0 00-.122-.135 1.98 1.98 0 00-.362-.265.922.922 0 00-.18-.069l.001.001-.052-.019c-.13-.04-.274-.058-.42-.058z"/></svg>
+                    </div>
+                    <h3>Linux</h3>
+                    <p class="version">Version 0.1.7</p>
+                    <div class="download-options">
+                        <a href="https://github.com/zxypro1/OfflineCodePractice/releases/download/v0.1.7/Algorithm.Practice-0.1.7-Linux.AppImage" class="download-btn">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                            AppImage
+                        </a>
+                        <a href="https://github.com/zxypro1/OfflineCodePractice/releases/download/v0.1.7/Algorithm.Practice-0.1.7-Linux.deb" class="download-btn secondary">
+                            .deb (Debian/Ubuntu)
+                        </a>
+                    </div>
+                </article>
+            </div>
+            <p style="text-align: center; margin-top: 32px; color: var(--text-muted);">
+                <a href="https://github.com/zxypro1/OfflineCodePractice/releases" target="_blank" rel="noopener" style="color: var(--primary-light);">View all releases →</a>
+            </p>
+        </div>
+    </section>
+    
+    <!-- AI Section -->
+    <section class="ai-section">
+        <div class="container">
+            <div class="ai-content">
+                <div class="ai-text fade-in">
+                    <h2>AI-Powered Problem Generation</h2>
+                    <p>Describe what you want to practice in natural language, and AI will generate a complete problem with test cases and solutions. Works with multiple AI providers.</p>
+                    <div class="ai-providers">
+                        <span class="provider-badge">🤖 DeepSeek</span>
+                        <span class="provider-badge">🧠 OpenAI</span>
+                        <span class="provider-badge">☁️ Claude</span>
+                        <span class="provider-badge">🌐 Qwen</span>
+                        <span class="provider-badge">🦙 Ollama</span>
+                    </div>
+                </div>
+                <div class="ai-visual fade-in">
+                    <div class="code-block">
+                        <p><span class="code-comment">// User prompt:</span></p>
+                        <p><span class="code-string">"Generate a dynamic programming problem about finding the longest increasing subsequence"</span></p>
+                        <br>
+                        <p><span class="code-comment">// AI generates:</span></p>
+                        <p><span class="code-keyword">const</span> <span class="code-function">problem</span> = {</p>
+                        <p>&nbsp;&nbsp;title: <span class="code-string">"Longest Increasing Subsequence"</span>,</p>
+                        <p>&nbsp;&nbsp;difficulty: <span class="code-string">"Medium"</span>,</p>
+                        <p>&nbsp;&nbsp;tags: [<span class="code-string">"dp"</span>, <span class="code-string">"array"</span>],</p>
+                        <p>&nbsp;&nbsp;tests: [<span class="code-comment">/* comprehensive test cases */</span>],</p>
+                        <p>&nbsp;&nbsp;solution: <span class="code-comment">/* working solution */</span></p>
+                        <p>};</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-links">
+                    <a href="https://github.com/zxypro1/OfflineCodePractice" target="_blank" rel="noopener">GitHub</a>
+                    <a href="https://github.com/zxypro1/OfflineCodePractice/releases" target="_blank" rel="noopener">Releases</a>
+                    <a href="https://github.com/zxypro1/OfflineCodePractice/issues" target="_blank" rel="noopener">Issues</a>
+                    <a href="https://github.com/zxypro1/OfflineCodePractice/discussions" target="_blank" rel="noopener">Discussions</a>
+                </div>
+                <div class="footer-info">
+                    <p>Open source under MIT License</p>
+                    <p>Contact: <a href="mailto:tzblackwood22@gmail.com">tzblackwood22@gmail.com</a></p>
+                </div>
+            </div>
+        </div>
+    </footer>
+    
+    <!-- Scroll Animation Script -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('visible');
+                    }
+                });
+            }, {
+                threshold: 0.1,
+                rootMargin: '0px 0px -50px 0px'
+            });
+            
+            document.querySelectorAll('.fade-in').forEach(el => observer.observe(el));
+        });
+    </script>
+</body>
+</html>
+

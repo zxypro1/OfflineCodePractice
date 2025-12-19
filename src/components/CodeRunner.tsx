@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { 
   Button, 
   Paper, 
@@ -11,12 +11,24 @@ import {
   Alert,
   Code,
   Select,
-  Tooltip
+  Tooltip,
+  Modal,
+  Loader
 } from '@mantine/core';
+import { IconWand } from '@tabler/icons-react';
 import Editor from '@monaco-editor/react';
-import { useTranslation } from '../contexts/I18nContext';
+import { useTranslation, useI18n } from '../contexts/I18nContext';
 import { useTheme } from '../contexts/ThemeContext';
 import { useWasmExecutor } from '../hooks/useWasmExecutor';
+
+interface AIProviderConfig {
+  deepSeek?: { apiKey: string; model: string; timeout?: string; maxTokens?: string };
+  openAI?: { apiKey: string; model: string };
+  qwen?: { apiKey: string; model: string };
+  claude?: { apiKey: string; model: string };
+  ollama?: { endpoint: string; model: string };
+  selectedProvider?: string;
+}
 
 // WASM 支持的语言配置
 const WASM_SUPPORTED_LANGUAGES = [
@@ -49,18 +61,51 @@ interface CodeRunnerProps {
   problem: any;
   onTestResult?: (result: any) => void;
   showResults?: boolean;
+  onCodeChange?: (code: string, language: string) => void;
 }
 
-export default function CodeRunner({ problem, onTestResult, showResults = true }: CodeRunnerProps) {
+export default function CodeRunner({ problem, onTestResult, showResults = true, onCodeChange }: CodeRunnerProps) {
   const { t } = useTranslation();
+  const { locale } = useI18n();
   const { colorScheme } = useTheme();
   const [selectedLanguage, setSelectedLanguage] = useState('javascript');
   const [code, setCode] = useState('');
   const [result, setResult] = useState<any>(null);
   const [isRunning, setIsRunning] = useState(false);
   
+  // AI Solution state
+  const [isGeneratingSolution, setIsGeneratingSolution] = useState(false);
+  const [solutionError, setSolutionError] = useState<string | null>(null);
+  const [confirmModalOpen, setConfirmModalOpen] = useState(false);
+  const [aiConfig, setAiConfig] = useState<AIProviderConfig | null>(null);
+  
   // WASM 执行器 hook
   const { runTests: runWasmTests, runtimeStatus, preloadRuntime } = useWasmExecutor();
+
+  // Load AI configuration
+  const loadAIConfig = useCallback(async () => {
+    try {
+      // Check if running in Electron
+      if (typeof window !== 'undefined' && (window as any).electronAPI) {
+        const result = await (window as any).electronAPI.loadConfiguration();
+        if (result.success && result.data) {
+          setAiConfig(result.data);
+        }
+      } else {
+        // Web mode: Load from localStorage
+        const savedConfig = localStorage.getItem('ai-provider-config');
+        if (savedConfig) {
+          setAiConfig(JSON.parse(savedConfig));
+        }
+      }
+    } catch (err) {
+      console.error('Failed to load AI config:', err);
+    }
+  }, []);
+
+  useEffect(() => {
+    loadAIConfig();
+  }, [loadAIConfig]);
   
   // 预加载选中语言的 WASM 运行时
   useEffect(() => {
@@ -86,6 +131,13 @@ export default function CodeRunner({ problem, onTestResult, showResults = true }
     
     setCode(template || '');
   }, [selectedLanguage, problem]);
+
+  // Notify parent of code changes
+  useEffect(() => {
+    if (onCodeChange) {
+      onCodeChange(code, selectedLanguage);
+    }
+  }, [code, selectedLanguage, onCodeChange]);
   
   // 过滤可用的 WASM 支持语言
   const availableLanguages = WASM_SUPPORTED_LANGUAGES.filter(
@@ -140,6 +192,88 @@ export default function CodeRunner({ problem, onTestResult, showResults = true }
       }
     } finally {
       setIsRunning(false);
+    }
+  };
+
+  // Generate AI Solution
+  const generateAISolution = async () => {
+    setIsGeneratingSolution(true);
+    setSolutionError(null);
+    setConfirmModalOpen(false);
+
+    try {
+      const response = await fetch('/api/ai-solution', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          problem: {
+            id: problem.id,
+            title: problem.title,
+            description: problem.description,
+            difficulty: problem.difficulty,
+            tags: problem.tags,
+            examples: problem.examples,
+            tests: problem.tests,
+          },
+          language: locale,
+          codeLanguage: selectedLanguage,
+          config: aiConfig, // Pass AI configuration
+          stream: true,
+        }),
+      });
+
+      if (!response.ok) {
+        const text = await response.text();
+        try {
+          const data = JSON.parse(text);
+          throw new Error(data.error || 'Failed to generate solution');
+        } catch {
+          throw new Error(text || 'Failed to generate solution');
+        }
+      }
+
+      const reader = response.body?.getReader();
+      if (!reader) {
+        const text = await response.text();
+        setCode(cleanCodeFromResponse(text));
+        return;
+      }
+
+      const decoder = new TextDecoder('utf-8');
+      let buffer = '';
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        buffer += decoder.decode(value, { stream: true });
+        setCode(cleanCodeFromResponse(buffer));
+      }
+
+      buffer += decoder.decode();
+      setCode(cleanCodeFromResponse(buffer));
+    } catch (error: any) {
+      setSolutionError(error.message || 'Failed to generate AI solution');
+    } finally {
+      setIsGeneratingSolution(false);
+    }
+  };
+
+  const cleanCodeFromResponse = (raw: string) => {
+    const text = (raw || '').trim();
+    const match = text.match(/```(?:javascript|typescript|python|js|ts|py)?\s*([\s\S]*?)```/);
+    if (match) return match[1].trim();
+    return text;
+  };
+
+  const handleAISolutionClick = () => {
+    // If code has been modified from template, show confirmation
+    const langConfig = WASM_SUPPORTED_LANGUAGES.find(l => l.value === selectedLanguage);
+    const templateKey = langConfig?.templateKey || 'js';
+    const template = problem.template?.[templateKey] || problem.template?.js || '';
+    
+    if (code.trim() !== template.trim() && code.trim() !== '') {
+      setConfirmModalOpen(true);
+    } else {
+      generateAISolution();
     }
   };
   
@@ -297,6 +431,20 @@ export default function CodeRunner({ problem, onTestResult, showResults = true }
               </Badge>
             </Tooltip>
             
+            {/* AI Solution Button */}
+            <Tooltip label={t('codeRunner.aiSolutionTooltip')} position="bottom">
+              <Button
+                onClick={handleAISolutionClick}
+                disabled={isGeneratingSolution || isRunning}
+                color="violet"
+                variant="light"
+                size="sm"
+                leftSection={isGeneratingSolution ? <Loader size={14} /> : <IconWand size={16} />}
+              >
+                {isGeneratingSolution ? t('codeRunner.generating') : t('codeRunner.aiSolution')}
+              </Button>
+            </Tooltip>
+            
             <Select
               value={selectedLanguage}
               onChange={(value) => setSelectedLanguage(value || 'javascript')}
@@ -314,6 +462,13 @@ export default function CodeRunner({ problem, onTestResult, showResults = true }
             </Button>
           </Group>
         </Group>
+        
+        {/* AI Solution Error */}
+        {solutionError && (
+          <Alert color="red" mb="sm" withCloseButton onClose={() => setSolutionError(null)}>
+            {solutionError}
+          </Alert>
+        )}
         
         <div style={{ flex: 1, minHeight: '300px' }}>
           <Editor
@@ -344,6 +499,28 @@ export default function CodeRunner({ problem, onTestResult, showResults = true }
           {renderResult()}
         </Paper>
       )}
+      
+      {/* AI Solution Confirmation Modal */}
+      <Modal
+        opened={confirmModalOpen}
+        onClose={() => setConfirmModalOpen(false)}
+        title={t('codeRunner.aiSolutionConfirmTitle')}
+        size="sm"
+      >
+        <Stack gap="md">
+          <Text size="sm">
+            {t('codeRunner.aiSolutionConfirmMessage')}
+          </Text>
+          <Group justify="flex-end">
+            <Button variant="default" onClick={() => setConfirmModalOpen(false)}>
+              {t('manage.cancel')}
+            </Button>
+            <Button color="violet" onClick={generateAISolution} leftSection={<IconWand size={16} />}>
+              {t('codeRunner.generateAnyway')}
+            </Button>
+          </Group>
+        </Stack>
+      </Modal>
     </div>
   );
 }

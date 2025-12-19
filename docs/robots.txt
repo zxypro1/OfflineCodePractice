@@ -1,0 +1,6 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://zxypro1.github.io/OfflineCodePractice/sitemap.xml
+
+

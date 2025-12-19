@@ -411,131 +411,63 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   }
 
   try {
-    const { request, aiProvider, config } = req.body;
+    const { request, config } = req.body;
 
     if (!request || typeof request !== 'string') {
       return res.status(400).json({ error: 'Request description is required' });
     }
 
-    // Check what providers are configured
-    // Use provided config from web mode if available, otherwise use environment variables
-    let isOllamaConfigured: boolean;
-    let isDeepSeekConfigured: boolean;
-    let isOpenAIConfigured: boolean;
-    let isQwenConfigured: boolean;
-    let isClaudeConfigured: boolean;
+    // Determine which provider to use from config.selectedProvider
+    // Priority: config.selectedProvider > auto
+    const selectedProviderChoice = config?.selectedProvider || 'auto';
 
-    if (config) {
-      // Use configuration from web mode (sent from frontend)
-      isOllamaConfigured = !!(config.ollama?.endpoint || config.ollama?.model);
-      isDeepSeekConfigured = !!config.deepSeek?.apiKey;
-      isOpenAIConfigured = !!config.openAI?.apiKey;
-      isQwenConfigured = !!config.qwen?.apiKey;
-      isClaudeConfigured = !!config.claude?.apiKey;
-    } else {
-      // Use environment variables (Electron mode or when no config provided)
-      isOllamaConfigured = !!process.env.OLLAMA_ENDPOINT || !!process.env.OLLAMA_MODEL;
-      isDeepSeekConfigured = !!process.env.DEEPSEEK_API_KEY;
-      isOpenAIConfigured = !!process.env.OPENAI_API_KEY;
-      isQwenConfigured = !!process.env.QWEN_API_KEY;
-      isClaudeConfigured = !!process.env.CLAUDE_API_KEY;
-    }
+    // Get API keys and configs - prefer config from frontend, fallback to environment
+    const deepseekKey = config?.deepSeek?.apiKey || process.env.DEEPSEEK_API_KEY;
+    const openaiKey = config?.openAI?.apiKey || process.env.OPENAI_API_KEY;
+    const qwenKey = config?.qwen?.apiKey || process.env.QWEN_API_KEY;
+    const claudeKey = config?.claude?.apiKey || process.env.CLAUDE_API_KEY;
+    const ollamaEndpoint = config?.ollama?.endpoint || process.env.OLLAMA_ENDPOINT || 'http://localhost:11434';
+    const ollamaModel = config?.ollama?.model || process.env.OLLAMA_MODEL;
     
-    // If a specific provider is requested, validate it's configured
-    if (aiProvider) {
-      if (aiProvider === 'ollama' && !isOllamaConfigured) {
-        return res.status(400).json({ error: 'Ollama is not configured. Please check your environment variables.' });
-      }
-      
-      if (aiProvider === 'deepseek' && !isDeepSeekConfigured) {
-        return res.status(400).json({ error: 'DeepSeek API key is not configured. Please check your environment variables.' });
-      }
-      
-      if (aiProvider === 'openai' && !isOpenAIConfigured) {
-        return res.status(400).json({ error: 'OpenAI API key is not configured. Please check your environment variables.' });
-      }
-      
-      if (aiProvider === 'qwen' && !isQwenConfigured) {
-        return res.status(400).json({ error: 'Qwen API key is not configured. Please check your environment variables.' });
-      }
-      
-      if (aiProvider === 'claude' && !isClaudeConfigured) {
-        return res.status(400).json({ error: 'Claude API key is not configured. Please check your environment variables.' });
-      }
-    }
+    // Check what providers are configured
+    const isOllamaConfigured = !!(ollamaEndpoint && ollamaModel) || !!process.env.OLLAMA_MODEL;
+    const isDeepSeekConfigured = !!deepseekKey;
+    const isOpenAIConfigured = !!openaiKey;
+    const isQwenConfigured = !!qwenKey;
+    const isClaudeConfigured = !!claudeKey;
+
+    // Determine which provider to use
+    let useOllama = false;
+    let useDeepSeek = false;
+    let useOpenAI = false;
+    let useQwen = false;
+    let useClaude = false;
     
-    // If no provider is specified, auto-select based on what's available
-    let useOllama: boolean;
-    let useDeepSeek: boolean;
-    let useOpenAI: boolean;
-    let useQwen: boolean;
-    let useClaude: boolean;
-    
-    if (aiProvider === 'ollama') {
+    if (selectedProviderChoice === 'ollama' && isOllamaConfigured) {
       useOllama = true;
-      useDeepSeek = false;
-      useOpenAI = false;
-      useQwen = false;
-      useClaude = false;
-    } else if (aiProvider === 'deepseek') {
-      useOllama = false;
+    } else if (selectedProviderChoice === 'deepseek' && isDeepSeekConfigured) {
       useDeepSeek = true;
-      useOpenAI = false;
-      useQwen = false;
-      useClaude = false;
-    } else if (aiProvider === 'openai') {
-      useOllama = false;
-      useDeepSeek = false;
+    } else if (selectedProviderChoice === 'openai' && isOpenAIConfigured) {
       useOpenAI = true;
-      useQwen = false;
-      useClaude = false;
-    } else if (aiProvider === 'qwen') {
-      useOllama = false;
-      useDeepSeek = false;
-      useOpenAI = false;
+    } else if (selectedProviderChoice === 'qwen' && isQwenConfigured) {
       useQwen = true;
-      useClaude = false;
-    } else if (aiProvider === 'claude') {
-      useOllama = false;
-      useDeepSeek = false;
-      useOpenAI = false;
-      useQwen = false;
+    } else if (selectedProviderChoice === 'claude' && isClaudeConfigured) {
       useClaude = true;
-    } else {
-      // Auto-select logic: prefer in order - Ollama, OpenAI, Claude, Qwen, DeepSeek
-      if (isOllamaConfigured) {
-        useOllama = true;
-        useDeepSeek = false;
-        useOpenAI = false;
-        useQwen = false;
-        useClaude = false;
-      } else if (isOpenAIConfigured) {
-        useOllama = false;
-        useDeepSeek = false;
-        useOpenAI = true;
-        useQwen = false;
-        useClaude = false;
-      } else if (isClaudeConfigured) {
-        useOllama = false;
-        useDeepSeek = false;
-        useOpenAI = false;
-        useQwen = false;
-        useClaude = true;
-      } else if (isQwenConfigured) {
-        useOllama = false;
-        useDeepSeek = false;
-        useOpenAI = false;
-        useQwen = true;
-        useClaude = false;
-      } else if (isDeepSeekConfigured) {
-        useOllama = false;
+    } else if (selectedProviderChoice === 'auto' || !useOllama && !useDeepSeek && !useOpenAI && !useQwen && !useClaude) {
+      // Auto-select logic: prefer in order - DeepSeek, OpenAI, Qwen, Claude, Ollama
+      if (isDeepSeekConfigured) {
         useDeepSeek = true;
-        useOpenAI = false;
-        useQwen = false;
-        useClaude = false;
+      } else if (isOpenAIConfigured) {
+        useOpenAI = true;
+      } else if (isQwenConfigured) {
+        useQwen = true;
+      } else if (isClaudeConfigured) {
+        useClaude = true;
+      } else if (isOllamaConfigured) {
+        useOllama = true;
       } else {
         return res.status(400).json({ 
-          error: 'No AI provider is configured. Please configure one of the supported AI providers in your environment variables.' 
+          error: 'No AI provider is configured. Please configure an AI provider in Settings.' 
         });
       }
     }
@@ -544,33 +476,24 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     const prompt = generatePrompt(request);
     let generatedContent: string;
 
+    const deepseekModel = config?.deepSeek?.model || process.env.DEEPSEEK_MODEL || 'deepseek-chat';
+    const openaiModel = config?.openAI?.model || process.env.OPENAI_MODEL || 'gpt-4-turbo';
+    const qwenModel = config?.qwen?.model || process.env.QWEN_MODEL || 'qwen-turbo';
+    const claudeModel = config?.claude?.model || process.env.CLAUDE_MODEL || 'claude-3-haiku-20240307';
+    const ollamaModelName = config?.ollama?.model || process.env.OLLAMA_MODEL || 'llama3';
+
     if (useOllama) {
-      // Use provided config if available, otherwise use environment variables
-      const endpoint = config?.ollama?.endpoint || process.env.OLLAMA_ENDPOINT || 'http://localhost:11434';
-      const model = config?.ollama?.model || process.env.OLLAMA_MODEL || 'llama3';
-      generatedContent = await callOllamaAPI(prompt, endpoint, model);
+      generatedContent = await callOllamaAPI(prompt, ollamaEndpoint, ollamaModelName);
     } else if (useDeepSeek) {
-      // Use provided config if available, otherwise use environment variables
-      const apiKey = config?.deepSeek?.apiKey || process.env.DEEPSEEK_API_KEY;
-      const model = config?.deepSeek?.model || process.env.DEEPSEEK_MODEL || 'deepseek-chat';
       const timeout = config?.deepSeek?.timeout ? parseInt(config.deepSeek.timeout) : (process.env.DEEPSEEK_API_TIMEOUT ? parseInt(process.env.DEEPSEEK_API_TIMEOUT) : 30000);
       const maxTokens = config?.deepSeek?.maxTokens ? parseInt(config.deepSeek.maxTokens) : (process.env.DEEPSEEK_MAX_TOKENS ? parseInt(process.env.DEEPSEEK_MAX_TOKENS) : 4000);
-      generatedContent = await callDeepSeekAPI(prompt, apiKey, model, timeout, maxTokens);
+      generatedContent = await callDeepSeekAPI(prompt, deepseekKey!, deepseekModel, timeout, maxTokens);
     } else if (useOpenAI) {
-      // Use provided config if available, otherwise use environment variables
-      const apiKey = config?.openAI?.apiKey || process.env.OPENAI_API_KEY;
-      const model = config?.openAI?.model || process.env.OPENAI_MODEL || 'gpt-4-turbo';
-      generatedContent = await callOpenAIAPI(prompt, apiKey, model);
+      generatedContent = await callOpenAIAPI(prompt, openaiKey!, openaiModel);
     } else if (useQwen) {
-      // Use provided config if available, otherwise use environment variables
-      const apiKey = config?.qwen?.apiKey || process.env.QWEN_API_KEY;
-      const model = config?.qwen?.model || process.env.QWEN_MODEL || 'qwen-turbo';
-      generatedContent = await callQwenAPI(prompt, apiKey, model);
+      generatedContent = await callQwenAPI(prompt, qwenKey!, qwenModel);
     } else if (useClaude) {
-      // Use provided config if available, otherwise use environment variables
-      const apiKey = config?.claude?.apiKey || process.env.CLAUDE_API_KEY;
-      const model = config?.claude?.model || process.env.CLAUDE_MODEL || 'claude-3-haiku-20240307';
-      generatedContent = await callClaudeAPI(prompt, apiKey, model);
+      generatedContent = await callClaudeAPI(prompt, claudeKey!, claudeModel);
     } else {
       return res.status(500).json({ error: 'No valid AI provider configured' });
     }

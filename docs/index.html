@@ -7,8 +7,8 @@
     
     <!-- SEO Meta Tags -->
     <title>Offline Code Practice - Free LeetCode-Style Algorithm Practice App | No Internet Required</title>
-    <meta name="description" content="Practice coding algorithms 100% offline with our free desktop app. Supports JavaScript, TypeScript, and Python. Built-in problem library, AI problem generator, and VS Code-like editor. Available for Windows, macOS, and Linux.">
-    <meta name="keywords" content="LeetCode, algorithm practice, coding interview, offline coding, JavaScript, TypeScript, Python, programming practice, data structures, coding problems, free, open source">
+    <meta name="description" content="Practice coding algorithms 100% offline with a VS Code-like Web IDE. Includes AI problem generator, AI chat hints, and AI solution generation. Supports JavaScript, TypeScript, and Python. Available for Windows, macOS, and Linux. Free & open source.">
+    <meta name="keywords" content="LeetCode, algorithm practice, coding interview, offline coding, AI coding assistant, AI solution, AI chat, AI problem generator, JavaScript, TypeScript, Python, programming practice, data structures, coding problems, free, open source">
     <meta name="author" content="zxypro1">
     <meta name="robots" content="index, follow">
     <link rel="canonical" href="https://zxypro1.github.io/OfflineCodePractice/">
@@ -19,14 +19,14 @@
     <meta property="og:type" content="website">
     <meta property="og:url" content="https://zxypro1.github.io/OfflineCodePractice/">
     <meta property="og:title" content="Offline Code Practice - Free Algorithm Practice App">
-    <meta property="og:description" content="Practice coding algorithms 100% offline. Supports JavaScript, TypeScript, and Python. Free and open source.">
+    <meta property="og:description" content="Practice algorithms offline with a Web IDE + AI assistant: AI problem generator, AI chat hints, and AI solution generation. Supports JavaScript/TypeScript/Python. Free & open source.">
     <meta property="og:image" content="https://raw.githubusercontent.com/zxypro1/OfflineCodePractice/main/public/icon.png">
     
     <!-- Twitter -->
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:url" content="https://zxypro1.github.io/OfflineCodePractice/">
     <meta name="twitter:title" content="Offline Code Practice - Free Algorithm Practice App">
-    <meta name="twitter:description" content="Practice coding algorithms 100% offline. Supports JavaScript, TypeScript, and Python. Free and open source.">
+    <meta name="twitter:description" content="Practice algorithms offline with a Web IDE + AI assistant: AI problem generator, AI chat hints, and AI solution generation. Supports JavaScript/TypeScript/Python. Free & open source.">
     <meta name="twitter:image" content="https://raw.githubusercontent.com/zxypro1/OfflineCodePractice/main/public/icon.png">
     
     <!-- Favicon -->
@@ -50,7 +50,7 @@
             "price": "0",
             "priceCurrency": "USD"
         },
-        "description": "A standalone algorithm coding practice application that works 100% offline.",
+        "description": "A standalone algorithm coding practice app that works 100% offline, with AI problem generator, AI chat assistant, and AI solution generation.",
         "downloadUrl": "https://github.com/zxypro1/OfflineCodePractice/releases",
         "softwareVersion": "0.1.7",
         "author": {
@@ -718,6 +718,7 @@
             <div class="nav-links">
                 <a href="#features">Features</a>
                 <a href="#languages">Languages</a>
+                <a href="#ai">AI</a>
                 <a href="#download">Download</a>
                 <a href="./zh/" class="lang-btn" aria-label="Switch to Chinese">中文</a>
                 <a href="https://github.com/zxypro1/OfflineCodePractice" target="_blank" rel="noopener" class="github-btn">
@@ -737,8 +738,8 @@
             <div class="badge">
                 <span>v0.1.7 Released</span>
             </div>
-            <h1>Practice Algorithms<br>Anywhere, Anytime</h1>
-            <p>A 100% offline LeetCode-style coding practice app. No internet required. Supports JavaScript, TypeScript, and Python with WASM-powered browser execution.</p>
+            <h1>Offline Practice<br>With AI Assistance</h1>
+            <p>A 100% offline LeetCode-style coding practice app with a Web IDE. Use AI to generate problems, chat for hints, and generate complete solutions—then run tests locally. Supports JavaScript, TypeScript, and Python.</p>
             <div class="hero-buttons">
                 <a href="#download" class="btn btn-primary">
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
@@ -778,8 +779,8 @@
                 </article>
                 <article class="feature-card fade-in">
                     <div class="feature-icon">🤖</div>
-                    <h3>AI Problem Generator</h3>
-                    <p>Generate custom problems using AI. Supports DeepSeek, OpenAI, Claude, Qwen, and Ollama.</p>
+                    <h3>AI Assistant (3-in-1)</h3>
+                    <p>AI Problem Generator + AI Chat + AI Solution generation—configurable providers in Settings (DeepSeek/OpenAI/Claude/Qwen/Ollama).</p>
                 </article>
                 <article class="feature-card fade-in">
                     <div class="feature-icon">📚</div>
@@ -891,12 +892,12 @@
     </section>
     
     <!-- AI Section -->
-    <section class="ai-section">
+    <section class="ai-section" id="ai">
         <div class="container">
             <div class="ai-content">
                 <div class="ai-text fade-in">
-                    <h2>AI-Powered Problem Generation</h2>
-                    <p>Describe what you want to practice in natural language, and AI will generate a complete problem with test cases and solutions. Works with multiple AI providers.</p>
+                    <h2>AI for the Whole Workflow</h2>
+                    <p>Generate new problems, ask for hints while you code, and generate full annotated solutions. All AI features share the same provider settings so you can switch models anytime.</p>
                     <div class="ai-providers">
                         <span class="provider-badge">🤖 DeepSeek</span>
                         <span class="provider-badge">🧠 OpenAI</span>
@@ -907,17 +908,16 @@
                 </div>
                 <div class="ai-visual fade-in">
                     <div class="code-block">
-                        <p><span class="code-comment">// User prompt:</span></p>
-                        <p><span class="code-string">"Generate a dynamic programming problem about finding the longest increasing subsequence"</span></p>
+                        <p><span class="code-comment">// AI Chat:</span></p>
+                        <p><span class="code-string">"Give me a hint based on my current code..."</span></p>
                         <br>
-                        <p><span class="code-comment">// AI generates:</span></p>
-                        <p><span class="code-keyword">const</span> <span class="code-function">problem</span> = {</p>
-                        <p>&nbsp;&nbsp;title: <span class="code-string">"Longest Increasing Subsequence"</span>,</p>
-                        <p>&nbsp;&nbsp;difficulty: <span class="code-string">"Medium"</span>,</p>
-                        <p>&nbsp;&nbsp;tags: [<span class="code-string">"dp"</span>, <span class="code-string">"array"</span>],</p>
-                        <p>&nbsp;&nbsp;tests: [<span class="code-comment">/* comprehensive test cases */</span>],</p>
-                        <p>&nbsp;&nbsp;solution: <span class="code-comment">/* working solution */</span></p>
-                        <p>};</p>
+                        <p><span class="code-comment">// AI Solution:</span></p>
+                        <p><span class="code-keyword">function</span> <span class="code-function">solution</span>(input) {</p>
+                        <p>&nbsp;&nbsp;<span class="code-comment">/* Solution 1: brute force (with notes) */</span></p>
+                        <p>&nbsp;&nbsp;<span class="code-comment">/* Solution 2: optimized (recommended) */</span></p>
+                        <p>&nbsp;&nbsp;<span class="code-comment">/* Complexity + explanation in comments */</span></p>
+                        <p>&nbsp;&nbsp;<span class="code-comment">/* ... */</span></p>
+                        <p>}</p>
                     </div>
                 </div>
             </div>

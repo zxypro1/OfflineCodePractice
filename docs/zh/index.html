@@ -7,8 +7,8 @@
 
   <!-- SEO Meta Tags -->
   <title>Offline Code Practice - 离线算法刷题软件 | 无需联网的 LeetCode 风格练习工具</title>
-  <meta name="description" content="一款 100% 离线可用的算法练习桌面应用：内置题库 + Web IDE（类 VS Code）+ 浏览器端 WASM 执行。支持 JavaScript、TypeScript、Python。Windows / macOS / Linux 全平台下载。">
-  <meta name="keywords" content="离线刷题,算法练习,LeetCode,面试,数据结构,编程题,JavaScript,TypeScript,Python,桌面应用,开源,免费">
+  <meta name="description" content="一款 100% 离线可用的算法刷题桌面应用：Web IDE（类 VS Code）+ WASM 本地运行 + AI 辅助（AI 生成题目 / AI 题解 / AI 对话提示）。支持 JavaScript / TypeScript / Python，Windows / macOS / Linux 全平台下载，免费开源。">
+  <meta name="keywords" content="离线刷题,算法练习,LeetCode,面试,AI题解,AI对话,AI生成题目,AI编程助手,数据结构,编程题,JavaScript,TypeScript,Python,桌面应用,开源,免费">
   <meta name="author" content="zxypro1">
   <meta name="robots" content="index, follow">
   <link rel="canonical" href="https://zxypro1.github.io/OfflineCodePractice/zh/">
@@ -19,14 +19,14 @@
   <meta property="og:type" content="website">
   <meta property="og:url" content="https://zxypro1.github.io/OfflineCodePractice/zh/">
   <meta property="og:title" content="Offline Code Practice - 离线算法刷题软件">
-  <meta property="og:description" content="无需联网也能刷题：内置题库、Web IDE、WASM 执行。支持 JS/TS/Python。免费开源。">
+  <meta property="og:description" content="无需联网也能刷题：Web IDE + WASM 执行 + AI 辅助（AI 生成题目 / AI 题解 / AI 对话提示）。支持 JS/TS/Python。免费开源。">
   <meta property="og:image" content="https://raw.githubusercontent.com/zxypro1/OfflineCodePractice/main/public/icon.png">
 
   <!-- Twitter -->
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:url" content="https://zxypro1.github.io/OfflineCodePractice/zh/">
   <meta name="twitter:title" content="Offline Code Practice - 离线算法刷题软件">
-  <meta name="twitter:description" content="无需联网也能刷题：内置题库、Web IDE、WASM 执行。支持 JS/TS/Python。免费开源。">
+  <meta name="twitter:description" content="无需联网也能刷题：Web IDE + WASM 执行 + AI 辅助（AI 生成题目 / AI 题解 / AI 对话提示）。支持 JS/TS/Python。免费开源。">
   <meta name="twitter:image" content="https://raw.githubusercontent.com/zxypro1/OfflineCodePractice/main/public/icon.png">
 
   <!-- Favicon -->
@@ -47,7 +47,7 @@
     "applicationCategory": "DeveloperApplication",
     "inLanguage": "zh-CN",
     "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
-    "description": "一款 100% 离线可用的算法刷题桌面应用，支持 JavaScript/TypeScript/Python。",
+    "description": "一款 100% 离线可用的算法刷题桌面应用，支持 JavaScript/TypeScript/Python，并提供 AI 生成题目、AI 题解、AI 对话提示。",
     "downloadUrl": "https://github.com/zxypro1/OfflineCodePractice/releases",
     "softwareVersion": "0.1.7",
     "author": { "@type": "Person", "name": "zxypro1" }
@@ -69,6 +69,7 @@
       <div class="nav-links">
         <a href="#features">功能亮点</a>
         <a href="#languages">支持语言</a>
+        <a href="#ai">AI 功能</a>
         <a href="#download">下载</a>
         <a href="../" class="lang-btn" aria-label="Switch to English">English</a>
         <a href="https://github.com/zxypro1/OfflineCodePractice" target="_blank" rel="noopener" class="github-btn">
@@ -88,8 +89,8 @@
       <div class="badge">
         <span>v0.1.7 已发布</span>
       </div>
-      <h1>离线刷题<br>随时随地</h1>
-      <p>一款 100% 离线可用的 LeetCode 风格算法练习应用，无需联网。支持 JavaScript、TypeScript、Python，并通过 WASM 在浏览器端直接运行测试。</p>
+      <h1>离线刷题<br>AI 随行</h1>
+      <p>一款 100% 离线可用的 LeetCode 风格算法练习应用：Web IDE + WASM 本地执行。做题时可直接 AI 对话获取提示、一键生成带注释的 AI 题解，还能用 AI 生成新题。支持 JavaScript / TypeScript / Python。</p>
       <div class="hero-buttons">
         <a href="#download" class="btn btn-primary">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
@@ -129,8 +130,8 @@
         </article>
         <article class="feature-card fade-in">
           <div class="feature-icon">🤖</div>
-          <h3>AI 辅助（可选）</h3>
-          <p>支持 AI 生成题目、AI 题解、AI 对话（多供应商可配置）。</p>
+          <h3>AI 辅助（3 合 1）</h3>
+          <p>AI 生成题目 + AI 对话提示 + AI 题解（带注释多解法）。支持多供应商统一在设置页配置（DeepSeek/OpenAI/Claude/Qwen/Ollama）。</p>
         </article>
         <article class="feature-card fade-in">
           <div class="feature-icon">📚</div>
@@ -141,6 +142,33 @@
           <div class="feature-icon">🌍</div>
           <h3>跨平台</h3>
           <p>Windows / macOS / Linux 全平台支持，体验一致。</p>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- AI Section -->
+  <section class="features" id="ai">
+    <div class="container">
+      <div class="section-title fade-in">
+        <h2>AI 功能：从出题到题解</h2>
+        <p>三大 AI 功能共用同一套供应商配置，可随时切换模型</p>
+      </div>
+      <div class="features-grid">
+        <article class="feature-card fade-in">
+          <div class="feature-icon">🧩</div>
+          <h3>AI 生成题目</h3>
+          <p>用自然语言描述练习目标，自动生成题目、示例与测试用例，直接加入本地题库。</p>
+        </article>
+        <article class="feature-card fade-in">
+          <div class="feature-icon">💬</div>
+          <h3>AI 对话</h3>
+          <p>右下角对话框随时提问：提示、思路、复杂度分析、调试建议。上下文包含题目与当前代码。</p>
+        </article>
+        <article class="feature-card fade-in">
+          <div class="feature-icon">🪄</div>
+          <h3>AI 题解</h3>
+          <p>一键生成带中文注释的完整题解：同一份代码中包含多种解法（暴力/优化/最优）并附复杂度说明。</p>
         </article>
       </div>
     </div>

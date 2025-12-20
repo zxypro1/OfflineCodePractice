@@ -10,8 +10,6 @@ Quick links: [Discussions](https://github.com/zxypro1/OfflineLeetPractice/discus
 
 <img width="2545" height="1229" alt="2025-08-24165302" src="https://github.com/user-attachments/assets/93116550-60af-41aa-b0f3-cc2b10fd5ac5" />
 
-<img width="1236" height="1057" alt="Screenshot 2025-08-24 210556" src="https://github.com/user-attachments/assets/6c1fe0f2-df1b-4cc9-a78e-8f0d88b87c24" />
-
 ## Quick Start
 
 ### Desktop Application (Recommended)

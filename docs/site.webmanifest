@@ -1,0 +1,28 @@
+{
+  "name": "Offline Code Practice",
+  "short_name": "OfflineCode",
+  "description": "Practice algorithms 100% offline with a Web IDE + AI assistant.",
+  "start_url": "/OfflineCodePractice/",
+  "scope": "/OfflineCodePractice/",
+  "display": "standalone",
+  "background_color": "#0f0f23",
+  "theme_color": "#0f0f23",
+  "icons": [
+    {
+      "src": "/OfflineCodePractice/icon.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    },
+    {
+      "src": "/OfflineCodePractice/favicon-32.png",
+      "sizes": "32x32",
+      "type": "image/png"
+    },
+    {
+      "src": "/OfflineCodePractice/favicon-16.png",
+      "sizes": "16x16",
+      "type": "image/png"
+    }
+  ]
+}
+

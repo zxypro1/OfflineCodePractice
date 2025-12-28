@@ -24,6 +24,7 @@ import { useTheme } from '../../src/contexts/ThemeContext';
 import { LanguageThemeControls } from '../../src/components/LanguageThemeControls';
 import { CodeWithCopy } from '../../src/components/CodeWithCopy';
 import MarkdownRenderer from '../../src/components/MarkdownRenderer';
+import { appendPracticeAttemptEvent } from '../../src/lib/practiceStats';
 
 const CodeRunner = dynamic(() => import('../../src/components/CodeRunner'), { ssr: false });
 const AIChatDialog = dynamic(() => import('../../src/components/AIChatDialog'), { ssr: false });
@@ -256,6 +257,22 @@ if (error || !problem) {
     // Auto-switch to results tab when test results are received
     if (result && result.status !== 'running') {
       setActiveTab('results');
+    }
+
+    // Record practice stats (client-side only)
+    if (result && result.status !== 'running' && Array.isArray(result.results)) {
+      const passedTests = typeof result.passed === 'number' ? result.passed : 0;
+      const totalTests = typeof result.total === 'number' ? result.total : result.results.length;
+      const allPassed = totalTests > 0 && passedTests === totalTests;
+
+      appendPracticeAttemptEvent({
+        problemId: String(id),
+        language: codeLanguage || 'javascript',
+        totalTests,
+        passedTests,
+        allPassed,
+        totalExecutionTimeMs: result.performance?.totalExecutionTime,
+      });
     }
   };
   

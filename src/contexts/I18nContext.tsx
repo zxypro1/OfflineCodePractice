@@ -23,6 +23,10 @@ type Translations = {
     title: string;
     subtitle: string;
   };
+  statsPage?: {
+    title: string;
+    subtitle: string;
+  };
   homepage: {
     title: string;
     subtitle: string;
@@ -31,6 +35,10 @@ type Translations = {
     addProblem: string;
     search: string;
     aiGenerator: string;
+    problemStatus?: {
+      attempted: string;
+      solved: string;
+    };
     searchPlaceholder: string;
     filterByDifficulty: string;
     filterByTags: string;
@@ -40,6 +48,46 @@ type Translations = {
     noResults: string;
     showingResults: string;
     of: string;
+    stats?: {
+      title: string;
+      subtitle: string;
+      jumpToDashboard: string;
+      last7Days: string;
+      last30Days: string;
+      clear: string;
+      today: string;
+      todayAttempted: string;
+      todaySolved: string;
+      todaySubmissions: string;
+      todayCorrectSubmissions: string;
+      trend: string;
+      unitProblems: string;
+      attemptedTrend: string;
+      solvedTrend: string;
+      submissionsTrend: string;
+      correctSubmissionsTrend: string;
+      summary: string;
+      rangeAttempted: string;
+      rangeSolved: string;
+      accuracy: string;
+      rangeSubmissions: string;
+      rangeCorrectSubmissions: string;
+      submissionAccuracy: string;
+      todayProblems: string;
+      uniqueProblemsTip: string;
+      recentSubmissions: string;
+      recentSubmissionsTip: string;
+      tests: string;
+      language: string;
+      execTime: string;
+      correct: string;
+      wrong: string;
+      empty: string;
+      solved: string;
+      unsolved: string;
+      attempts: string;
+      more: string;
+    };
     difficulty: {
       Easy: string;
       Medium: string;

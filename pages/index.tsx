@@ -24,6 +24,7 @@ import {
 import { useMemo } from 'react';
 import { useTranslation, useI18n } from '../src/contexts/I18nContext';
 import { LanguageThemeControls } from '../src/components/LanguageThemeControls'
+import { buildProblemStatusIndex, loadPracticeAttemptEvents, PRACTICE_STATS_UPDATED_EVENT } from '../src/lib/practiceStats';
 
 type Problem = {
   id: string;
@@ -49,6 +50,9 @@ export default function Home() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [mounted, setMounted] = useState(false);
+  const [problemStatusIndex, setProblemStatusIndex] = useState<Map<string, { attempted: boolean; solved: boolean; lastTs: string }>>(
+    new Map()
+  );
   
   // Search and filter states
   const [searchQuery, setSearchQuery] = useState('');
@@ -58,6 +62,28 @@ export default function Home() {
   useEffect(() => {
     setMounted(true);
   }, []);
+
+  useEffect(() => {
+    if (!mounted) return;
+
+    const refresh = () => {
+      const events = loadPracticeAttemptEvents();
+      setProblemStatusIndex(buildProblemStatusIndex(events));
+    };
+
+    refresh();
+
+    const onStorage = (e: StorageEvent) => {
+      if (e.key && e.key.includes('practice-attempt-events-v1')) refresh();
+    };
+
+    window.addEventListener('storage', onStorage);
+    window.addEventListener(PRACTICE_STATS_UPDATED_EVENT, refresh as any);
+    return () => {
+      window.removeEventListener('storage', onStorage);
+      window.removeEventListener(PRACTICE_STATS_UPDATED_EVENT, refresh as any);
+    };
+  }, [mounted]);
 
   useEffect(() => {
     const fetchProblems = async () => {
@@ -340,6 +366,16 @@ export default function Home() {
               <Text size="sm" c="dimmed">{t('homepage.subtitle')}</Text>
             </div>
             <Group>
+              <Link href="/stats">
+                <Badge
+                  size="lg"
+                  variant="outline"
+                  color="grape"
+                  style={{ cursor: 'pointer', padding: '8px 16px' }}
+                >
+                  📊 {t('homepage.stats.jumpToDashboard')}
+                </Badge>
+              </Link>
               <Link href="/add-problem">
                 <Badge 
                   size="lg" 
@@ -501,6 +537,23 @@ export default function Home() {
                         >
                           {t(`homepage.difficulty.${problem.difficulty}`)}
                         </Badge>
+                        {(() => {
+                          const st = problemStatusIndex.get(problem.id);
+                          if (!st?.attempted) return null;
+                          return (
+                            <Group gap={6}>
+                              {st.solved ? (
+                                <Badge color="green" variant="light" size="sm">
+                                  {t('homepage.problemStatus.solved')}
+                                </Badge>
+                              ) : (
+                                <Badge color="blue" variant="light" size="sm">
+                                  {t('homepage.problemStatus.attempted')}
+                                </Badge>
+                              )}
+                            </Group>
+                          );
+                        })()}
                       </Group>
                       
                       <div>

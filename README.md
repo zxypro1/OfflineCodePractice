@@ -162,7 +162,8 @@ See [DESKTOP-APP-GUIDE.md](./DESKTOP-APP-GUIDE.md) for detailed build instructio
 
 ## Technology Stack
 
-- **Frontend**: React 18, Next.js 13, TypeScript
+### Frontend
+- **Framework**: React 18, Next.js 13, TypeScript
 - **UI Framework**: Mantine v7
 - **Code Editor**: Monaco Editor
 - **Code Execution**: WebAssembly
@@ -170,6 +171,14 @@ See [DESKTOP-APP-GUIDE.md](./DESKTOP-APP-GUIDE.md) for detailed build instructio
   - TypeScript: TypeScript compiler (CDN)
   - Python: Pyodide (CPython compiled to WASM)
 - **Desktop**: Electron
+
+### Backend (Problem Marketplace)
+- **Framework**: Rust + Axum
+- **Database**: PostgreSQL (Supabase)
+- **Authentication**: JWT + OAuth (GitHub, Google)
+- **Deployment**: Vercel Serverless Functions
+
+👉 **[Backend Documentation](./backend/README.md)** | **[后端文档](./backend/README-zh.md)**
 
 ## Project Structure
 

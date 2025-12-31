@@ -221,6 +221,26 @@ export default function Home() {
                 <Text size="sm" c="dimmed">{t('homepage.subtitle')}</Text>
               </div>
               <Group>
+                <Link href="/stats">
+                  <Badge 
+                    size="lg" 
+                    variant="outline" 
+                    color="grape" 
+                    style={{ cursor: 'pointer', padding: '8px 16px' }}
+                  >
+                    📊 {t('homepage.stats.jumpToDashboard')}
+                  </Badge>
+                </Link>
+                <Link href="/market">
+                  <Badge 
+                    size="lg" 
+                    variant="outline" 
+                    color="orange" 
+                    style={{ cursor: 'pointer', padding: '8px 16px' }}
+                  >
+                    🛒 {t('manage.market')}
+                  </Badge>
+                </Link>
                 <Link href="/add-problem">
                   <Badge 
                     size="lg" 
@@ -294,6 +314,26 @@ export default function Home() {
                 <Text size="sm" c="dimmed">{t('homepage.subtitle')}</Text>
               </div>
               <Group>
+                <Link href="/stats">
+                  <Badge 
+                    size="lg" 
+                    variant="outline" 
+                    color="grape" 
+                    style={{ cursor: 'pointer', padding: '8px 16px' }}
+                  >
+                    📊 {t('homepage.stats.jumpToDashboard')}
+                  </Badge>
+                </Link>
+                <Link href="/market">
+                  <Badge 
+                    size="lg" 
+                    variant="outline" 
+                    color="orange" 
+                    style={{ cursor: 'pointer', padding: '8px 16px' }}
+                  >
+                    🛒 {t('manage.market')}
+                  </Badge>
+                </Link>
                 <Link href="/add-problem">
                   <Badge 
                     size="lg" 
@@ -374,6 +414,16 @@ export default function Home() {
                   style={{ cursor: 'pointer', padding: '8px 16px' }}
                 >
                   📊 {t('homepage.stats.jumpToDashboard')}
+                </Badge>
+              </Link>
+              <Link href="/market">
+                <Badge 
+                  size="lg" 
+                  variant="outline" 
+                  color="orange" 
+                  style={{ cursor: 'pointer', padding: '8px 16px' }}
+                >
+                  🛒 {t('manage.market')}
                 </Badge>
               </Link>
               <Link href="/add-problem">

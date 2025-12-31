@@ -77,16 +77,16 @@ export function SparkBarChart({
         >
           {(!hideXAxis ? (
             // @ts-expect-error - recharts XAxis type compatibility issue
-            <XAxis
-              dataKey="name"
-              tick={{ fontSize: 9, fill: 'var(--mantine-color-dimmed)' }}
-              tickLine={{ stroke: 'var(--mantine-color-gray-4)' }}
-              axisLine={{ stroke: 'var(--mantine-color-gray-4)' }}
-              angle={-45}
-              textAnchor="end"
-              height={50}
-              interval={0}
-            />
+          <XAxis
+            dataKey="name"
+            tick={{ fontSize: 9, fill: 'var(--mantine-color-dimmed)' }}
+            tickLine={{ stroke: 'var(--mantine-color-gray-4)' }}
+            axisLine={{ stroke: 'var(--mantine-color-gray-4)' }}
+            angle={-45}
+            textAnchor="end"
+            height={50}
+            interval={0}
+          />
           ) : null) as any}
           {/* @ts-expect-error - recharts YAxis type compatibility issue */}
           <YAxis

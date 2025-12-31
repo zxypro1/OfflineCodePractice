@@ -1,10 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import Head from 'next/head';
-import { AppShell, Container, Group, Title, Button, ActionIcon, Text } from '@mantine/core';
-import { IconArrowLeft, IconBrain } from '@tabler/icons-react';
+import { Container, Button, Text } from '@mantine/core';
 import { useRouter } from 'next/router';
 import { useTranslation, useI18n } from '../src/contexts/I18nContext';
-import { LanguageThemeControls } from '../src/components/LanguageThemeControls';
+import { StandardPageLayout } from '../src/components/StandardPageLayout';
 import ProblemGenerator from '../src/components/ProblemGenerator';
 
 interface GeneratedProblem {
@@ -36,10 +34,6 @@ const GeneratorPage: React.FC = () => {
     setLastGeneratedProblem(problem);
   };
 
-  const handleBackToHome = () => {
-    router.push('/');
-  };
-
   const handleTryProblem = () => {
     if (lastGeneratedProblem) {
       router.push(`/problems/${lastGeneratedProblem.id}`);
@@ -48,80 +42,36 @@ const GeneratorPage: React.FC = () => {
 
   if (!mounted) {
     return (
-      <>
-        <Head>
-          <title>{t('aiGenerator.title')} - {t('header.title')}</title>
-          <meta name="description" content={t('aiGenerator.subtitle')} />
-          <meta name="viewport" content="width=device-width, initial-scale=1" />
-        </Head>
-        <div>{t('common.loading')}</div>
-      </>
+      <StandardPageLayout
+        title={t('aiGenerator.title')}
+        subtitle={t('aiGenerator.subtitle')}
+        pageTitle={t('aiGenerator.title')}
+      >
+        <Text>{t('common.loading')}</Text>
+      </StandardPageLayout>
     );
   }
 
   return (
-    <>
-      <Head>
-        <title>{t('aiGenerator.title')} - {t('header.title')}</title>
-        <meta name="description" content={t('aiGenerator.subtitle')} />
-        <meta name="viewport" content="width=device-width, initial-scale=1" />
-      </Head>
-
-      <AppShell
-        header={{ height: 70 }}
-        padding="md"
-      >
-        {/* Header */}
-        <AppShell.Header>
-          <Container size="lg" h="100%">
-            <Group h="100%" justify="space-between">
-              <Group>
-                <ActionIcon
-                  variant="subtle"
-                  onClick={handleBackToHome}
-                  aria-label={t('aiGenerator.backToHome')}
-                >
-                  <IconArrowLeft size={18} />
-                </ActionIcon>
-                
-                <IconBrain size={24} />
-                <Title order={3}>
-                  {t('aiGenerator.title')}
-                </Title>
-              </Group>
-
-              <Group>
-                {lastGeneratedProblem && (
-                  <Button 
-                    variant="outline"
-                    onClick={handleTryProblem}
-                  >
-                    {t('aiGenerator.tryLastProblem')}
-                  </Button>
-                )}
-                <LanguageThemeControls />
-              </Group>
-            </Group>
-          </Container>
-        </AppShell.Header>
-
-        {/* Main Content */}
-        <AppShell.Main>
-          <Container size="lg" py="xl">
-            <ProblemGenerator 
-              onProblemGenerated={handleProblemGenerated}
-            />
-          </Container>
-
-          {/* Footer */}
-          <Container size="lg" py="md">
-            <Text size="sm" ta="center" c="dimmed">
-              {t('aiGenerator.poweredBy', { provider: 'AI' })} • {t('aiGenerator.unlimitedProblems')}
-            </Text>
-          </Container>
-        </AppShell.Main>
-      </AppShell>
-    </>
+    <StandardPageLayout
+      title={t('aiGenerator.title')}
+      subtitle={t('aiGenerator.subtitle')}
+      pageTitle={t('aiGenerator.title')}
+      rightSection={
+        lastGeneratedProblem && (
+          <Button 
+            variant="outline"
+            onClick={handleTryProblem}
+          >
+            {t('aiGenerator.tryLastProblem')}
+          </Button>
+        )
+      }
+    >
+      <Container size="lg" py="xl">
+        <ProblemGenerator onProblemGenerated={handleProblemGenerated} />
+      </Container>
+    </StandardPageLayout>
   );
 };
 

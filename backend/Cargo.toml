@@ -1,0 +1,32 @@
+[package]
+name = "offline-leet-backend"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+axum = { version = "0.7", features = ["macros"] }
+tokio = { version = "1.0", features = ["full"] }
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+sqlx = { version = "0.7", features = ["runtime-tokio", "tls-rustls", "postgres", "chrono", "uuid"] }
+chrono = { version = "0.4", features = ["serde"] }
+uuid = { version = "1.0", features = ["v4", "serde"] }
+dotenvy = "0.15"
+tower-http = { version = "0.5", features = ["cors", "trace", "limit", "set-header"] }
+tower_governor = "0.3"
+tracing = "0.1"
+tracing-subscriber = { version = "0.3", features = ["env-filter"] }
+jsonwebtoken = "9.0"
+argon2 = "0.5"
+oauth2 = "4.4"
+reqwest = { version = "0.11", features = ["json"] }
+anyhow = "1.0"
+thiserror = "1.0"
+async-trait = "0.1"
+bytes = "1.0"
+config = "0.13"
+tower = { version = "0.4", features = ["util"] }
+validator = { version = "0.16", features = ["derive"] }
+rand = "0.8"
+vercel_runtime = "1.1.0"
+

@@ -28,7 +28,15 @@ import {
   ScrollArea,
 } from '@mantine/core';
 import { useTranslation, useI18n } from '../src/contexts/I18nContext';
-import { LanguageThemeControls } from '../src/components/LanguageThemeControls';
+import { StandardPageLayout } from '../src/components/StandardPageLayout';
+import { 
+  IconCloudUpload,
+  IconSearch,
+  IconTrash,
+  IconDownload,
+  IconWorldDownload
+} from '@tabler/icons-react';
+import { notifications } from '@mantine/notifications';
 import ProblemForm from '../src/components/ProblemForm';
 
 type Problem = {
@@ -86,6 +94,7 @@ export default function ManageProblems() {
   
   // State for search
   const [searchQuery, setSearchQuery] = useState('');
+  const [uploadingToMarket, setUploadingToMarket] = useState<string | null>(null);
 
   // State for edit modal
   const [editModalOpen, setEditModalOpen] = useState(false);
@@ -104,6 +113,60 @@ export default function ManageProblems() {
       setError(err instanceof Error ? err.message : 'Failed to load problems');
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleUploadToMarket = async (problem: Problem) => {
+    const savedUser = localStorage.getItem('market_user');
+    if (!savedUser) {
+      notifications.show({
+        title: t('common.error'),
+        message: t('market.loginRequired'),
+        color: 'red',
+      });
+      return;
+    }
+
+    const user = JSON.parse(savedUser);
+    setUploadingToMarket(problem.id);
+
+    try {
+      const res = await fetch('/api/market/problems', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${user.token}`
+        },
+        body: JSON.stringify({
+          title: problem.title[locale as keyof typeof problem.title] || problem.title.en,
+          content: problem,
+          tags: problem.tags || [],
+          difficulty: problem.difficulty,
+        }),
+      });
+
+      if (res.ok) {
+        notifications.show({
+          title: t('common.success'),
+          message: t('market.uploadSuccess'),
+          color: 'green',
+        });
+      } else {
+        const data = await res.json();
+        notifications.show({
+          title: t('common.error'),
+          message: data.error || 'Upload failed',
+          color: 'red',
+        });
+      }
+    } catch (err) {
+      notifications.show({
+        title: t('common.error'),
+        message: 'Network error',
+        color: 'red',
+      });
+    } finally {
+      setUploadingToMarket(null);
     }
   };
 
@@ -296,33 +359,11 @@ export default function ManageProblems() {
   };
 
   return (
-    <AppShell header={{ height: 64 }}>
-      <Head>
-        <title>{t('manage.title')} - {t('header.title')}</title>
-        <meta name="description" content="Manage your problem collection" />
-        <link rel="icon" href="/favicon.ico" />
-      </Head>
-
-      <AppShell.Header>
-        <Container size="xl" h="100%">
-          <Group h="100%" justify="space-between">
-            <Link href="/" style={{ textDecoration: 'none' }}>
-              <Title order={3} c="var(--mantine-color-text)">
-                {t('header.title')}
-              </Title>
-            </Link>
-            <Group>
-              <Button component={Link} href="/" variant="subtle">
-                {t('manage.backToProblems')}
-              </Button>
-              <LanguageThemeControls />
-            </Group>
-          </Group>
-        </Container>
-      </AppShell.Header>
-
-      <AppShell.Main>
-        <Container size="xl" py="xl">
+    <StandardPageLayout
+      title={t('manage.title')}
+      pageTitle={t('manage.title')}
+    >
+      <Container size="xl" py="xl">
           <Stack gap="xl">
             <Title order={2}>{t('manage.title')}</Title>
             
@@ -637,6 +678,16 @@ export default function ManageProblems() {
                             </Table.Td>
                             <Table.Td>
                               <Group gap="xs">
+                                <Tooltip label={t('market.uploadProblem')}>
+                                  <ActionIcon 
+                                    variant="subtle" 
+                                    color="orange"
+                                    onClick={() => handleUploadToMarket(problem)}
+                                    loading={uploadingToMarket === problem.id}
+                                  >
+                                    <IconCloudUpload size={16} />
+                                  </ActionIcon>
+                                </Tooltip>
                                 <Tooltip label={t('manage.viewProblem')}>
                                   <ActionIcon 
                                     variant="subtle" 
@@ -678,8 +729,6 @@ export default function ManageProblems() {
               </Tabs.Panel>
             </Tabs>
           </Stack>
-        </Container>
-      </AppShell.Main>
 
       {/* Delete Confirmation Modal */}
       <Modal
@@ -725,6 +774,7 @@ export default function ManageProblems() {
           />
         )}
       </Modal>
-    </AppShell>
+        </Container>
+    </StandardPageLayout>
   );
 }

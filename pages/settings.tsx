@@ -19,7 +19,7 @@ import {
 } from '@mantine/core';
 import { IconRobot } from '@tabler/icons-react';
 import { useTranslation, useI18n } from '../src/contexts/I18nContext';
-import { LanguageThemeControls } from '../src/components/LanguageThemeControls';
+import { StandardPageLayout } from '../src/components/StandardPageLayout';
 
 export default function SettingsPage() {
   const { t } = useTranslation();
@@ -213,13 +213,12 @@ export default function SettingsPage() {
 
   if (loading) {
     return (
-      <Container size="md" py="xl">
-        <Stack gap="xl">
-          <Group justify="space-between" align="center">
-            <Title>{t('settings.title')}</Title>
-            <LanguageThemeControls />
-          </Group>
-          
+      <StandardPageLayout
+        title={t('settings.title')}
+        subtitle={t('settings.description')}
+        pageTitle={t('settings.title')}
+      >
+        <Container size="md" py="xl">
           <Card shadow="sm" padding="lg" radius="md" withBorder>
             <Center style={{ minHeight: '300px' }}>
               <Stack align="center" gap="md">
@@ -228,25 +227,19 @@ export default function SettingsPage() {
               </Stack>
             </Center>
           </Card>
-        </Stack>
-      </Container>
+        </Container>
+      </StandardPageLayout>
     );
   }
 
   return (
-    <Container size="md" py="xl">
-      <Stack gap="xl">
-        <Group justify="space-between" align="center">
-          <Button 
-            variant="subtle"
-            onClick={() => window.location.href = '/'}
-            size="md"
-          >
-            ← {t('common.home')}
-          </Button>
-          <Title>{t('settings.title')}</Title>
-          <LanguageThemeControls />
-        </Group>
+    <StandardPageLayout
+      title={t('settings.title')}
+      subtitle={t('settings.description')}
+      pageTitle={t('settings.title')}
+    >
+      <Container size="md" py="xl">
+        <Stack gap="xl">
         
         <Card shadow="sm" padding="lg" radius="md" withBorder>
           <Stack gap="xl">
@@ -427,7 +420,8 @@ export default function SettingsPage() {
             </Group>
           </Stack>
         </Card>
-      </Stack>
-    </Container>
+        </Stack>
+      </Container>
+    </StandardPageLayout>
   );
 }

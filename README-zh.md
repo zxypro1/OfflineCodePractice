@@ -162,7 +162,8 @@ npm run dist:all
 
 ## 技术栈
 
-- **前端框架**：React 18、Next.js 13、TypeScript
+### 前端
+- **框架**：React 18、Next.js 13、TypeScript
 - **UI 框架**：Mantine v7
 - **代码编辑器**：Monaco Editor
 - **代码执行**：WebAssembly
@@ -170,6 +171,14 @@ npm run dist:all
   - TypeScript：TypeScript 编译器（CDN）
   - Python：Pyodide（CPython 编译为 WASM）
 - **桌面框架**：Electron
+
+### 后端（题目市场）
+- **框架**：Rust + Axum
+- **数据库**：PostgreSQL (Supabase)
+- **认证**：JWT + OAuth（GitHub、Google）
+- **部署**：Vercel Serverless Functions
+
+👉 **[后端文档](./backend/README-zh.md)** | **[Backend Documentation](./backend/README.md)**
 
 ## 项目结构
 

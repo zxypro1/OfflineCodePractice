@@ -377,6 +377,11 @@
     "downloadSuccess": "Problem downloaded and added to your collection",
     "loginRequired": "Login required for this action",
     "logout": "Logout",
-    "registerSuccess": "Registration successful, logged in automatically"
+    "registerSuccess": "Registration successful, logged in automatically",
+    "loginSuccess": "Login successful",
+    "termsOfService": "Terms of Service & Open Source License",
+    "agreeToTermsPrefix": "I have read and agree to the",
+    "agreeToTermsSuffix": ", especially that all uploaded problems will be licensed under the MIT License",
+    "mustAgreeToTerms": "Please read and agree to the Terms of Service before registering"
   }
 }

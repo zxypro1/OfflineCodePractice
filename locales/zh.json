@@ -377,6 +377,11 @@
     "downloadSuccess": "题目已下载并添加到本地题库",
     "loginRequired": "此操作需要登录",
     "logout": "退出登录",
-    "registerSuccess": "注册成功，已自动登录"
+    "registerSuccess": "注册成功，已自动登录",
+    "loginSuccess": "登录成功",
+    "termsOfService": "《服务条款与开源协议》",
+    "agreeToTermsPrefix": "我已阅读并同意",
+    "agreeToTermsSuffix": "，特别是所有上传的题目将采用 MIT 开源协议",
+    "mustAgreeToTerms": "请阅读并同意服务条款后再注册"
   }
 }

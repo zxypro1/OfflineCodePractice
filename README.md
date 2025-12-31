@@ -213,7 +213,18 @@ Contributions are welcome. Areas for improvement:
 
 ## License
 
-MIT License
+MIT License - see the [LICENSE](./LICENSE) file for details.
+
+### Problem Market Content
+
+**All problems uploaded to the Problem Market are automatically licensed under the MIT License.** By uploading content to the Problem Market, you:
+
+- ✅ Grant all users the right to freely use, modify, and distribute your problems
+- ✅ Allow commercial use of your content
+- ✅ Understand that no permission is required for others to use your problems
+- ✅ Retain attribution rights while allowing free usage
+
+For complete terms, see the Terms of Service displayed during registration.
 
 ---
 

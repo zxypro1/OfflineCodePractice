@@ -23,11 +23,14 @@ import {
   Loader,
   Select,
   MultiSelect,
+  Checkbox,
+  Anchor,
 } from '@mantine/core';
 import { notifications } from '@mantine/notifications';
 import { IconSearch, IconDownload, IconUpload, IconLogout, IconBrandGithub, IconBrandGoogle } from '@tabler/icons-react';
 import { useTranslation, useI18n } from '../src/contexts/I18nContext';
 import { StandardPageLayout } from '../src/components/StandardPageLayout';
+import { TermsOfService } from '../src/components/TermsOfService';
 
 interface ProblemMarketItem {
   id: string;
@@ -52,6 +55,8 @@ export default function MarketPage() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [authLoading, setAuthModeLoading] = useState(false);
+  const [agreedToTerms, setAgreedToTerms] = useState(false);
+  const [termsModalOpened, setTermsModalOpened] = useState(false);
   
   // Market State
   const [problems, setProblems] = useState<ProblemMarketItem[]>([]);
@@ -91,6 +96,17 @@ export default function MarketPage() {
 
   const handleAuth = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    // Check terms agreement for registration
+    if (authMode === 'register' && !agreedToTerms) {
+      notifications.show({
+        title: t('common.error'),
+        message: t('market.mustAgreeToTerms'),
+        color: 'red',
+      });
+      return;
+    }
+    
     setAuthModeLoading(true);
     
     const endpoint = authMode === 'login' ? 'login' : 'register';
@@ -115,6 +131,11 @@ export default function MarketPage() {
           message: authMode === 'login' ? t('market.loginSuccess') : t('market.registerSuccess'),
           color: 'green',
         });
+        // Reset form
+        setUsername('');
+        setEmail('');
+        setPassword('');
+        setAgreedToTerms(false);
       } else {
         notifications.show({
           title: t('common.error'),
@@ -188,21 +209,24 @@ export default function MarketPage() {
   }
 
   return (
-    <StandardPageLayout
-      title={t('market.title')}
-      subtitle={t('market.subtitle')}
-      pageTitle={t('market.title')}
-      rightSection={
-        user && (
-          <Group gap="xs">
-            <Text size="sm" fw={500}>{user.username}</Text>
-            <Button variant="subtle" color="red" size="xs" leftSection={<IconLogout size={14} />} onClick={handleLogout}>
-              {t('market.logout')}
-            </Button>
-          </Group>
-        )
-      }
-    >
+    <>
+      <TermsOfService opened={termsModalOpened} onClose={() => setTermsModalOpened(false)} />
+      
+      <StandardPageLayout
+        title={t('market.title')}
+        subtitle={t('market.subtitle')}
+        pageTitle={t('market.title')}
+        rightSection={
+          user && (
+            <Group gap="xs">
+              <Text size="sm" fw={500}>{user.username}</Text>
+              <Button variant="subtle" color="red" size="xs" leftSection={<IconLogout size={14} />} onClick={handleLogout}>
+                {t('market.logout')}
+              </Button>
+            </Group>
+          )
+        }
+      >
         {!user ? (
           <Container size="xs" py={100}>
             <Paper withBorder shadow="md" p={30} radius="md">
@@ -235,6 +259,31 @@ export default function MarketPage() {
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                   />
+                  
+                  {authMode === 'register' && (
+                    <Alert color="yellow" variant="light">
+                      <Checkbox
+                        checked={agreedToTerms}
+                        onChange={(e) => setAgreedToTerms(e.currentTarget.checked)}
+                        label={
+                          <Text size="sm">
+                            {t('market.agreeToTermsPrefix')}{' '}
+                            <Anchor 
+                              component="span" 
+                              fw={600}
+                              onClick={(e) => {
+                                e.preventDefault();
+                                setTermsModalOpened(true);
+                              }}
+                            >
+                              {t('market.termsOfService')}
+                            </Anchor>
+                            {t('market.agreeToTermsSuffix')}
+                          </Text>
+                        }
+                      />
+                    </Alert>
+                  )}
                   
                   <Button type="submit" loading={authLoading}>
                     {authMode === 'login' ? t('market.login') : t('market.register')}
@@ -339,6 +388,7 @@ export default function MarketPage() {
            )}
          </Stack>
          )}
-    </StandardPageLayout>
+      </StandardPageLayout>
+    </>
   );
 }

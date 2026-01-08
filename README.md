@@ -6,9 +6,9 @@ Quick links: [Discussions](https://github.com/zxypro1/algolocal/discussions) | [
 
 > Practice coding algorithms 100% offline with AI: generate problems, get hints, discuss solutions, and run code in JavaScript, TypeScript, or Python — no internet or setup required.
 
-<img width="2536" height="1219" alt="2025-08-24165250" src="https://github.com/user-attachments/assets/17846e96-32e8-479f-9193-02a2fc8db017" />
+<img width="1909" height="930" alt="2026" src="https://github.com/user-attachments/assets/7292075e-6d1b-4fc3-9019-7a80f17c1711" />
 
-<img width="2545" height="1229" alt="2025-08-24165302" src="https://github.com/user-attachments/assets/93116550-60af-41aa-b0f3-cc2b10fd5ac5" />
+<img width="1909" height="930" alt="2025-08-24165302" src="https://github.com/user-attachments/assets/93116550-60af-41aa-b0f3-cc2b10fd5ac5" />
 
 ## Quick Start
 

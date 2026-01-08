@@ -20,17 +20,17 @@
 
 | 平台 | 下载文件 |
 |------|----------|
-| **macOS** (Apple Silicon) | `Algorithm-Practice-*-macOS-arm64.dmg` |
-| **macOS** (Intel) | `Algorithm-Practice-*-macOS-x64.dmg` |
-| **Windows** (安装版) | `Algorithm-Practice-*-Windows-Setup.exe` |
-| **Windows** (便携版) | `Algorithm-Practice-*-Windows-Portable.exe` |
-| **Linux** (AppImage) | `Algorithm-Practice-*-Linux.AppImage` |
-| **Linux** (Debian/Ubuntu) | `Algorithm-Practice-*-Linux.deb` |
-| **Linux** (Fedora/RHEL) | `Algorithm-Practice-*-Linux.rpm` |
+| **macOS** (Apple Silicon) | `AlgoLocal-*-macOS-arm64.dmg` |
+| **macOS** (Intel) | `AlgoLocal-*-macOS-x64.dmg` |
+| **Windows** (安装版) | `AlgoLocal-*-Windows-Setup.exe` |
+| **Windows** (便携版) | `AlgoLocal-*-Windows-Portable.exe` |
+| **Linux** (AppImage) | `AlgoLocal-*-Linux.AppImage` |
+| **Linux** (Debian/Ubuntu) | `AlgoLocal-*-Linux.deb` |
+| **Linux** (Fedora/RHEL) | `AlgoLocal-*-Linux.rpm` |
 
 **macOS 用户**：如果提示"应用已损坏，无法打开"，请在终端执行：
 ```bash
-xattr -cr "/Applications/Algorithm Practice.app"
+xattr -cr "/Applications/AlgoLocal.app"
 ```
 
 ### Web 版本（备选方案）

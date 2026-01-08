@@ -1,6 +1,6 @@
 # Desktop Application Build Guide
 
-This guide covers building Algorithm Practice as a cross-platform desktop application for Windows, macOS, and Linux.
+This guide covers building AlgoLocal as a cross-platform desktop application for Windows, macOS, and Linux.
 
 ## Overview
 
@@ -47,8 +47,8 @@ npm run dist:mac
 ```
 
 Output:
-- `dist/Algorithm Practice-x.x.x-macOS-x64.dmg` (Intel)
-- `dist/Algorithm Practice-x.x.x-macOS-arm64.dmg` (Apple Silicon)
+- `dist/AlgoLocal-x.x.x-macOS-x64.dmg` (Intel)
+- `dist/AlgoLocal-x.x.x-macOS-arm64.dmg` (Apple Silicon)
 
 #### Windows
 
@@ -65,8 +65,8 @@ build-windows.bat
 ```
 
 Output:
-- `dist/Algorithm Practice-x.x.x-Windows-x64.exe` (Installer)
-- `dist/Algorithm Practice-x.x.x-Windows-Portable.exe` (Portable)
+- `dist/AlgoLocal-x.x.x-Windows-x64.exe` (Installer)
+- `dist/AlgoLocal-x.x.x-Windows-Portable.exe` (Portable)
 
 #### Linux
 
@@ -75,9 +75,9 @@ npm run dist:linux
 ```
 
 Output:
-- `dist/Algorithm Practice-x.x.x-Linux.AppImage`
-- `dist/Algorithm Practice-x.x.x-Linux.deb`
-- `dist/Algorithm Practice-x.x.x-Linux.rpm`
+- `dist/AlgoLocal-x.x.x-Linux.AppImage`
+- `dist/AlgoLocal-x.x.x-Linux.deb`
+- `dist/AlgoLocal-x.x.x-Linux.rpm`
 
 #### All Platforms
 
@@ -145,7 +145,7 @@ Solution:
 
 Or run in Terminal:
 ```bash
-xattr -cr "/Applications/Algorithm Practice.app"
+xattr -cr "/Applications/AlgoLocal.app"
 ```
 
 ### Windows: SmartScreen Warning

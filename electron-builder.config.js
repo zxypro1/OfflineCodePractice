@@ -109,7 +109,7 @@ module.exports = {
       {
         ext: 'algo',
         name: 'Algorithm Problem',
-        description: 'Algorithm Practice Problem File',
+        description: 'AlgoLocal Problem File',
         role: 'Editor'
       }
     ]
@@ -143,7 +143,7 @@ module.exports = {
     entitlements: 'build/entitlements.mac.plist',
     entitlementsInherit: 'build/entitlements.mac.plist',
     bundleVersion: '1',
-    bundleShortVersion: '0.0.9',
+    bundleShortVersion: '0.2.0',
     fileAssociations: [
       {
         ext: 'algo',
@@ -204,7 +204,7 @@ module.exports = {
     synopsis: 'Practice coding algorithms 100% offline with AI',
     description: '基于 WASM 的离线算法练习应用，支持 JavaScript、TypeScript 和 Python',
     desktop: {
-      Name: 'Algorithm Practice',
+      Name: 'AlgoLocal',
       Comment: '离线算法练习',
       Categories: 'Development;IDE;',
       Keywords: 'algorithm;code;practice;programming;'

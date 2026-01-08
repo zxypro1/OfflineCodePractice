@@ -233,7 +233,7 @@ function createWindow() {
     height: 900,
     minWidth: 1000,
     minHeight: 700,
-    title: 'Algorithm Practice',
+    title: 'AlgoLocal',
     backgroundColor: savedThemePref === 'dark' ? '#1a1a2e' : '#FFFFFF',
     // 使用默认标题栏，避免红绿灯按钮与内容重叠
     titleBarStyle: 'default',

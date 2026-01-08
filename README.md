@@ -20,17 +20,17 @@ The desktop application provides the best experience with zero environment setup
 
 | Platform | Download |
 |----------|----------|
-| **macOS** (Apple Silicon) | `Algorithm-Practice-*-macOS-arm64.dmg` |
-| **macOS** (Intel) | `Algorithm-Practice-*-macOS-x64.dmg` |
-| **Windows** (Installer) | `Algorithm-Practice-*-Windows-Setup.exe` |
-| **Windows** (Portable) | `Algorithm-Practice-*-Windows-Portable.exe` |
-| **Linux** (AppImage) | `Algorithm-Practice-*-Linux.AppImage` |
-| **Linux** (Debian/Ubuntu) | `Algorithm-Practice-*-Linux.deb` |
-| **Linux** (Fedora/RHEL) | `Algorithm-Practice-*-Linux.rpm` |
+| **macOS** (Apple Silicon) | `AlgoLocal-*-macOS-arm64.dmg` |
+| **macOS** (Intel) | `AlgoLocal-*-macOS-x64.dmg` |
+| **Windows** (Installer) | `AlgoLocal-*-Windows-Setup.exe` |
+| **Windows** (Portable) | `AlgoLocal-*-Windows-Portable.exe` |
+| **Linux** (AppImage) | `AlgoLocal-*-Linux.AppImage` |
+| **Linux** (Debian/Ubuntu) | `AlgoLocal-*-Linux.deb` |
+| **Linux** (Fedora/RHEL) | `AlgoLocal-*-Linux.rpm` |
 
 **macOS Users**: If you encounter "App is damaged and can't be opened", run in Terminal:
 ```bash
-xattr -cr "/Applications/Algorithm Practice.app"
+xattr -cr "/Applications/AlgoLocal.app"
 ```
 
 ### Web Version (Alternative)

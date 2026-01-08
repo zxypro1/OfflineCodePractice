@@ -47,8 +47,8 @@ npm run dist:mac
 ```
 
 输出文件：
-- `dist/Algorithm Practice-x.x.x-macOS-x64.dmg`（Intel）
-- `dist/Algorithm Practice-x.x.x-macOS-arm64.dmg`（Apple Silicon）
+- `dist/AlgoLocal-x.x.x-macOS-x64.dmg`（Intel）
+- `dist/AlgoLocal-x.x.x-macOS-arm64.dmg`（Apple Silicon）
 
 #### Windows
 
@@ -65,8 +65,8 @@ build-windows.bat
 ```
 
 输出文件：
-- `dist/Algorithm Practice-x.x.x-Windows-x64.exe`（安装版）
-- `dist/Algorithm Practice-x.x.x-Windows-Portable.exe`（便携版）
+- `dist/AlgoLocal-x.x.x-Windows-x64.exe`（安装版）
+- `dist/AlgoLocal-x.x.x-Windows-Portable.exe`（便携版）
 
 #### Linux
 
@@ -75,9 +75,9 @@ npm run dist:linux
 ```
 
 输出文件：
-- `dist/Algorithm Practice-x.x.x-Linux.AppImage`
-- `dist/Algorithm Practice-x.x.x-Linux.deb`
-- `dist/Algorithm Practice-x.x.x-Linux.rpm`
+- `dist/AlgoLocal-x.x.x-Linux.AppImage`
+- `dist/AlgoLocal-x.x.x-Linux.deb`
+- `dist/AlgoLocal-x.x.x-Linux.rpm`
 
 #### 所有平台
 
@@ -145,7 +145,7 @@ npm run dist:all
 
 或在终端执行：
 ```bash
-xattr -cr "/Applications/Algorithm Practice.app"
+xattr -cr "/Applications/AlgoLocal.app"
 ```
 
 ### Windows：SmartScreen 警告

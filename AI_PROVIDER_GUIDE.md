@@ -1,6 +1,6 @@
 # AI Provider Configuration Guide
 
-This guide explains how to configure AI model providers for the problem generation feature in Offline Algorithm Practice.
+This guide explains how to configure AI model providers for the problem generation feature in AlgoLocal.
 
 ## Accessing Settings
 

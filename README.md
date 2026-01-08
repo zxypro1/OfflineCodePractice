@@ -1,10 +1,10 @@
-# Offline Algorithm Practice
+# AlgoLocal
 
 [中文](./README-zh.md)
 
-Quick links: [Discussions](https://github.com/zxypro1/OfflineLeetPractice/discussions) | [Issues](https://github.com/zxypro1/OfflineLeetPractice/issues) | [Pull Requests](https://github.com/zxypro1/OfflineLeetPractice/pulls)
+Quick links: [Discussions](https://github.com/zxypro1/algolocal/discussions) | [Issues](https://github.com/zxypro1/algolocal/issues) | [Pull Requests](https://github.com/zxypro1/algolocal/pulls)
 
-> A standalone algorithm coding practice application that works 100% offline. No local development environment required — just download, install, and start practicing. Supports JavaScript, TypeScript, and Python with WASM-based browser-side code execution.
+> Practice coding algorithms 100% offline with AI: generate problems, get hints, discuss solutions, and run code in JavaScript, TypeScript, or Python — no internet or setup required.
 
 <img width="2536" height="1219" alt="2025-08-24165250" src="https://github.com/user-attachments/assets/17846e96-32e8-479f-9193-02a2fc8db017" />
 
@@ -16,7 +16,7 @@ Quick links: [Discussions](https://github.com/zxypro1/OfflineLeetPractice/discus
 
 The desktop application provides the best experience with zero environment setup required. Simply download and run.
 
-**[Download Latest Release](https://github.com/zxypro1/OfflineCodePractice/releases/latest)**
+**[Download Latest Release](https://github.com/zxypro1/algolocal/releases/latest)**
 
 | Platform | Download |
 |----------|----------|
@@ -41,13 +41,12 @@ For developers who prefer running from source, see [Development Setup](#developm
 
 ### Core Functionality
 
-- **Standalone Application**: No Node.js, Python, or any development environment required
-- **Complete Offline Support**: Works without internet after installation
-- **Built-in Problem Library**: 10+ classic algorithm problems included
-- **AI Problem Generator**: Generate custom problems using various AI providers
+- **AI-Powered Practice**: Generate problems, get hints, chat about solutions, and generate detailed explanations with multiple approaches — all powered by AI
+- **Complete Offline Support**: Works 100% offline after initial setup, no internet required during practice
 - **WASM Code Execution**: Browser-side execution for JavaScript, TypeScript, and Python
 - **Monaco Code Editor**: VS Code-like editing experience with syntax highlighting and autocomplete
-- **Instant Testing**: Run tests immediately with detailed results and execution time tracking
+- **Practice Dashboard**: Track your progress with daily statistics, accuracy metrics, heatmap visualization, and performance trends
+- **Built-in Problem Library**: 10+ classic algorithm problems included, easily expandable
 - **Cross-platform**: Windows, macOS, and Linux supported
 
 ### Supported Languages
@@ -60,12 +59,14 @@ For developers who prefer running from source, see [Development Setup](#developm
 
 All code execution happens in the browser using WebAssembly. No server-side execution required.
 
-### AI-Powered Problem Generation
+### AI-Powered Features
 
-- **Custom Problem Creation**: Describe what you want to practice in natural language
-- **Complete Solutions**: Each problem includes working reference solutions
-- **Comprehensive Testing**: Auto-generated test cases including edge cases
-- **Instant Integration**: Problems automatically added to your local library
+The application includes three AI-powered tools that share the same provider configuration:
+
+- **AI Problem Generator**: Describe what you want to practice in natural language, and AI creates a complete problem with test cases and reference solutions
+- **AI Solution Generation**: Generate multiple solution approaches (brute force + optimized) with detailed annotations, complexity analysis, and trade-offs explained
+- **AI Chat Assistant**: Get contextual hints while solving problems without spoiling the solution. Ask questions about your current code or approach
+- **Flexible Configuration**: Switch between DeepSeek, OpenAI, Claude, Qwen, or local Ollama models anytime
 
 ## How to Use
 
@@ -75,15 +76,27 @@ All code execution happens in the browser using WebAssembly. No server-side exec
 2. **Select a Problem**: Click on any problem to open the detail page
 3. **Choose Language**: Select JavaScript, TypeScript, or Python
 4. **Write Solution**: Use the Monaco editor with full IDE features
-5. **Run Tests**: Click "Submit & Run Tests" to execute your code
-6. **View Results**: See detailed test results with execution time
+5. **Get AI Help** (Optional):
+   - **AI Chat**: Ask for hints or discuss your approach without getting the full solution
+   - **AI Solution**: Generate complete annotated solutions with multiple approaches
+6. **Run Tests**: Click "Submit & Run Tests" to execute your code
+7. **View Results**: See detailed test results with execution time
+8. **Track Progress**: Check the Practice Dashboard to see your statistics and performance trends
 
 ### AI Problem Generation
 
 1. **Access Generator**: Click "AI Generator" on the homepage
-2. **Describe Requirements**: Enter what type of problem you want
+2. **Describe Requirements**: Enter what type of problem you want (e.g., "binary search tree", "dynamic programming")
 3. **Generate**: AI creates a complete problem with test cases and solutions
 4. **Practice**: Generated problem is automatically available in your library
+
+### Practice Analytics
+
+1. **Access Dashboard**: Click "Practice Stats" or "Dashboard" on the homepage
+2. **View Statistics**: See your total problems attempted, solved, and accuracy rate
+3. **Analyze Performance**: Review accuracy breakdown by difficulty level and problem tags
+4. **Track Streaks**: Visualize your daily practice activity with an interactive heatmap
+5. **Review History**: Check your recent attempts and identify areas for improvement
 
 ### Settings Configuration
 
@@ -133,8 +146,8 @@ chmod +x start-local.sh
 
 **Manual Setup:**
 ```bash
-git clone https://github.com/zxypro1/OfflineLeetPractice.git
-cd OfflineLeetPractice
+git clone https://github.com/zxypro1/algolocal.git
+cd algolocal
 npm install
 npm run build
 npm start
@@ -178,15 +191,25 @@ OfflineLeetPractice/
 ├── pages/                  # Next.js pages and API routes
 │   ├── api/
 │   │   ├── problems.ts     # Problem data API
-│   │   ├── generate-problem.ts
-│   │   └── add-problem.ts
-│   ├── problems/[id].tsx   # Problem detail page
+│   │   ├── generate-problem.ts  # AI problem generation
+│   │   ├── ai-solution.ts  # AI solution generation
+│   │   ├── ai-chat.ts      # AI chat assistant
+│   │   ├── add-problem.ts
+│   │   └── ...
+│   ├── problems/[id].tsx   # Problem detail page (with AI chat + AI solution)
 │   ├── generator.tsx       # AI Generator page
+│   ├── stats.tsx           # Practice Dashboard page
+│   ├── manage.tsx          # Problem management page
 │   └── index.tsx           # Homepage
 ├── src/
 │   ├── components/         # React components
-│   └── hooks/
-│       └── useWasmExecutor.ts
+│   │   ├── PracticeDashboard.tsx  # Stats visualization
+│   │   ├── ContributionHeatmap.tsx
+│   │   └── ...
+│   ├── hooks/
+│   │   └── useWasmExecutor.ts
+│   └── lib/
+│       └── practiceStats.ts  # Local statistics tracking
 ├── public/
 │   └── problems.json       # Problem database
 ├── electron-main.js        # Electron main process

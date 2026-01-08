@@ -251,12 +251,12 @@ jobs:
       - name: Create Release
         uses: softprops/action-gh-release@v2
         with:
-          name: Algorithm Practice v${{ needs.changelog.outputs.version }}
+          name: AlgoLocal v${{ needs.changelog.outputs.version }}
           tag_name: ${{ github.ref_name }}
           body: |
-            ## 🚀 Algorithm Practice v${{ needs.changelog.outputs.version }}
+            ## 🚀 AlgoLocal v${{ needs.changelog.outputs.version }}
             
-            An offline algorithm practice application with WASM-based code execution.
+            Practice coding algorithms 100% offline with AI: generate problems, get hints, discuss solutions, and run code in JavaScript, TypeScript, or Python — no internet or setup required.
             
             ### 📦 Downloads
             
@@ -290,7 +290,7 @@ jobs:
             
             ### 中文说明
             
-            基于 WASM 的离线算法练习应用。
+            100% 离线刷算法，AI 全程辅助：生成题目、获取提示、讨论解法，支持 JavaScript、TypeScript、Python 代码运行——无需联网或配置环境。
             
             **macOS 安装提示**：如果打开应用时提示"已损坏"或"无法验证开发者"，请在终端运行：
             

@@ -4,11 +4,11 @@
  */
 module.exports = {
   // 应用标识
-  appId: 'com.algorithm.practice',
-  productName: 'Algorithm Practice',
+  appId: 'com.algolocal.app',
+  productName: 'AlgoLocal',
   
   // 应用元数据
-  copyright: 'Copyright © 2024 zxypro1',
+  copyright: 'Copyright © 2024-2025 zxypro1',
   
   // 构建目录
   directories: {
@@ -122,7 +122,7 @@ module.exports = {
     allowToChangeInstallationDirectory: false,   // 禁用目录选择，加速安装
     createDesktopShortcut: true,
     createStartMenuShortcut: true,
-    shortcutName: 'Algorithm Practice',
+    shortcutName: 'AlgoLocal',
     deleteAppDataOnUninstall: false,
     artifactName: '${productName}-${version}-Windows-Setup.${ext}'
   },
@@ -176,7 +176,7 @@ module.exports = {
       height: 380
     },
     backgroundColor: '#1a1a2e',
-    title: 'AlgorithmPractice',
+    title: 'AlgoLocal',
     artifactName: '${productName}-${version}-macOS-${arch}.${ext}'
   },
 
@@ -200,8 +200,8 @@ module.exports = {
     category: 'Development',
     artifactName: '${productName}-${version}-Linux-${arch}.${ext}',
     maintainer: 'zxypro1 <zxypro@example.com>',
-    vendor: 'Algorithm Practice',
-    synopsis: '离线算法练习应用',
+    vendor: 'AlgoLocal',
+    synopsis: 'Practice coding algorithms 100% offline with AI',
     description: '基于 WASM 的离线算法练习应用，支持 JavaScript、TypeScript 和 Python',
     desktop: {
       Name: 'Algorithm Practice',

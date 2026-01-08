@@ -1,10 +1,10 @@
-# 离线算法练习
+# AlgoLocal
 
 [English](./README.md)
 
-快速链接: [讨论区](https://github.com/zxypro1/OfflineLeetPractice/discussions) | [Issues](https://github.com/zxypro1/OfflineLeetPractice/issues) | [Pull Requests](https://github.com/zxypro1/OfflineLeetPractice/pulls)
+快速链接: [讨论区](https://github.com/zxypro1/algolocal/discussions) | [Issues](https://github.com/zxypro1/algolocal/issues) | [Pull Requests](https://github.com/zxypro1/algolocal/pulls)
 
-> 一款独立的算法编程练习应用，支持 100% 离线使用。无需配置任何本地开发环境——下载、安装、即可开始练习。支持 JavaScript、TypeScript 和 Python，采用 WASM 浏览器端代码执行。
+> 100% 离线刷算法，AI 全程辅助：生成题目、获取提示、讨论解法，支持 JavaScript、TypeScript、Python 代码运行——无需联网或配置环境。
 
 <img width="2524" height="1223" alt="2025-08-24165202" src="https://github.com/user-attachments/assets/0c5a4952-77c1-41be-9cdc-fd8fe1db4b8a" />
 
@@ -16,7 +16,7 @@
 
 桌面应用提供最佳体验，无需任何环境配置。下载后即可直接运行。
 
-**[下载最新版本](https://github.com/zxypro1/OfflineCodePractice/releases/latest)**
+**[下载最新版本](https://github.com/zxypro1/algolocal/releases/latest)**
 
 | 平台 | 下载文件 |
 |------|----------|
@@ -41,13 +41,12 @@ xattr -cr "/Applications/Algorithm Practice.app"
 
 ### 核心功能
 
-- **独立应用程序**：无需 Node.js、Python 或任何开发环境
-- **完全离线支持**：安装后无需网络即可使用
-- **内置题库**：包含 10+ 道经典算法题目
-- **AI 题目生成器**：使用多种 AI 服务生成自定义题目
+- **AI 全程辅助**：生成题目、获取提示、讨论解法、生成详细题解（含多种方法）——全部由 AI 驱动
+- **完全离线支持**：初始设置后 100% 离线可用，练习时无需联网
 - **WASM 代码执行**：浏览器端执行 JavaScript、TypeScript 和 Python
 - **Monaco 代码编辑器**：VS Code 级别的编辑体验，支持语法高亮和自动补全
-- **即时测试**：立即运行测试并查看详细结果和执行时间
+- **练习数据看板**：通过每日统计、准确率指标、热力图可视化和性能趋势跟踪您的进度
+- **内置题库**：包含 10+ 道经典算法题目，可轻松扩展
 - **跨平台支持**：支持 Windows、macOS 和 Linux
 
 ### 支持的语言
@@ -60,12 +59,14 @@ xattr -cr "/Applications/Algorithm Practice.app"
 
 所有代码执行都在浏览器端通过 WebAssembly 完成，无需服务器端执行。
 
-### AI 智能题目生成
+### AI 智能功能
 
-- **自定义题目创建**：用自然语言描述想要练习的内容
-- **完整解法**：每个题目都包含可运行的参考解法
-- **全面测试**：自动生成包括边界情况的测试用例
-- **即时集成**：题目自动添加到本地题库
+应用包含三个 AI 驱动的工具，共享相同的服务商配置：
+
+- **AI 题目生成器**：用自然语言描述想要练习的内容，AI 会创建包含测试用例和参考解法的完整题目
+- **AI 题解生成**：生成多种解法（暴力解法 + 优化解法），带详细注释、复杂度分析和权衡说明
+- **AI 聊天助手**：在解题过程中获取上下文提示，不直接透露答案。可以询问当前代码或解题思路
+- **灵活配置**：随时切换 DeepSeek、OpenAI、Claude、Qwen 或本地 Ollama 模型
 
 ## 使用方法
 
@@ -75,15 +76,27 @@ xattr -cr "/Applications/Algorithm Practice.app"
 2. **选择题目**：点击任意题目打开详情页面
 3. **选择语言**：选择 JavaScript、TypeScript 或 Python
 4. **编写解法**：使用具备完整 IDE 功能的 Monaco 编辑器
-5. **运行测试**：点击"提交并运行测试"执行代码
-6. **查看结果**：查看详细测试结果和执行时间
+5. **获取 AI 帮助**（可选）：
+   - **AI 聊天**：询问提示或讨论解题思路，不会直接给出完整答案
+   - **AI 题解**：生成包含多种方法的完整带注释题解
+6. **运行测试**：点击"提交并运行测试"执行代码
+7. **查看结果**：查看详细测试结果和执行时间
+8. **跟踪进度**：查看练习数据看板，了解统计数据和性能趋势
 
 ### AI 题目生成
 
 1. **访问生成器**：点击首页的"AI 生成器"按钮
-2. **描述需求**：输入想要的题目类型
+2. **描述需求**：输入想要的题目类型（如"二叉搜索树"、"动态规划"）
 3. **生成题目**：AI 创建包含测试用例和解法的完整题目
 4. **开始练习**：生成的题目自动出现在题库中
+
+### 练习数据分析
+
+1. **访问看板**：点击首页的"练习统计"或"数据看板"
+2. **查看统计**：查看总尝试题目数、解决题目数和准确率
+3. **分析表现**：按难度和题目标签查看准确率分布
+4. **追踪连续性**：通过交互式热力图可视化每日练习活动
+5. **回顾历史**：查看最近的尝试记录，识别需要改进的领域
 
 ### 设置配置
 
@@ -133,8 +146,8 @@ chmod +x start-local.sh
 
 **手动配置：**
 ```bash
-git clone https://github.com/zxypro1/OfflineLeetPractice.git
-cd OfflineLeetPractice
+git clone https://github.com/zxypro1/algolocal.git
+cd algolocal
 npm install
 npm run build
 npm start
@@ -178,15 +191,25 @@ OfflineLeetPractice/
 ├── pages/                  # Next.js 页面和 API 路由
 │   ├── api/
 │   │   ├── problems.ts     # 题目数据 API
-│   │   ├── generate-problem.ts
-│   │   └── add-problem.ts
-│   ├── problems/[id].tsx   # 题目详情页面
+│   │   ├── generate-problem.ts  # AI 题目生成
+│   │   ├── ai-solution.ts  # AI 题解生成
+│   │   ├── ai-chat.ts      # AI 聊天助手
+│   │   ├── add-problem.ts
+│   │   └── ...
+│   ├── problems/[id].tsx   # 题目详情页面（带 AI 聊天 + AI 题解）
 │   ├── generator.tsx       # AI 生成器页面
+│   ├── stats.tsx           # 练习数据看板页面
+│   ├── manage.tsx          # 题目管理页面
 │   └── index.tsx           # 首页
 ├── src/
 │   ├── components/         # React 组件
-│   └── hooks/
-│       └── useWasmExecutor.ts
+│   │   ├── PracticeDashboard.tsx  # 统计数据可视化
+│   │   ├── ContributionHeatmap.tsx
+│   │   └── ...
+│   ├── hooks/
+│   │   └── useWasmExecutor.ts
+│   └── lib/
+│       └── practiceStats.ts  # 本地统计追踪
 ├── public/
 │   └── problems.json       # 题目数据库
 ├── electron-main.js        # Electron 主进程

@@ -2,20 +2,20 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
         xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
-    <loc>https://zxypro1.github.io/OfflineCodePractice/</loc>
+    <loc>https://zxypro1.github.io/algolocal/</loc>
     <lastmod>2025-01-24</lastmod>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
-    <xhtml:link rel="alternate" hreflang="en" href="https://zxypro1.github.io/OfflineCodePractice/"/>
-    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://zxypro1.github.io/OfflineCodePractice/zh/"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://zxypro1.github.io/algolocal/"/>
+    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://zxypro1.github.io/algolocal/zh/"/>
   </url>
   <url>
-    <loc>https://zxypro1.github.io/OfflineCodePractice/zh/</loc>
+    <loc>https://zxypro1.github.io/algolocal/zh/</loc>
     <lastmod>2025-01-24</lastmod>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
-    <xhtml:link rel="alternate" hreflang="en" href="https://zxypro1.github.io/OfflineCodePractice/"/>
-    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://zxypro1.github.io/OfflineCodePractice/zh/"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://zxypro1.github.io/algolocal/"/>
+    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://zxypro1.github.io/algolocal/zh/"/>
   </url>
 </urlset>
 

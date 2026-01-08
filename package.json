@@ -1,18 +1,18 @@
 {
-  "name": "algorithm-practice",
+  "name": "algolocal",
   "version": "0.1.9",
   "private": true,
   "main": "electron-main.js",
-  "description": "离线算法练习应用 - 基于 WASM 的浏览器端代码执行，支持 JavaScript、TypeScript 和 Python",
+  "description": "Practice coding algorithms 100% offline with AI: generate problems, get hints, discuss solutions, and run code in JavaScript, TypeScript, or Python",
   "author": {
     "name": "zxypro1",
     "url": "https://github.com/zxypro1"
   },
   "license": "MIT",
-  "homepage": "https://github.com/zxypro1/OfflineLeetPractice",
+  "homepage": "https://github.com/zxypro1/algolocal",
   "repository": {
     "type": "git",
-    "url": "https://github.com/zxypro1/OfflineLeetPractice.git"
+    "url": "https://github.com/zxypro1/algolocal.git"
   },
   "keywords": [
     "algorithm",

@@ -24,21 +24,29 @@ export interface TestResult {
   error: string | null;
 }
 
+export interface PerformanceStats {
+  totalExecutionTime: number;
+  averageExecutionTime: number;
+  medianExecutionTime: number;
+  minExecutionTime: number;
+  maxExecutionTime: number;
+  standardDeviation: number;
+  warmupTime: number;
+  iterations: number;
+  memoryUsage: {
+    heapUsed: number;
+    heapTotal: number;
+    external: number;
+    rss: number;
+  };
+}
+
 export interface RunTestsResult {
   status: 'success' | 'error';
   total: number;
   passed: number;
   results: TestResult[];
-  performance: {
-    totalExecutionTime: number;
-    averageExecutionTime: number;
-    memoryUsage: {
-      heapUsed: number;
-      heapTotal: number;
-      external: number;
-      rss: number;
-    };
-  };
+  performance: PerformanceStats;
   error?: string;
 }
 
@@ -501,6 +509,145 @@ function splitCommaNotInBrackets(str: string): string[] {
 }
 
 /**
+ * 性能统计辅助函数
+ */
+interface BenchmarkConfig {
+  warmupRuns: number;  // 预热运行次数
+  measureRuns: number; // 测量运行次数
+  discardOutliers: boolean; // 是否排除异常值
+}
+
+const DEFAULT_BENCHMARK_CONFIG: BenchmarkConfig = {
+  warmupRuns: 1,      // 1次预热
+  measureRuns: 3,     // 3次测量
+  discardOutliers: true
+};
+
+/**
+ * 计算数组的中位数
+ */
+function calculateMedian(values: number[]): number {
+  if (values.length === 0) return 0;
+  const sorted = [...values].sort((a, b) => a - b);
+  const mid = Math.floor(sorted.length / 2);
+  return sorted.length % 2 !== 0
+    ? sorted[mid]
+    : (sorted[mid - 1] + sorted[mid]) / 2;
+}
+
+/**
+ * 计算标准差
+ */
+function calculateStandardDeviation(values: number[], mean: number): number {
+  if (values.length <= 1) return 0;
+  const squaredDiffs = values.map(v => Math.pow(v - mean, 2));
+  const avgSquaredDiff = squaredDiffs.reduce((a, b) => a + b, 0) / values.length;
+  return Math.sqrt(avgSquaredDiff);
+}
+
+/**
+ * 使用 IQR 方法排除异常值
+ */
+function removeOutliers(values: number[]): number[] {
+  if (values.length < 4) return values;
+  
+  const sorted = [...values].sort((a, b) => a - b);
+  const q1 = sorted[Math.floor(sorted.length * 0.25)];
+  const q3 = sorted[Math.floor(sorted.length * 0.75)];
+  const iqr = q3 - q1;
+  const lowerBound = q1 - 1.5 * iqr;
+  const upperBound = q3 + 1.5 * iqr;
+  
+  return values.filter(v => v >= lowerBound && v <= upperBound);
+}
+
+/**
+ * 执行多次运行并收集性能数据
+ */
+async function benchmarkExecution(
+  executeFn: () => Promise<{ result: any; error: string | null; executionTime: number }>,
+  config: BenchmarkConfig = DEFAULT_BENCHMARK_CONFIG
+): Promise<{
+  result: any;
+  error: string | null;
+  times: number[];
+  warmupTime: number;
+}> {
+  let warmupTime = 0;
+  let lastResult: any = null;
+  let lastError: string | null = null;
+  const times: number[] = [];
+
+  // 预热运行
+  for (let i = 0; i < config.warmupRuns; i++) {
+    const warmupResult = await executeFn();
+    warmupTime += warmupResult.executionTime;
+    lastResult = warmupResult.result;
+    lastError = warmupResult.error;
+    if (warmupResult.error) {
+      // 预热阶段出错就直接返回
+      return { result: lastResult, error: lastError, times: [warmupResult.executionTime], warmupTime };
+    }
+  }
+
+  // 测量运行
+  for (let i = 0; i < config.measureRuns; i++) {
+    const measureResult = await executeFn();
+    times.push(measureResult.executionTime);
+    lastResult = measureResult.result;
+    lastError = measureResult.error;
+    if (measureResult.error) {
+      return { result: lastResult, error: lastError, times, warmupTime };
+    }
+  }
+
+  return { result: lastResult, error: lastError, times, warmupTime };
+}
+
+/**
+ * 计算完整的性能统计
+ */
+function calculatePerformanceStats(
+  times: number[],
+  warmupTime: number,
+  config: BenchmarkConfig = DEFAULT_BENCHMARK_CONFIG
+): Omit<PerformanceStats, 'memoryUsage'> {
+  // 是否排除异常值
+  const processedTimes = config.discardOutliers ? removeOutliers(times) : times;
+  
+  if (processedTimes.length === 0) {
+    return {
+      totalExecutionTime: 0,
+      averageExecutionTime: 0,
+      medianExecutionTime: 0,
+      minExecutionTime: 0,
+      maxExecutionTime: 0,
+      standardDeviation: 0,
+      warmupTime: Math.round(warmupTime * 100) / 100,
+      iterations: times.length
+    };
+  }
+
+  const sum = processedTimes.reduce((a, b) => a + b, 0);
+  const avg = sum / processedTimes.length;
+  const median = calculateMedian(processedTimes);
+  const stdDev = calculateStandardDeviation(processedTimes, avg);
+  const min = Math.min(...processedTimes);
+  const max = Math.max(...processedTimes);
+
+  return {
+    totalExecutionTime: Math.round(sum * 100) / 100,
+    averageExecutionTime: Math.round(avg * 100) / 100,
+    medianExecutionTime: Math.round(median * 100) / 100,
+    minExecutionTime: Math.round(min * 100) / 100,
+    maxExecutionTime: Math.round(max * 100) / 100,
+    standardDeviation: Math.round(stdDev * 100) / 100,
+    warmupTime: Math.round(warmupTime * 100) / 100,
+    iterations: processedTimes.length
+  };
+}
+
+/**
  * 深度比较两个值
  */
 function deepEqual(a: any, b: any): boolean {
@@ -589,7 +736,7 @@ export function useWasmExecutor() {
   }, []); // 移除 runtimeStatus 依赖，使用 ref 代替
 
   /**
-   * 运行测试（纯 WASM 执行）
+   * 运行测试（纯 WASM 执行）- 使用更严谨的性能统计方法
    */
   const runTests = useCallback(async (
     problem: any,
@@ -610,6 +757,8 @@ export function useWasmExecutor() {
       const tests = problem.tests || [];
       const results: TestResult[] = [];
       let passedCount = 0;
+      let totalWarmupTime = 0;
+      const allExecutionTimes: number[] = [];
 
       const isLinkedListProblem = problem.tags?.includes('linked-list');
       const templateKey = language === 'javascript' ? 'js' : language;
@@ -623,37 +772,50 @@ export function useWasmExecutor() {
           const args = parseTestInput(test.input);
           const expected = JSON.parse(test.output);
 
-          let execResult;
-          
-          if (language === 'javascript') {
-            execResult = await executeJavaScript(code, args, isLinkedListProblem);
-          } else if (language === 'typescript') {
-            execResult = await executeTypeScript(code, args, isLinkedListProblem);
-          } else if (language === 'python') {
-            execResult = await executePython(code, args, functionName);
-          } else {
-            throw new Error(`Unsupported language: ${language}`);
-          }
+          // 创建执行函数
+          const createExecuteFn = () => {
+            // 每次都需要重新解析参数，因为某些语言（如链表问题）会修改参数
+            const freshArgs = parseTestInput(test.input);
+            
+            if (language === 'javascript') {
+              return executeJavaScript(code, freshArgs, isLinkedListProblem);
+            } else if (language === 'typescript') {
+              return executeTypeScript(code, freshArgs, isLinkedListProblem);
+            } else if (language === 'python') {
+              return executePython(code, freshArgs, functionName);
+            } else {
+              throw new Error(`Unsupported language: ${language}`);
+            }
+          };
 
-          if (execResult.error) {
+          // 使用基准测试方法执行多次运行
+          const benchmarkResult = await benchmarkExecution(createExecuteFn, DEFAULT_BENCHMARK_CONFIG);
+          
+          totalWarmupTime += benchmarkResult.warmupTime;
+          allExecutionTimes.push(...benchmarkResult.times);
+
+          if (benchmarkResult.error) {
             results.push({
               input: test.input,
               expected,
               actual: null,
               passed: false,
-              executionTime: execResult.executionTime,
-              error: execResult.error
+              executionTime: calculateMedian(benchmarkResult.times),
+              error: benchmarkResult.error
             });
           } else {
-            const passed = deepEqual(execResult.result, expected);
+            const passed = deepEqual(benchmarkResult.result, expected);
             if (passed) passedCount++;
+
+            // 使用中位数作为该测试用例的执行时间（更稳定）
+            const medianTime = calculateMedian(benchmarkResult.times);
 
             results.push({
               input: test.input,
               expected,
-              actual: execResult.result,
+              actual: benchmarkResult.result,
               passed,
-              executionTime: execResult.executionTime,
+              executionTime: Math.round(medianTime * 100) / 100,
               error: null
             });
           }
@@ -673,6 +835,9 @@ export function useWasmExecutor() {
       const finalMemory = (performance as any).memory?.usedJSHeapSize || 0;
       const memoryUsed = Math.max(0, finalMemory - initialMemory);
 
+      // 计算完整的性能统计
+      const perfStats = calculatePerformanceStats(allExecutionTimes, totalWarmupTime, DEFAULT_BENCHMARK_CONFIG);
+
       setIsLoading(false);
 
       return {
@@ -681,8 +846,9 @@ export function useWasmExecutor() {
         passed: passedCount,
         results,
         performance: {
-          totalExecutionTime: Math.round(totalExecutionTime),
-          averageExecutionTime: tests.length > 0 ? Math.round(totalExecutionTime / tests.length * 100) / 100 : 0,
+          ...perfStats,
+          // 覆盖总时间为实际测量的总时间
+          totalExecutionTime: Math.round(totalExecutionTime * 100) / 100,
           memoryUsage: {
             heapUsed: Math.round(memoryUsed / 1024 / 1024 * 100) / 100,
             heapTotal: Math.round(finalMemory / 1024 / 1024 * 100) / 100,
@@ -701,6 +867,12 @@ export function useWasmExecutor() {
         performance: {
           totalExecutionTime: 0,
           averageExecutionTime: 0,
+          medianExecutionTime: 0,
+          minExecutionTime: 0,
+          maxExecutionTime: 0,
+          standardDeviation: 0,
+          warmupTime: 0,
+          iterations: 0,
           memoryUsage: { heapUsed: 0, heapTotal: 0, external: 0, rss: 0 }
         },
         error: error.message || String(error)

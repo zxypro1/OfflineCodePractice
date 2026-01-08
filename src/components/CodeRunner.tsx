@@ -4,7 +4,7 @@ import {
   Paper, 
   Text, 
   Title, 
-  Stack, 
+  Stack,
   Group, 
   Badge, 
   LoadingOverlay,
@@ -319,24 +319,44 @@ export default function CodeRunner({ problem, onTestResult, showResults = true, 
           {/* Performance Information */}
           {result.performance && (
             <Paper p="sm" withBorder style={{ background: 'var(--mantine-color-blue-light)' }}>
-              <Group justify="space-between">
-                <div>
-                  <Text size="xs" c="dimmed">{t('codeRunner.totalExecutionTime')}:</Text>
-                  <Text size="sm" fw={500}>{result.performance.totalExecutionTime}ms</Text>
-                </div>
-                <div>
-                  <Text size="xs" c="dimmed">{t('codeRunner.averageTime')}:</Text>
-                  <Text size="sm" fw={500}>{result.performance.averageExecutionTime}ms</Text>
-                </div>
-                <div>
-                  <Text size="xs" c="dimmed">{t('codeRunner.memoryUsed')}:</Text>
-                  <Text size="sm" fw={500}>{result.performance.memoryUsage.heapUsed}MB</Text>
-                </div>
-                <div>
-                  <Text size="xs" c="dimmed">{t('codeRunner.totalMemory')}:</Text>
-                  <Text size="sm" fw={500}>{result.performance.memoryUsage.rss}MB</Text>
-                </div>
-              </Group>
+              <Stack gap="xs">
+                <Group justify="space-between" wrap="wrap">
+                  <div>
+                    <Text size="xs" c="dimmed">{t('codeRunner.totalExecutionTime')}:</Text>
+                    <Text size="sm" fw={500}>{result.performance.totalExecutionTime}ms</Text>
+                  </div>
+                  <div>
+                    <Text size="xs" c="dimmed">{t('codeRunner.medianTime') || 'Median Time'}:</Text>
+                    <Text size="sm" fw={500}>{result.performance.medianExecutionTime}ms</Text>
+                  </div>
+                  <div>
+                    <Text size="xs" c="dimmed">{t('codeRunner.averageTime')}:</Text>
+                    <Text size="sm" fw={500}>{result.performance.averageExecutionTime}ms</Text>
+                  </div>
+                  <div>
+                    <Text size="xs" c="dimmed">{t('codeRunner.memoryUsed')}:</Text>
+                    <Text size="sm" fw={500}>{result.performance.memoryUsage.heapUsed}MB</Text>
+                  </div>
+                </Group>
+                <Group justify="space-between" wrap="wrap">
+                  <div>
+                    <Text size="xs" c="dimmed">{t('codeRunner.minTime') || 'Min'}:</Text>
+                    <Text size="sm" fw={500}>{result.performance.minExecutionTime}ms</Text>
+                  </div>
+                  <div>
+                    <Text size="xs" c="dimmed">{t('codeRunner.maxTime') || 'Max'}:</Text>
+                    <Text size="sm" fw={500}>{result.performance.maxExecutionTime}ms</Text>
+                  </div>
+                  <div>
+                    <Text size="xs" c="dimmed">{t('codeRunner.stdDev') || 'Std Dev'}:</Text>
+                    <Text size="sm" fw={500}>±{result.performance.standardDeviation}ms</Text>
+                  </div>
+                  <div>
+                    <Text size="xs" c="dimmed">{t('codeRunner.iterations') || 'Iterations'}:</Text>
+                    <Text size="sm" fw={500}>{result.performance.iterations}x</Text>
+                  </div>
+                </Group>
+              </Stack>
             </Paper>
           )}
           

@@ -384,6 +384,59 @@ const ProblemForm: React.FC<ProblemFormProps> = ({
               />
             </Paper>
 
+            {/* Examples */}
+            <Paper p="lg" withBorder>
+              <Title order={3} mb="md">{t('addProblem.examples')}</Title>
+              <Stack gap="md">
+                {formData.examples.map((example, index) => (
+                  <Paper key={index} p="md" withBorder>
+                    <Grid align="flex-end" gutter="md">
+                      <Grid.Col span={{ base: 12, xs: formData.examples.length > 1 ? 5 : 6, sm: formData.examples.length > 1 ? 5 : 6 }}>
+                        <Textarea
+                          label={t('addProblem.exampleInput')}
+                          value={example.input}
+                          onChange={(e) => handleArrayChange('examples', index, 'input', e.target.value)}
+                          placeholder="e.g., nums = [2,7,11,15], target = 9"
+                          rows={2}
+                        />
+                      </Grid.Col>
+                      <Grid.Col span={{ base: 12, xs: formData.examples.length > 1 ? 5 : 6, sm: formData.examples.length > 1 ? 5 : 6 }}>
+                        <Textarea
+                          label={t('addProblem.exampleOutput')}
+                          value={example.output}
+                          onChange={(e) => handleArrayChange('examples', index, 'output', e.target.value)}
+                          placeholder="e.g., [0,1]"
+                          rows={2}
+                        />
+                      </Grid.Col>
+                      {formData.examples.length > 1 && (
+                        <Grid.Col span={{ base: 12, xs: 2, sm: 2 }}>
+                          <Group justify="center">
+                            <ActionIcon
+                              color="red"
+                              variant="light"
+                              onClick={() => removeArrayItem('examples', index)}
+                              size="lg"
+                              aria-label={t('addProblem.removeExample')}
+                            >
+                              <IconTrash size={16} />
+                            </ActionIcon>
+                          </Group>
+                        </Grid.Col>
+                      )}
+                    </Grid>
+                  </Paper>
+                ))}
+                <Button
+                  variant="outline"
+                  leftSection={<IconPlus size={16} />}
+                  onClick={() => addArrayItem('examples')}
+                >
+                  {t('addProblem.addExample')}
+                </Button>
+              </Stack>
+            </Paper>
+
             {/* Descriptions */}
             <Paper p="lg" withBorder>
               <Title order={3} mb="md">{t('addProblem.descriptions')}</Title>
@@ -408,6 +461,78 @@ const ProblemForm: React.FC<ProblemFormProps> = ({
                   />
                 </Grid.Col>
               </Grid>
+            </Paper>
+
+            {/* Code Templates */}
+            <Paper p="lg" withBorder>
+              <Title order={3} mb="md">{t('addProblem.codeTemplates')}</Title>
+              <Text size="sm" c="dimmed" mb="md">{t('addProblem.codeTemplatesHint')}</Text>
+              <Stack gap="md">
+                <Textarea
+                  label="JavaScript"
+                  value={formData.template.js || ''}
+                  onChange={(e) => handleNestedChange('template', 'js', e.target.value)}
+                  rows={5}
+                  styles={{ input: { fontFamily: 'monospace' } }}
+                  placeholder="function solution() {\n  // write your code here\n}\nmodule.exports = solution;"
+                />
+                <Textarea
+                  label="Python"
+                  value={formData.template.python || ''}
+                  onChange={(e) => handleNestedChange('template', 'python', e.target.value)}
+                  rows={5}
+                  styles={{ input: { fontFamily: 'monospace' } }}
+                  placeholder="def solution():\n    # write your code here\n    pass"
+                />
+                <Textarea
+                  label="Java"
+                  value={formData.template.java || ''}
+                  onChange={(e) => handleNestedChange('template', 'java', e.target.value)}
+                  rows={6}
+                  styles={{ input: { fontFamily: 'monospace' } }}
+                  placeholder="public class Solution {\n    public void solution() {\n        // write your code here\n    }\n}"
+                />
+                <Textarea
+                  label="C++"
+                  value={formData.template.cpp || ''}
+                  onChange={(e) => handleNestedChange('template', 'cpp', e.target.value)}
+                  rows={6}
+                  styles={{ input: { fontFamily: 'monospace' } }}
+                  placeholder="#include <iostream>\nusing namespace std;\n\nclass Solution {\npublic:\n    void solution() {\n        // write your code here\n    }\n};"
+                />
+                <Textarea
+                  label="C"
+                  value={formData.template.c || ''}
+                  onChange={(e) => handleNestedChange('template', 'c', e.target.value)}
+                  rows={5}
+                  styles={{ input: { fontFamily: 'monospace' } }}
+                  placeholder="#include <stdio.h>\n\nvoid solution() {\n    // write your code here\n}"
+                />
+              </Stack>
+            </Paper>
+
+            {/* Solution Templates (Optional) */}
+            <Paper p="lg" withBorder>
+              <Title order={3} mb="md">{t('addProblem.solutionTemplates')}</Title>
+              <Text size="sm" c="dimmed" mb="md">{t('addProblem.solutionTemplatesHint')}</Text>
+              <Stack gap="md">
+                <Textarea
+                  label="JavaScript Solution"
+                  value={formData.solution?.js || ''}
+                  onChange={(e) => handleNestedChange('solution', 'js', e.target.value)}
+                  rows={6}
+                  styles={{ input: { fontFamily: 'monospace' } }}
+                  placeholder={t('addProblem.optionalSolutionPlaceholder')}
+                />
+                <Textarea
+                  label="Python Solution"
+                  value={formData.solution?.python || ''}
+                  onChange={(e) => handleNestedChange('solution', 'python', e.target.value)}
+                  rows={6}
+                  styles={{ input: { fontFamily: 'monospace' } }}
+                  placeholder={t('addProblem.optionalSolutionPlaceholder')}
+                />
+              </Stack>
             </Paper>
 
             {/* Test Cases */}

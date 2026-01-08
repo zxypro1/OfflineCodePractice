@@ -6,9 +6,9 @@
 
 > 100% 离线刷算法，AI 全程辅助：生成题目、获取提示、讨论解法，支持 JavaScript、TypeScript、Python 代码运行——无需联网或配置环境。
 
-<img width="2524" height="1223" alt="2025-08-24165202" src="https://github.com/user-attachments/assets/0c5a4952-77c1-41be-9cdc-fd8fe1db4b8a" />
+<img width="1898" height="932" alt="2026" src="https://github.com/user-attachments/assets/a601c9fb-2e36-4e64-a547-11ed5fbde581" />
 
-<img width="2542" height="1221" alt="2025-08-2165223" src="https://github.com/user-attachments/assets/5b9298e2-fa5b-4596-9694-733132ea509f" />
+<img width="1898" height="932" alt="2025-08-2165223" src="https://github.com/user-attachments/assets/5b9298e2-fa5b-4596-9694-733132ea509f" />
 
 ## 快速开始
 

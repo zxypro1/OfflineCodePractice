@@ -8,16 +8,27 @@
     "loading": "加载中...",
     "error": "错误",
     "success": "成功",
-    "settings": "设置"
+    "settings": "设置",
+    "navigation": "导航",
+    "practice": "练习",
+    "content": "内容",
+    "system": "系统"
+  },
+  "navigation": {
+    "statsDesc": "查看练习进度和统计数据",
+    "addDesc": "创建新的题目",
+    "aiDesc": "使用 AI 生成题目",
+    "manageDesc": "导入和管理题目",
+    "settingsDesc": "配置应用设置"
   },
   "header": {
-    "title": "离线算法练习",
+    "title": "AlgoLocal",
     "subtitle": "本地题库，支持在浏览器内编辑并运行测试（JavaScript、TypeScript、Python）"
   },
   "homepage": {
-    "title": "🚀 离线算法练习",
+    "title": "AlgoLocal",
     "subtitle": "本地题库，支持在浏览器内编辑并运行测试（JavaScript、TypeScript、Python）",
-    "problemList": "📚 题目列表",
+    "problemList": "题目列表",
     "problems": "题",
     "addProblem": "添加题目",
     "search": "搜索",
@@ -31,6 +42,17 @@
     "showingResults": "显示",
     "of": "共",
     "aiGenerator": "AI 生成器",
+    "viewMode": {
+      "title": "视图模式",
+      "grid": "卡片视图",
+      "list": "列表视图"
+    },
+    "table": {
+      "status": "状态",
+      "title": "标题",
+      "difficulty": "难度",
+      "tags": "标签"
+    },
     "problemStatus": {
       "attempted": "已做过",
       "solved": "已通过"
@@ -103,7 +125,7 @@
     "noSolutions": "此题目暂无参考解法。"
   },
   "codeRunner": {
-    "title": "💻 代码编辑器",
+    "title": "代码编辑器",
     "submit": "🚀 提交并运行测试",
     "running": "运行中...",
     "testResults": "📋 测试结果",

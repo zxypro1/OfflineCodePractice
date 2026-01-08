@@ -8,16 +8,27 @@
     "loading": "Loading...",
     "error": "Error",
     "success": "Success",
-    "settings": "Settings"
+    "settings": "Settings",
+    "navigation": "Navigation",
+    "practice": "Practice",
+    "content": "Content",
+    "system": "System"
+  },
+  "navigation": {
+    "statsDesc": "View your progress and statistics",
+    "addDesc": "Create a new problem",
+    "aiDesc": "Generate problems with AI",
+    "manageDesc": "Import and manage problems",
+    "settingsDesc": "Configure app settings"
   },
   "header": {
-    "title": "Offline Algorithm Practice",
+    "title": "AlgoLocal",
     "subtitle": "Local problem set, supports editing and running tests in browser (JavaScript, TypeScript, Python)"
   },
   "homepage": {
-    "title": "🚀 Offline Algorithm Practice",
+    "title": "AlgoLocal",
     "subtitle": "Local problem set, supports editing and running tests in browser (JavaScript, TypeScript, Python)",
-    "problemList": "📚 Problem List",
+    "problemList": "Problem List",
     "problems": "problems",
     "addProblem": "Add Problem",
     "search": "Search",
@@ -31,6 +42,17 @@
     "showingResults": "Showing",
     "of": "of",
     "aiGenerator": "AI Generator",
+    "viewMode": {
+      "title": "View Mode",
+      "grid": "Grid View",
+      "list": "List View"
+    },
+    "table": {
+      "status": "Status",
+      "title": "Title",
+      "difficulty": "Difficulty",
+      "tags": "Tags"
+    },
     "problemStatus": {
       "attempted": "Attempted",
       "solved": "Solved"
@@ -103,7 +125,7 @@
     "noSolutions": "No reference solutions available for this problem."
   },
   "codeRunner": {
-    "title": "💻 Code Editor",
+    "title": "Code Editor",
     "submit": "🚀 Submit & Run Tests",
     "running": "Running...",
     "testResults": "📋 Test Results",

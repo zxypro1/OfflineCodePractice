@@ -19,8 +19,15 @@ import {
   Button,
   Flex,
   Paper,
-  AppShell
+  AppShell,
+  SegmentedControl,
+  Table,
+  ActionIcon,
+  Tooltip,
+  Drawer,
+  NavLink
 } from '@mantine/core';
+import { IconLayoutGrid, IconList, IconMenu2, IconChartBar, IconPlus, IconRobot, IconPackage, IconSettings } from '@tabler/icons-react';
 import { useMemo } from 'react';
 import { useTranslation, useI18n } from '../src/contexts/I18nContext';
 import { LanguageThemeControls } from '../src/components/LanguageThemeControls'
@@ -58,10 +65,48 @@ export default function Home() {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedDifficulties, setSelectedDifficulties] = useState<string[]>([]);
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
+  const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
+  const [drawerOpened, setDrawerOpened] = useState(false);
+  
+  // Column widths for list view table
+  const [columnWidths, setColumnWidths] = useState({
+    status: 100,
+    title: 400,
+    difficulty: 150,
+    tags: 300
+  });
 
   useEffect(() => {
     setMounted(true);
+    // Load view mode preference from localStorage
+    const savedViewMode = localStorage.getItem('problemViewMode');
+    if (savedViewMode === 'grid' || savedViewMode === 'list') {
+      setViewMode(savedViewMode);
+    }
+    // Load column widths from localStorage
+    const savedWidths = localStorage.getItem('tableColumnWidths');
+    if (savedWidths) {
+      try {
+        setColumnWidths(JSON.parse(savedWidths));
+      } catch (e) {
+        console.error('Failed to parse saved column widths', e);
+      }
+    }
   }, []);
+  
+  // Save column widths to localStorage when they change
+  useEffect(() => {
+    if (mounted) {
+      localStorage.setItem('tableColumnWidths', JSON.stringify(columnWidths));
+    }
+  }, [columnWidths, mounted]);
+
+  // Save view mode preference
+  useEffect(() => {
+    if (mounted) {
+      localStorage.setItem('problemViewMode', viewMode);
+    }
+  }, [viewMode, mounted]);
 
   useEffect(() => {
     if (!mounted) return;
@@ -366,56 +411,13 @@ export default function Home() {
               <Text size="sm" c="dimmed">{t('homepage.subtitle')}</Text>
             </div>
             <Group>
-              <Link href="/stats">
-                <Badge
-                  size="lg"
-                  variant="outline"
-                  color="grape"
-                  style={{ cursor: 'pointer', padding: '8px 16px' }}
-                >
-                  📊 {t('homepage.stats.jumpToDashboard')}
-                </Badge>
-              </Link>
-              <Link href="/add-problem">
-                <Badge 
-                  size="lg" 
-                  variant="outline" 
-                  color="blue" 
-                  style={{ cursor: 'pointer', padding: '8px 16px' }}
-                >
-                  + {t('homepage.addProblem')}
-                </Badge>
-              </Link>
-              <Link href="/generator">
-                <Badge 
-                  size="lg" 
-                  variant="outline" 
-                  color="violet" 
-                  style={{ cursor: 'pointer', padding: '8px 16px' }}
-                >
-                  🤖 {t('homepage.aiGenerator')}
-                </Badge>
-              </Link>
-              <Link href="/manage">
-                <Badge 
-                  size="lg" 
-                  variant="outline" 
-                  color="teal" 
-                  style={{ cursor: 'pointer', padding: '8px 16px' }}
-                >
-                  📦 {t('manage.manageProblems')}
-                </Badge>
-              </Link>
-              <Link href="/settings">
-                <Badge 
-                  size="lg" 
-                  variant="outline" 
-                  color="gray" 
-                  style={{ cursor: 'pointer', padding: '8px 16px' }}
-                >
-                  ⚙️ {t('common.settings')}
-                </Badge>
-              </Link>
+              <ActionIcon
+                variant="subtle"
+                size="lg"
+                onClick={() => setDrawerOpened(true)}
+              >
+                <IconMenu2 size={24} />
+              </ActionIcon>
               <LanguageThemeControls />
             </Group>
           </Group>
@@ -425,6 +427,35 @@ export default function Home() {
       {/* Left Sidebar with search and filters */}
       <AppShell.Navbar p="md">
         <Stack gap="lg">
+          <Group justify="space-between" align="center">
+            <Title order={4}>{t('homepage.problemList')}</Title>
+            {/* View Mode Toggle */}
+            <Group gap={4}>
+              <Tooltip label={t('homepage.viewMode.grid')}>
+                <ActionIcon
+                  variant={viewMode === 'grid' ? 'filled' : 'subtle'}
+                  color="gray"
+                  size="sm"
+                  onClick={() => setViewMode('grid')}
+                >
+                  <IconLayoutGrid size={16} />
+                </ActionIcon>
+              </Tooltip>
+              <Tooltip label={t('homepage.viewMode.list')}>
+                <ActionIcon
+                  variant={viewMode === 'list' ? 'filled' : 'subtle'}
+                  color="gray"
+                  size="sm"
+                  onClick={() => setViewMode('list')}
+                >
+                  <IconList size={16} />
+                </ActionIcon>
+              </Tooltip>
+            </Group>
+          </Group>
+
+          <Divider />
+
           {/* Search Section */}
           <div>
             <Title order={4} mb="md">{t('homepage.search')}</Title>
@@ -515,7 +546,7 @@ export default function Home() {
                 </Text>
               </Alert>
             </Center>
-          ) : (
+          ) : viewMode === 'grid' ? (
             <Grid gutter="md" style={{ margin: 0 }}>
               {filteredProblems.map((problem) => (
                 <Grid.Col key={problem.id} span={{ base: 12, sm: 6, xl: 4 }}>
@@ -588,9 +619,400 @@ export default function Home() {
                 </Grid.Col>
               ))}
             </Grid>
+          ) : (
+            <div style={{ overflowX: 'auto' }}>
+              <Table striped highlightOnHover withTableBorder withColumnBorders style={{ tableLayout: 'fixed', width: '100%' }}>
+                <colgroup>
+                  <col style={{ width: `${columnWidths.status}px` }} />
+                  <col style={{ width: `${columnWidths.title}px` }} />
+                  <col style={{ width: `${columnWidths.difficulty}px` }} />
+                  <col style={{ width: `${columnWidths.tags}px` }} />
+                </colgroup>
+                <Table.Thead>
+                  <Table.Tr>
+                    <Table.Th style={{ position: 'relative', padding: '12px' }}>
+                      {t('homepage.table.status')}
+                      <div
+                        style={{
+                          position: 'absolute',
+                          top: 0,
+                          right: 0,
+                          bottom: 0,
+                          width: '5px',
+                          cursor: 'col-resize',
+                          userSelect: 'none',
+                          backgroundColor: 'transparent'
+                        }}
+                        onMouseDown={(e) => {
+                          const startX = e.pageX;
+                          const startWidth = columnWidths.status;
+                          const handleMouseMove = (e: MouseEvent) => {
+                            const newWidth = Math.max(50, startWidth + e.pageX - startX);
+                            setColumnWidths(prev => ({ ...prev, status: newWidth }));
+                          };
+                          const handleMouseUp = () => {
+                            document.removeEventListener('mousemove', handleMouseMove);
+                            document.removeEventListener('mouseup', handleMouseUp);
+                          };
+                          document.addEventListener('mousemove', handleMouseMove);
+                          document.addEventListener('mouseup', handleMouseUp);
+                        }}
+                      />
+                    </Table.Th>
+                    <Table.Th style={{ position: 'relative', padding: '12px' }}>
+                      {t('homepage.table.title')}
+                      <div
+                        style={{
+                          position: 'absolute',
+                          top: 0,
+                          right: 0,
+                          bottom: 0,
+                          width: '5px',
+                          cursor: 'col-resize',
+                          userSelect: 'none',
+                          backgroundColor: 'transparent'
+                        }}
+                        onMouseDown={(e) => {
+                          const startX = e.pageX;
+                          const startWidth = columnWidths.title;
+                          const handleMouseMove = (e: MouseEvent) => {
+                            const newWidth = Math.max(100, startWidth + e.pageX - startX);
+                            setColumnWidths(prev => ({ ...prev, title: newWidth }));
+                          };
+                          const handleMouseUp = () => {
+                            document.removeEventListener('mousemove', handleMouseMove);
+                            document.removeEventListener('mouseup', handleMouseUp);
+                          };
+                          document.addEventListener('mousemove', handleMouseMove);
+                          document.addEventListener('mouseup', handleMouseUp);
+                        }}
+                      />
+                    </Table.Th>
+                    <Table.Th style={{ position: 'relative', padding: '12px' }}>
+                      {t('homepage.table.difficulty')}
+                      <div
+                        style={{
+                          position: 'absolute',
+                          top: 0,
+                          right: 0,
+                          bottom: 0,
+                          width: '5px',
+                          cursor: 'col-resize',
+                          userSelect: 'none',
+                          backgroundColor: 'transparent'
+                        }}
+                        onMouseDown={(e) => {
+                          const startX = e.pageX;
+                          const startWidth = columnWidths.difficulty;
+                          const handleMouseMove = (e: MouseEvent) => {
+                            const newWidth = Math.max(80, startWidth + e.pageX - startX);
+                            setColumnWidths(prev => ({ ...prev, difficulty: newWidth }));
+                          };
+                          const handleMouseUp = () => {
+                            document.removeEventListener('mousemove', handleMouseMove);
+                            document.removeEventListener('mouseup', handleMouseUp);
+                          };
+                          document.addEventListener('mousemove', handleMouseMove);
+                          document.addEventListener('mouseup', handleMouseUp);
+                        }}
+                      />
+                    </Table.Th>
+                    <Table.Th style={{ position: 'relative', padding: '12px' }}>
+                      {t('homepage.table.tags')}
+                    </Table.Th>
+                  </Table.Tr>
+                </Table.Thead>
+                <Table.Tbody>
+                  {filteredProblems.map((problem) => {
+                    const st = problemStatusIndex.get(problem.id);
+                    return (
+                      <Table.Tr 
+                        key={problem.id}
+                        style={{ cursor: 'pointer' }}
+                        onClick={() => window.location.href = `/problems/${problem.id}`}
+                      >
+                        <Table.Td style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                          {st?.attempted && (
+                            st.solved ? (
+                              <Badge color="green" variant="light" size="sm">
+                                ✓
+                              </Badge>
+                            ) : (
+                              <Badge color="blue" variant="light" size="sm">
+                                ○
+                              </Badge>
+                            )
+                          )}
+                        </Table.Td>
+                        <Table.Td style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                          <Text fw={500} size="sm">
+                            {problem.title[locale as keyof typeof problem.title] || problem.title.zh}
+                          </Text>
+                        </Table.Td>
+                        <Table.Td style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                          <Badge 
+                            color={getDifficultyColor(problem.difficulty)}
+                            variant="light"
+                            size="sm"
+                          >
+                            {t(`homepage.difficulty.${problem.difficulty}`)}
+                          </Badge>
+                        </Table.Td>
+                        <Table.Td style={{ overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                          <Group gap={4}>
+                            {problem.tags?.slice(0, 2).map((tag) => (
+                              <Badge 
+                                key={tag} 
+                                color="blue" 
+                                variant="light" 
+                                size="xs"
+                              >
+                                {t(`tags.${tag}`) !== `tags.${tag}` ? t(`tags.${tag}`) : tag}
+                              </Badge>
+                            ))}
+                            {problem.tags?.length > 2 && (
+                              <Badge color="gray" variant="light" size="xs">
+                                +{problem.tags.length - 2}
+                              </Badge>
+                            )}
+                          </Group>
+                        </Table.Td>
+                      </Table.Tr>
+                    );
+                  })}
+                </Table.Tbody>
+              </Table>
+            </div>
           )}
         </Container>
       </AppShell.Main>
+
+      {/* Navigation Drawer */}
+      <Drawer
+        opened={drawerOpened}
+        onClose={() => setDrawerOpened(false)}
+        position="right"
+        title={
+          <Group gap="xs">
+            <IconMenu2 size={24} />
+            <Text fw={600} size="lg">{t('common.navigation')}</Text>
+          </Group>
+        }
+        padding="lg"
+        size="sm"
+        styles={{
+          header: {
+            paddingBottom: 16
+          }
+        }}
+      >
+        <Stack gap="md">
+          {/* Practice Section */}
+          <div>
+            <Text size="xs" tt="uppercase" fw={700} c="dimmed" mb="xs" px="xs">
+              {t('common.practice') || 'Practice'}
+            </Text>
+            <Stack gap={4}>
+              <Paper
+                p="md"
+                radius="md"
+                style={{ 
+                  cursor: 'pointer',
+                  transition: 'all 0.2s ease',
+                  background: 'var(--mantine-color-grape-light)',
+                  border: 'none'
+                }}
+                onClick={() => {
+                  window.location.href = '/stats';
+                  setDrawerOpened(false);
+                }}
+                className="nav-item"
+              >
+                <Group gap="md">
+                  <div style={{ 
+                    width: 40, 
+                    height: 40, 
+                    display: 'flex', 
+                    alignItems: 'center', 
+                    justifyContent: 'center',
+                    borderRadius: '8px',
+                    background: 'var(--mantine-color-grape-filled)'
+                  }}>
+                    <IconChartBar size={22} style={{ color: 'white' }} />
+                  </div>
+                  <div style={{ flex: 1 }}>
+                    <Text fw={500} size="sm">{t('homepage.stats.jumpToDashboard')}</Text>
+                    <Text size="xs" c="dimmed">{t('navigation.statsDesc') || 'View your progress'}</Text>
+                  </div>
+                </Group>
+              </Paper>
+            </Stack>
+          </div>
+
+          <Divider />
+
+          {/* Content Management Section */}
+          <div>
+            <Text size="xs" tt="uppercase" fw={700} c="dimmed" mb="xs" px="xs">
+              {t('common.content') || 'Content'}
+            </Text>
+            <Stack gap={4}>
+              <Paper
+                p="md"
+                radius="md"
+                style={{ 
+                  cursor: 'pointer',
+                  transition: 'all 0.2s ease',
+                  background: 'var(--mantine-color-blue-light)',
+                  border: 'none'
+                }}
+                onClick={() => {
+                  window.location.href = '/add-problem';
+                  setDrawerOpened(false);
+                }}
+                className="nav-item"
+              >
+                <Group gap="md">
+                  <div style={{ 
+                    width: 40, 
+                    height: 40, 
+                    display: 'flex', 
+                    alignItems: 'center', 
+                    justifyContent: 'center',
+                    borderRadius: '8px',
+                    background: 'var(--mantine-color-blue-filled)'
+                  }}>
+                    <IconPlus size={22} style={{ color: 'white' }} />
+                  </div>
+                  <div style={{ flex: 1 }}>
+                    <Text fw={500} size="sm">{t('homepage.addProblem')}</Text>
+                    <Text size="xs" c="dimmed">{t('navigation.addDesc') || 'Create new problem'}</Text>
+                  </div>
+                </Group>
+              </Paper>
+
+              <Paper
+                p="md"
+                radius="md"
+                style={{ 
+                  cursor: 'pointer',
+                  transition: 'all 0.2s ease',
+                  background: 'var(--mantine-color-violet-light)',
+                  border: 'none'
+                }}
+                onClick={() => {
+                  window.location.href = '/generator';
+                  setDrawerOpened(false);
+                }}
+                className="nav-item"
+              >
+                <Group gap="md">
+                  <div style={{ 
+                    width: 40, 
+                    height: 40, 
+                    display: 'flex', 
+                    alignItems: 'center', 
+                    justifyContent: 'center',
+                    borderRadius: '8px',
+                    background: 'var(--mantine-color-violet-filled)'
+                  }}>
+                    <IconRobot size={22} style={{ color: 'white' }} />
+                  </div>
+                  <div style={{ flex: 1 }}>
+                    <Text fw={500} size="sm">{t('homepage.aiGenerator')}</Text>
+                    <Text size="xs" c="dimmed">{t('navigation.aiDesc') || 'Generate with AI'}</Text>
+                  </div>
+                </Group>
+              </Paper>
+
+              <Paper
+                p="md"
+                radius="md"
+                style={{ 
+                  cursor: 'pointer',
+                  transition: 'all 0.2s ease',
+                  background: 'var(--mantine-color-teal-light)',
+                  border: 'none'
+                }}
+                onClick={() => {
+                  window.location.href = '/manage';
+                  setDrawerOpened(false);
+                }}
+                className="nav-item"
+              >
+                <Group gap="md">
+                  <div style={{ 
+                    width: 40, 
+                    height: 40, 
+                    display: 'flex', 
+                    alignItems: 'center', 
+                    justifyContent: 'center',
+                    borderRadius: '8px',
+                    background: 'var(--mantine-color-teal-filled)'
+                  }}>
+                    <IconPackage size={22} style={{ color: 'white' }} />
+                  </div>
+                  <div style={{ flex: 1 }}>
+                    <Text fw={500} size="sm">{t('manage.manageProblems')}</Text>
+                    <Text size="xs" c="dimmed">{t('navigation.manageDesc') || 'Manage problems'}</Text>
+                  </div>
+                </Group>
+              </Paper>
+            </Stack>
+          </div>
+
+          <Divider />
+
+          {/* Settings Section */}
+          <div>
+            <Text size="xs" tt="uppercase" fw={700} c="dimmed" mb="xs" px="xs">
+              {t('common.system') || 'System'}
+            </Text>
+            <Stack gap={4}>
+              <Paper
+                p="md"
+                radius="md"
+                style={{ 
+                  cursor: 'pointer',
+                  transition: 'all 0.2s ease',
+                  background: 'var(--mantine-color-gray-light)',
+                  border: 'none'
+                }}
+                onClick={() => {
+                  window.location.href = '/settings';
+                  setDrawerOpened(false);
+                }}
+                className="nav-item"
+              >
+                <Group gap="md">
+                  <div style={{ 
+                    width: 40, 
+                    height: 40, 
+                    display: 'flex', 
+                    alignItems: 'center', 
+                    justifyContent: 'center',
+                    borderRadius: '8px',
+                    background: 'var(--mantine-color-gray-filled)'
+                  }}>
+                    <IconSettings size={22} style={{ color: 'white' }} />
+                  </div>
+                  <div style={{ flex: 1 }}>
+                    <Text fw={500} size="sm">{t('common.settings')}</Text>
+                    <Text size="xs" c="dimmed">{t('navigation.settingsDesc') || 'App settings'}</Text>
+                  </div>
+                </Group>
+              </Paper>
+            </Stack>
+          </div>
+        </Stack>
+
+        <style jsx global>{`
+          .nav-item:hover {
+            transform: translateX(-4px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+          }
+        `}</style>
+      </Drawer>
     </AppShell>
   );
 }
